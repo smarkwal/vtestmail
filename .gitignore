@@ -19,6 +19,7 @@ build
 
 # user-specific files
 /gradle.user.properties
+/notes.txt
 *.gpg
 
 # macOS files
