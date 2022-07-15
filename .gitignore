@@ -1,20 +1,25 @@
-.gradle
-/build/
 
-# Ignore Gradle GUI config
-gradle-app.setting
+# Gradle installation
+/.gradle
 
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
-
-# Cache of project
-.gradletasknamecache
-
-# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
-# gradle/wrapper/gradle-wrapper.properties
-
-# Ignore Gradle build output directory
+# build output
+/build
+/target
+/out
 build
 
-# Ignore IntelliJ project files
-/.idea/
+# IntelliJ project files
+/.idea
+*.iml
+
+# profiler shapshots and heap dumps
+*.jps
+*.hprof
+*.jfr
+
+# user-specific files
+/gradle.user.properties
+*.gpg
+
+# macOS files
+.DS_Store

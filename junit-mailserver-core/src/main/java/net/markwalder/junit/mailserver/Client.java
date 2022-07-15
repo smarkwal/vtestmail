@@ -38,6 +38,7 @@ public class Client {
 	 *
 	 * @return Line of text sent by client, or {@code null} if the client has
 	 * closed the connection.
+	 * @throws IOException If an I/O error occurs.
 	 */
 	public String readLine() throws IOException {
 		String line = reader.readLine(); // TODO: accept only CRLF as line separator?
@@ -51,6 +52,7 @@ public class Client {
 	 * Send a line of text to the client, followed by a CRLF line break.
 	 *
 	 * @param line Line of text to send.
+	 * @throws IOException If an I/O error occurs.
 	 */
 	public void writeLine(String line) throws IOException {
 		System.out.println("Server: " + line);

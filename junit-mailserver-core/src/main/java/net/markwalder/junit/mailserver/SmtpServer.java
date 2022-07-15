@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Virtual SMTP server for testing.
- * <p/>
+ * <p>
  * Limitations:
  * <ul>
  *     <li>All SMTP commands must be in uppercase.</li>

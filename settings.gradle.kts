@@ -8,4 +8,4 @@
  */
 
 rootProject.name = "junit-mailserver"
-include("lib")
+include("junit-mailserver-core")

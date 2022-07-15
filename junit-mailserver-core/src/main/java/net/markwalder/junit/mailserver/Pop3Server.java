@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Virtual SMTP server for testing.
- * <p/>
+ * <p>
  * Limitations:
  * <ul>
  *     <li>Only one client can connect to the server at a time.</li>
