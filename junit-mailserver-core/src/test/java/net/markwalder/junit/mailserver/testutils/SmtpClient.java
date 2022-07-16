@@ -22,7 +22,9 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Properties;
 import net.markwalder.junit.mailserver.SmtpServer;
 
@@ -40,15 +42,6 @@ public class SmtpClient {
 
 	public MessageBuilder prepareMessage() {
 		return new MessageBuilder(session);
-	}
-
-	public Message createMessage(String from, String to, String subject, String body) throws MessagingException {
-		return prepareMessage()
-				.from(from)
-				.to(to)
-				.subject(subject)
-				.body(body)
-				.build();
 	}
 
 	public void send(Message message) throws MessagingException {
@@ -174,10 +167,27 @@ public class SmtpClient {
 
 	public static class MessageBuilder {
 
-		private final Message message;
+		private final CustomMimeMessage message;
 
 		private MessageBuilder(Session session) {
-			this.message = new MimeMessage(session);
+			this.message = new CustomMimeMessage(session);
+		}
+
+		public MessageBuilder messageId(String messageId) {
+			message.setMessageId(messageId);
+			return this;
+		}
+
+		public MessageBuilder date(OffsetDateTime date) throws MessagingException {
+			// example date: Wed, 1 Jan 2020 00:00:00 +0000
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("E, d MMM yyyy HH:mm:ss xx", Locale.US);
+			String value = date.format(formatter);
+			return header("Date", value);
+		}
+
+		public MessageBuilder header(String name, String value) throws MessagingException {
+			message.setHeader(name, value);
+			return this;
 		}
 
 		public MessageBuilder from(String address) throws MessagingException {
