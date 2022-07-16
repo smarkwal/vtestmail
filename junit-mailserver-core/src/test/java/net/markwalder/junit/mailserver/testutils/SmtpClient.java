@@ -16,6 +16,7 @@
 
 package net.markwalder.junit.mailserver.testutils;
 
+import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
@@ -57,25 +58,115 @@ public class SmtpClient {
 	public static class SmtpClientBuilder {
 
 		private final Properties properties = new Properties();
+		private Authenticator authenticator = null;
 
 		private SmtpClientBuilder(SmtpServer server) {
+			if (server == null) throw new IllegalArgumentException("server must not be null");
+
 			int port = server.getPort();
 
-			// set default properties
-			properties.put("mail.smtp.auth", false);
-			properties.put("mail.smtp.starttls.enable", "false");
+			// SMTP properties:
+			// https://javaee.github.io/javamail/docs/api/com/sun/mail/smtp/package-summary.html
+
+			// SMTP server address (host name)
 			properties.put("mail.smtp.host", "localhost");
+
+			// SMTP server port
 			properties.put("mail.smtp.port", String.valueOf(port));
-			// TODO: add more default properties?
+
+			// host name used in HELO or EHLO command
+			properties.put("mail.smtp.localhost", "localhost");
+
+			// SMTP client address (host name)
+			properties.put("mail.smtp.localaddress", "localhost");
+
+			// try to use EHLO before HELO
+			properties.put("mail.smtp.ehlo", "true");
+
+			// disable authentication and encryption by default
+			properties.put("mail.smtp.auth", "false");
+			properties.put("mail.smtp.ssl.enable", "false");
+			properties.put("mail.smtp.starttls.enable", "false");
+			properties.put("mail.smtp.ssl.trust", "*");
+
+			// socket timeouts
+			properties.put("mail.smtp.connectiontimeout", "5000"); // connect
+			properties.put("mail.smtp.timeout", "5000"); // read
+			properties.put("mail.smtp.writetimeout", "5000"); // write
 		}
 
-		// TODO: add methods to control authentication and encryption (SSL/TLS)
-		//  - authentication method (e.g. PLAIN, LOGIN, CRAM-MD5, XOAUTH2, ...)
-		//  - username and password (or access token)
-		//  - encryption method (e.g. TLS, SSL, ...)
+		public SmtpClientBuilder withAuthentication(String authType, String username, String password) {
+			if (authType == null) throw new IllegalArgumentException("authType must not be null");
+			if (username == null) throw new IllegalArgumentException("username must not be null");
+			if (password == null) throw new IllegalArgumentException("password must not be null");
+
+			// If true, attempt to authenticate the user using the AUTH command.
+			// Defaults to false.
+			properties.put("mail.smtp.auth", "true");
+
+			// If set, lists the authentication mechanisms to consider, and the
+			// order in which to consider them. Only mechanisms supported by the
+			// server and supported by the current implementation will be used.
+			// The default is "LOGIN PLAIN DIGEST-MD5 NTLM", which includes all
+			// the authentication mechanisms supported by the current
+			// implementation except XOAUTH2.
+			properties.put("mail.smtp.auth.mechanisms", authType);
+
+			// create authenticator
+			authenticator = new PasswordAuthenticator(username, password);
+
+			return this;
+		}
+
+		public SmtpClientBuilder withEncryption(String protocols) {
+			if (protocols == null || protocols.isEmpty()) throw new IllegalArgumentException("protocols must not be null or empty");
+
+			// use SSL to connect to SMTP server
+			properties.put("mail.smtp.ssl.enable", "true");
+
+			// SSL protocols (whitespace separated list)
+			properties.put("mail.smtp.ssl.protocols", protocols);
+
+			// SSL cipher suites (whitespace separated list)
+			// TODO: support this?
+			// properties.put("mail.smtp.ssl.ciphersuites", "");
+
+			return this;
+		}
+
+		public SmtpClientBuilder withSSLv3() {
+			return withEncryption("SSLv3");
+		}
+
+		public SmtpClientBuilder withTLSv1() {
+			return withEncryption("TLSv1");
+		}
+
+		public SmtpClientBuilder withTLSv11() {
+			return withEncryption("TLSv1.1");
+		}
+
+		public SmtpClientBuilder withTLSv12() {
+			return withEncryption("TLSv1.2");
+		}
+
+		public SmtpClientBuilder withTLSv13() {
+			return withEncryption("TLSv1.3");
+		}
+
+		public SmtpClientBuilder withStartTLS() {
+
+			// enable the use of the STARTTLS command
+			properties.put("mail.smtp.starttls.enable", "true");
+
+			// require the use of the STARTTLS command
+			properties.put("mail.smtp.starttls.required", "true");
+
+			return this;
+		}
 
 		public SmtpClient build() {
-			Session session = Session.getInstance(properties);
+			Session session = Session.getInstance(properties, authenticator);
 			return new SmtpClient(session);
 		}
 
