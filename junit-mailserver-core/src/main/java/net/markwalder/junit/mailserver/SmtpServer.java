@@ -103,6 +103,7 @@ public class SmtpServer extends MailServer {
 	private void handleEHLO() throws IOException {
 
 		// support TLS
+		// TODO: why does removing STARTTLS break authentication?
 		client.writeLine("250-STARTTLS");
 
 		// supported authentication types
@@ -214,6 +215,7 @@ public class SmtpServer extends MailServer {
 			String line = client.readLine();
 			if (line.equals(".")) {
 				// end of message detected
+				// TODO: remove trailing CRLF from message
 				break;
 			}
 

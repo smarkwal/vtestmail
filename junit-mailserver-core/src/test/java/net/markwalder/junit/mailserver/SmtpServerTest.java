@@ -21,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import java.io.IOException;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -113,7 +115,14 @@ class SmtpServerTest {
 			SmtpClient client = clientBuilder.build();
 
 			// prepare: email
-			Message message = client.createMessage("bob@localhost", "alice@localhost", "Test email", "This is a test email.");
+			Message message = client.prepareMessage()
+					.messageId("1234567890@localhost")
+					.date(OffsetDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
+					.from("bob@localhost")
+					.to("alice@localhost")
+					.subject("Test email")
+					.body("This is a test email.")
+					.build();
 
 			// test
 			client.send(message);
@@ -124,6 +133,18 @@ class SmtpServerTest {
 			assertThat(messages).hasSize(1);
 			// TODO: add more assertions
 
+			// TODO: server.getSessions();
+			// TODO: session.getLog();
+			// TODO: session.getClientAddress();
+			// TODO: session.getClientPort();
+			// TODO: session.getSSLProtocol();
+			// TODO: session.getCipherSuite();
+			// TODO: session.getAuthType();
+			// TODO: session.getUsername();
+			// TODO: session.getMessages();
+			// TODO: message.getMailFrom();
+			// TODO: message.getRecipients();
+			// TODO: message.getData();
 		}
 	}
 
