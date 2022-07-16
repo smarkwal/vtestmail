@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.Security;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.net.ServerSocketFactory;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 import net.markwalder.junit.mailserver.auth.Authenticator;
 import net.markwalder.junit.mailserver.auth.CramMd5Authenticator;
 import net.markwalder.junit.mailserver.auth.LoginAuthenticator;
@@ -39,12 +43,22 @@ import org.apache.commons.codec.digest.DigestUtils;
  * Skeleton for a simulated/virtual SMTP, IMAP, or POP3 server.
  */
 @SuppressWarnings("unused")
-abstract class MailServer {
+abstract class MailServer implements AutoCloseable {
+
+	static {
+
+		// enable SSLv3, TLSv1 and TLSv1.1
+		Security.setProperty("jdk.tls.disabledAlgorithms", "");
+
+		// enable JavaMail debug output
+		// System.setProperty("mail.socket.debug", "true");
+	}
 
 	private final String protocol;
 	protected final MailboxStore store;
 
 	private boolean useSSL = false;
+	private String sslProtocol = "TLSv1.2";
 	private boolean authenticationRequired = false;
 	//TODO: private boolean encryptionRequired = false;
 
@@ -96,6 +110,17 @@ abstract class MailServer {
 	public void setUseSSL(boolean useSSL) {
 		this.useSSL = useSSL;
 	}
+
+	public String getSSLProtocol() {
+		return sslProtocol;
+	}
+
+	public void setSSLProtocol(String sslProtocol) {
+		if (sslProtocol == null || sslProtocol.isEmpty()) throw new IllegalArgumentException("sslProtocol must not be null or empty");
+		this.sslProtocol = sslProtocol;
+	}
+
+	// TODO: set cipher suites?
 
 	public boolean isAuthenticationRequired() {
 		return authenticationRequired && username == null;
@@ -177,13 +202,22 @@ abstract class MailServer {
 		// open a server socket on a free port
 		ServerSocketFactory factory;
 		if (useSSL) {
-			// TODO: use TLSv1.2 or TLSv1.3 instead of SSL? or make it configurable?
-			factory = SSLUtils.createFactoryForSelfSignedCertificate("SSL", 2048, "localhost", Duration.ofDays(365));
+			factory = SSLUtils.createFactoryForSelfSignedCertificate(sslProtocol, 2048, "localhost", Duration.ofDays(365));
 		} else {
 			factory = ServerSocketFactory.getDefault();
 		}
 		InetAddress localhost = InetAddress.getLoopbackAddress();
 		serverSocket = factory.createServerSocket(0, 1, localhost);
+
+		if (serverSocket instanceof SSLServerSocket) {
+			SSLServerSocket sslServerSocket = (SSLServerSocket) serverSocket;
+
+			// disable all other SSL/TLS protocols
+			sslServerSocket.setEnabledProtocols(new String[] { sslProtocol });
+
+			// TODO: enable/disable cipher suites?
+			// sslServerSocket.setEnabledCipherSuites(...);
+		}
 
 		// start a new thread to handle client connections
 		thread = new Thread(this::run);
@@ -227,6 +261,11 @@ abstract class MailServer {
 		System.out.println(protocol + " server stopped");
 	}
 
+	@Override
+	public void close() throws IOException {
+		stop();
+	}
+
 	protected void run() {
 
 		stop.set(false);
@@ -235,10 +274,26 @@ abstract class MailServer {
 		while (!stop.get()) {
 
 			// wait for incoming connection
-			System.out.println("Waiting for " + protocol + " connection on localhost:" + getPort() + (useSSL ? " (SSL)" : "") + " ...");
+			System.out.println("Waiting for " + protocol + " connection on localhost:" + getPort() + (useSSL ? " (" + sslProtocol + ")" : "") + " ...");
+
+			// if (serverSocket instanceof SSLServerSocket) {
+			// 	SSLServerSocket sslSocket = (SSLServerSocket) serverSocket;
+			// 	System.out.println("Protocols: " + Arrays.toString(sslSocket.getEnabledProtocols()));
+			// 	System.out.println("Cipher suites: " + Arrays.toString(sslSocket.getEnabledCipherSuites()));
+			// }
+
 			try (Socket socket = serverSocket.accept()) {
 
-				System.out.println(protocol + " connection from " + socket.getInetAddress().getHostAddress() + ":" + socket.getPort());
+				String clientInfo = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
+				if (socket instanceof SSLSocket) {
+					SSLSocket sslSocket = (SSLSocket) socket;
+					SSLSession sslSession = sslSocket.getSession();
+					String sslProtocol = sslSession.getProtocol();
+					String cipherSuite = sslSession.getCipherSuite();
+					// TODO: make information available for assertions
+					clientInfo += " (" + sslProtocol + ", " + cipherSuite + ")";
+				}
+				System.out.println(protocol + " connection from " + clientInfo);
 
 				// clear log (if there has been a previous connection)
 				log.setLength(0);
