@@ -17,6 +17,7 @@
 package net.markwalder.junit.mailserver;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -28,13 +29,20 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import net.markwalder.junit.mailserver.testutils.SmtpClient;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
 class SmtpServerTest {
 
+	private static final String FROM = "bob@localhost";
+	private static final String TO = "alice@localhost";
+	private static final String USERNAME = "alice";
+	private static final String PASSWORD = "password123";
+
 	@Test
+	@DisplayName("Port")
 	void getPort() throws IOException {
 
 		// prepare: SMTP server
@@ -50,87 +58,47 @@ class SmtpServerTest {
 		}
 	}
 
-	@TestFactory
-	Collection<DynamicTest> testAuthenticationAndEncryption() {
-
-		List<DynamicTest> tests = new ArrayList<>();
-
-		// TODO: support tests with STARTTLS
-
-		List<String> authTypes = Arrays.asList(
-				null,
-				AuthType.LOGIN,
-				AuthType.PLAIN,
-				// TODO: AuthType.CRAM_MD5,
-				// TODO: AuthType.DIGEST_MD5,
-				AuthType.XOAUTH2
-		);
-		List<String> sslProtocols = Arrays.asList(
-				null,
-				"SSLv3",
-				"TLSv1",
-				"TLSv1.1",
-				"TLSv1.2",
-				"TLSv1.3"
-		);
-
-		for (String authType : authTypes) {
-			for (String sslProtocol : sslProtocols) {
-				String name = "test(" + authType + "," + sslProtocol + ")";
-				DynamicTest test = DynamicTest.dynamicTest(name, () -> testAuthenticationAndEncryption(authType, sslProtocol));
-				tests.add(test);
-			}
-		}
-
-		return tests;
-	}
-
-	void testAuthenticationAndEncryption(String authType, String sslProtocol) throws IOException, MessagingException {
+	@Test
+	@DisplayName("Data")
+	void testData() throws IOException, MessagingException {
 
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
-		store.createMailbox("alice", "password123", "alice@localhost");
+		store.createMailbox(USERNAME, PASSWORD, TO);
 
 		// prepare: SMTP server
 		try (SmtpServer server = new SmtpServer(store)) {
-			if (authType != null) {
-				server.setAuthenticationRequired(true);
-				server.setAuthTypes(authType);
-			}
-			if (sslProtocol != null) {
-				server.setUseSSL(true);
-				server.setSSLProtocol(sslProtocol);
-				// TODO: require encryption
-			}
 			server.start();
 
 			// prepare: SMTP client
-			SmtpClient.SmtpClientBuilder clientBuilder = SmtpClient.forServer(server);
-			if (authType != null) {
-				clientBuilder.withAuthentication(authType, "alice", "password123");
-			}
-			if (sslProtocol != null) {
-				clientBuilder.withEncryption(sslProtocol);
-			}
-			SmtpClient client = clientBuilder.build();
+			SmtpClient client = SmtpClient.forServer(server).build();
 
 			// prepare: email
-			Message message = client.prepareMessage()
-					.messageId("1234567890@localhost")
-					.date(OffsetDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
-					.from("bob@localhost")
-					.to("alice@localhost")
-					.subject("Test email")
-					.body("This is a test email.")
-					.build();
+			Message message = createTestMessage(client);
 
 			// test
 			client.send(message);
 
 			// assert
-			Mailbox mailbox = store.getMailbox("alice");
+			Mailbox mailbox = store.getMailbox(USERNAME);
 			List<Mailbox.Message> messages = mailbox.getMessages();
 			assertThat(messages).hasSize(1);
+
+			Mailbox.Message mail = messages.get(0);
+			String content = mail.getContent();
+			assertThat(content).isEqualTo(
+					"Date: Wed, 1 Jan 2020 00:00:00 +0000\r\n" +
+							"From: bob@localhost\r\n" +
+							"To: alice@localhost\r\n" +
+							"Message-ID: <1234567890@localhost>\r\n" +
+							"Subject: Test email\r\n" +
+							"MIME-Version: 1.0\r\n" +
+							"Content-Type: text/plain; charset=utf-8\r\n" +
+							"Content-Transfer-Encoding: 7bit\r\n" +
+							"\r\n" +
+							"This is a test email."
+			);
+
 			// TODO: add more assertions
 
 			// TODO: server.getSessions();
@@ -145,7 +113,137 @@ class SmtpServerTest {
 			// TODO: message.getMailFrom();
 			// TODO: message.getRecipients();
 			// TODO: message.getData();
+
 		}
+	}
+
+	@TestFactory
+	@DisplayName("Encryption")
+	Collection<DynamicTest> testEncryption() {
+
+		List<String> sslProtocols = Arrays.asList(
+				"SSLv3",
+				"TLSv1",
+				"TLSv1.1",
+				"TLSv1.2",
+				"TLSv1.3"
+		);
+
+		List<DynamicTest> tests = new ArrayList<>();
+		for (String sslProtocol : sslProtocols) {
+
+			DynamicTest test = DynamicTest.dynamicTest(sslProtocol, () -> testEncryption(sslProtocol, false));
+			tests.add(test);
+
+			test = DynamicTest.dynamicTest(sslProtocol + " (STARTTLS)", () -> testEncryption(sslProtocol, true));
+			tests.add(test);
+		}
+		return tests;
+	}
+
+	private void testEncryption(String sslProtocol, boolean useStarTLS) throws IOException, MessagingException {
+
+		// TODO: support tests with STARTTLS
+		assumeFalse(useStarTLS, "STARTTLS not implemented");
+
+		// prepare: mailbox
+		MailboxStore store = new MailboxStore();
+		store.createMailbox(USERNAME, PASSWORD, TO);
+
+		// prepare: SMTP server
+		try (SmtpServer server = new SmtpServer(store)) {
+			server.setUseSSL(true);
+			server.setSSLProtocol(sslProtocol);
+			// TODO: require encryption
+			server.start();
+
+			// prepare: SMTP client
+			SmtpClient client = SmtpClient.forServer(server)
+					.withEncryption(sslProtocol)
+					.build();
+
+			// prepare: email
+			Message message = createTestMessage(client);
+
+			// test
+			client.send(message);
+
+			// assert
+			Mailbox mailbox = store.getMailbox(USERNAME);
+			List<Mailbox.Message> messages = mailbox.getMessages();
+			assertThat(messages).hasSize(1);
+		}
+	}
+
+	@TestFactory
+	@DisplayName("Authentication")
+	Collection<DynamicTest> testAuthentication() {
+
+		// note: CRAM-MD5 is not supported by JavaMail
+		List<String> authTypes = Arrays.asList(
+				AuthType.LOGIN,
+				AuthType.PLAIN,
+				// TODO: AuthType.DIGEST_MD5,
+				AuthType.XOAUTH2
+		);
+
+		List<DynamicTest> tests = new ArrayList<>();
+		for (String authType : authTypes) {
+			DynamicTest test = DynamicTest.dynamicTest(authType, () -> testAuthentication(authType, false));
+			tests.add(test);
+			test = DynamicTest.dynamicTest(authType + " (TLSv1.2)", () -> testAuthentication(authType, true));
+			tests.add(test);
+		}
+		return tests;
+	}
+
+	private void testAuthentication(String authType, boolean encrypted) throws IOException, MessagingException {
+
+		// prepare: mailbox
+		MailboxStore store = new MailboxStore();
+		store.createMailbox(USERNAME, PASSWORD, TO);
+
+		// prepare: SMTP server
+		try (SmtpServer server = new SmtpServer(store)) {
+			server.setAuthenticationRequired(true);
+			server.setAuthTypes(authType);
+			if (encrypted) {
+				server.setUseSSL(true);
+				server.setSSLProtocol("TLSv1.2");
+				// TODO: require encryption
+			}
+			server.start();
+
+			// prepare: SMTP client
+			SmtpClient.SmtpClientBuilder clientBuilder = SmtpClient.forServer(server);
+			if (encrypted) {
+				clientBuilder.withEncryption("TLSv1.2");
+			}
+			clientBuilder.withAuthentication(authType, USERNAME, PASSWORD);
+			SmtpClient client = clientBuilder.build();
+
+			// prepare: email
+			Message message = createTestMessage(client);
+
+			// test
+			client.send(message);
+
+			// assert
+			Mailbox mailbox = store.getMailbox(USERNAME);
+			List<Mailbox.Message> messages = mailbox.getMessages();
+			assertThat(messages).hasSize(1);
+		}
+	}
+
+	private Message createTestMessage(SmtpClient client) throws MessagingException {
+		return client.prepareMessage()
+				.messageId("1234567890@localhost")
+				.date(OffsetDateTime.of(2020, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC))
+				.from(FROM)
+				.to(TO)
+				.subject("Test email")
+				.body("This is a test email.")
+				.build();
 	}
 
 }

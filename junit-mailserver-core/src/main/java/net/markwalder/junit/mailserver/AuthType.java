@@ -21,6 +21,7 @@ public interface AuthType {
 	String LOGIN = "LOGIN";
 	String PLAIN = "PLAIN";
 	String CRAM_MD5 = "CRAM-MD5";
+	String DIGEST_MD5 = "DIGEST-MD5";
 	String XOAUTH2 = "XOAUTH2";
 
 }
