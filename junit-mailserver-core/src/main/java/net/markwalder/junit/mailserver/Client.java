@@ -16,7 +16,6 @@
 
 package net.markwalder.junit.mailserver;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +24,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import net.markwalder.junit.mailserver.utils.LineReader;
 
 /**
  * Mail client connection.
@@ -34,14 +34,14 @@ public class Client {
 	private static final String CRLF = "\r\n";
 	private static final String LF = "\n";
 
-	private final BufferedReader reader;
+	private final LineReader reader;
 	private final BufferedWriter writer;
 	private final StringBuilder log;
 
 	Client(Socket socket, StringBuilder log) throws IOException {
 
 		InputStream inputStream = socket.getInputStream();
-		this.reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.US_ASCII));
+		this.reader = new LineReader(new InputStreamReader(inputStream, StandardCharsets.US_ASCII));
 
 		OutputStream outputStream = socket.getOutputStream();
 		this.writer = new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.US_ASCII));
@@ -57,7 +57,7 @@ public class Client {
 	 * @throws IOException If an I/O error occurs.
 	 */
 	public String readLine() throws IOException {
-		String line = reader.readLine(); // TODO: accept only CRLF as line separator?
+		String line = reader.readLine();
 		if (line == null) return null;
 		System.out.println("Client: " + line);
 		log.append(line).append(LF);
