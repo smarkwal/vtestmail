@@ -145,7 +145,7 @@ public class SmtpServer extends MailServer {
 
 		// get user credentials from client
 		Authenticator authenticator = getAuthenticator(authType);
-		Credentials credentials = authenticator.authenticate(parameters, client);
+		Credentials credentials = authenticator.authenticate(parameters, client, store);
 		if (credentials == null) {
 			client.writeLine("535 5.7.8 Authentication failed");
 			return;

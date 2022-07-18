@@ -18,6 +18,7 @@ package net.markwalder.junit.mailserver.auth;
 
 import java.io.IOException;
 import net.markwalder.junit.mailserver.Client;
+import net.markwalder.junit.mailserver.MailboxStore;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -26,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 public class PlainAuthenticator implements Authenticator {
 
 	@Override
-	public Credentials authenticate(String parameters, Client client) throws IOException {
+	public Credentials authenticate(String parameters, Client client, MailboxStore store) throws IOException {
 
 		// https://www.rfc-editor.org/rfc/rfc4616.html
 		// https://mailtrap.io/blog/smtp-auth/

@@ -18,6 +18,7 @@ package net.markwalder.junit.mailserver.auth;
 
 import java.io.IOException;
 import net.markwalder.junit.mailserver.Client;
+import net.markwalder.junit.mailserver.MailboxStore;
 
 public class LoginAuthenticator implements Authenticator {
 
@@ -25,7 +26,7 @@ public class LoginAuthenticator implements Authenticator {
 	private static final String PASSWORD_CHALLENGE = AuthUtils.encodeBase64("Password:");
 
 	@Override
-	public Credentials authenticate(String parameters, Client client) throws IOException {
+	public Credentials authenticate(String parameters, Client client, MailboxStore store) throws IOException {
 
 		// https://mailtrap.io/blog/smtp-auth/
 

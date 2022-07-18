@@ -183,7 +183,7 @@ class SmtpServerTest {
 		List<String> authTypes = Arrays.asList(
 				AuthType.LOGIN,
 				AuthType.PLAIN,
-				// TODO: AuthType.DIGEST_MD5,
+				AuthType.DIGEST_MD5,
 				AuthType.XOAUTH2
 		);
 

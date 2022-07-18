@@ -18,12 +18,13 @@ package net.markwalder.junit.mailserver.auth;
 
 import java.io.IOException;
 import net.markwalder.junit.mailserver.Client;
+import net.markwalder.junit.mailserver.MailboxStore;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public class CramMd5Authenticator implements Authenticator {
 
 	@Override
-	public Credentials authenticate(String parameters, Client client) throws IOException {
+	public Credentials authenticate(String parameters, Client client, MailboxStore store) throws IOException {
 
 		// https://mailtrap.io/blog/smtp-auth/
 

@@ -34,6 +34,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import net.markwalder.junit.mailserver.auth.Authenticator;
 import net.markwalder.junit.mailserver.auth.CramMd5Authenticator;
+import net.markwalder.junit.mailserver.auth.DigestMd5Authenticator;
 import net.markwalder.junit.mailserver.auth.LoginAuthenticator;
 import net.markwalder.junit.mailserver.auth.PlainAuthenticator;
 import net.markwalder.junit.mailserver.auth.XOauth2Authenticator;
@@ -100,6 +101,7 @@ abstract class MailServer implements AutoCloseable {
 		addAuthenticator(AuthType.LOGIN, new LoginAuthenticator());
 		addAuthenticator(AuthType.PLAIN, new PlainAuthenticator());
 		addAuthenticator(AuthType.CRAM_MD5, new CramMd5Authenticator());
+		addAuthenticator(AuthType.DIGEST_MD5, new DigestMd5Authenticator());
 		addAuthenticator(AuthType.XOAUTH2, new XOauth2Authenticator());
 	}
 

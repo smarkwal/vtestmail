@@ -17,12 +17,13 @@
 package net.markwalder.junit.mailserver.auth;
 
 import net.markwalder.junit.mailserver.Client;
+import net.markwalder.junit.mailserver.MailboxStore;
 import org.apache.commons.lang3.StringUtils;
 
 public class XOauth2Authenticator implements Authenticator {
 
 	@Override
-	public Credentials authenticate(String parameters, Client client) {
+	public Credentials authenticate(String parameters, Client client, MailboxStore store) {
 
 		// https://developers.google.com/gmail/imap/xoauth2-protocol
 
