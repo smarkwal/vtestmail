@@ -44,7 +44,7 @@ import org.apache.commons.codec.digest.DigestUtils;
  * Skeleton for a simulated/virtual SMTP, IMAP, or POP3 server.
  */
 @SuppressWarnings("unused")
-abstract class MailServer implements AutoCloseable {
+public abstract class MailServer implements AutoCloseable {
 
 	static {
 
@@ -103,6 +103,10 @@ abstract class MailServer implements AutoCloseable {
 		addAuthenticator(AuthType.CRAM_MD5, new CramMd5Authenticator());
 		addAuthenticator(AuthType.DIGEST_MD5, new DigestMd5Authenticator());
 		addAuthenticator(AuthType.XOAUTH2, new XOauth2Authenticator());
+	}
+
+	public MailboxStore getStore() {
+		return store;
 	}
 
 	public boolean isUseSSL() {
@@ -303,7 +307,7 @@ abstract class MailServer implements AutoCloseable {
 				client = new Client(socket, log);
 
 				// greet client
-				handleCommand(null);
+				handleNewClient();
 
 				// read and handle client commands
 				while (true) {
@@ -332,6 +336,8 @@ abstract class MailServer implements AutoCloseable {
 		}
 
 	}
+
+	protected abstract void handleNewClient() throws IOException;
 
 	protected abstract boolean handleCommand(String command) throws IOException;
 

@@ -26,7 +26,7 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Properties;
-import net.markwalder.junit.mailserver.SmtpServer;
+import net.markwalder.junit.mailserver.smtp.SmtpServer;
 
 public class SmtpClient {
 

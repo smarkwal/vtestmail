@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.markwalder.junit.mailserver;
+package net.markwalder.junit.mailserver.smtp;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import net.markwalder.junit.mailserver.AuthType;
+import net.markwalder.junit.mailserver.Mailbox;
+import net.markwalder.junit.mailserver.MailboxStore;
 import net.markwalder.junit.mailserver.testutils.SmtpClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;

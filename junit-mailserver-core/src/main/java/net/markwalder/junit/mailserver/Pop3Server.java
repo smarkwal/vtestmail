@@ -60,6 +60,18 @@ public class Pop3Server extends MailServer {
 	}
 
 	@Override
+	protected void handleNewClient() throws IOException {
+
+		// calculate a new timestamp for APOP authentication
+		timestamp = "<" + System.currentTimeMillis() + "@localhost>";
+
+		client.writeLine("+OK POP3 server ready " + timestamp);
+
+		// enter authorization state
+		state = State.AUTHORIZATION;
+	}
+
+	@Override
 	protected boolean handleCommand(String command) throws IOException {
 
 		// convert the first word of the command to uppercase
@@ -69,9 +81,7 @@ public class Pop3Server extends MailServer {
 		boolean quit = false;
 		try {
 
-			if (command == null) {
-				handleNewClient();
-			} else if (command.startsWith("APOP ")) {
+			if (command.startsWith("APOP ")) {
 				handleAPOP(command);
 			} else if (command.startsWith("USER ")) {
 				handleUSER(command);
@@ -114,17 +124,6 @@ public class Pop3Server extends MailServer {
 
 		return quit;
 
-	}
-
-	private void handleNewClient() throws IOException {
-
-		// calculate a new timestamp for APOP authentication
-		timestamp = "<" + System.currentTimeMillis() + "@localhost>";
-
-		client.writeLine("+OK POP3 server ready " + timestamp);
-
-		// enter authorization state
-		state = State.AUTHORIZATION;
 	}
 
 	private void handleAPOP(String command) throws IOException {
