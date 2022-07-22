@@ -34,8 +34,7 @@ class STARTTLSTest extends CommandTest {
 		// verify
 		Mockito.verify(client).writeLine("220 Ready to start TLS");
 
-		Mockito.verifyNoMoreInteractions(server);
-		Mockito.verifyNoMoreInteractions(client);
+		Mockito.verifyNoMoreInteractions(server, client);
 	}
 
 }

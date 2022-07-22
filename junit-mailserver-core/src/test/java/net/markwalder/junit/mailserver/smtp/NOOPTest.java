@@ -34,8 +34,7 @@ class NOOPTest extends CommandTest {
 		// verify
 		Mockito.verify(client).writeLine("250 OK");
 
-		Mockito.verifyNoMoreInteractions(server);
-		Mockito.verifyNoMoreInteractions(client);
+		Mockito.verifyNoMoreInteractions(server, client);
 	}
 
 }

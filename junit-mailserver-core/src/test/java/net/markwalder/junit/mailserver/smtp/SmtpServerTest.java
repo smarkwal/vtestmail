@@ -279,12 +279,11 @@ class SmtpServerTest {
 			// prepare: email
 			Message message = createTestMessage(client);
 
-			// test and assert
-			assertThrows(
-					AuthenticationFailedException.class,
-					() -> client.send(message),
-					"No authentication mechanisms supported by both server and client"
-			);
+			// test
+			Exception exception = assertThrows(AuthenticationFailedException.class, () -> client.send(message));
+
+			// assert
+			assertThat(exception).hasMessage("No authentication mechanisms supported by both server and client");
 		}
 	}
 
@@ -305,11 +304,10 @@ class SmtpServerTest {
 			Message message = createTestMessage(client);
 
 			// test and assert
-			assertThrows(
-					SMTPSendFailedException.class,
-					() -> client.send(message),
-					"530 5.7.0 Authentication required"
-			);
+			Exception exception = assertThrows(SMTPSendFailedException.class, () -> client.send(message));
+
+			// assert
+			assertThat(exception).hasMessageContaining("530 5.7.0 Authentication required");
 		}
 	}
 

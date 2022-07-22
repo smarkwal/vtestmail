@@ -18,7 +18,6 @@ package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 
 class RSETTest extends CommandTest {
@@ -36,8 +35,7 @@ class RSETTest extends CommandTest {
 		Mockito.verify(server).reset();
 		Mockito.verify(client).writeLine("250 OK");
 
-		Mockito.verifyNoMoreInteractions(server);
-		Mockito.verifyNoMoreInteractions(client);
+		Mockito.verifyNoMoreInteractions(server, client);
 	}
 
 }

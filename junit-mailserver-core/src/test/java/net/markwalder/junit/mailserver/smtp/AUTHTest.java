@@ -16,6 +16,9 @@
 
 package net.markwalder.junit.mailserver.smtp;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.io.IOException;
 import net.markwalder.junit.mailserver.MailboxStore;
 import net.markwalder.junit.mailserver.auth.Authenticator;
@@ -59,11 +62,64 @@ class AUTHTest extends CommandTest {
 		Mockito.verify(server).isAuthenticated();
 		Mockito.verify(client).writeLine("235 2.7.0 Authentication succeeded");
 
-		Mockito.verifyNoMoreInteractions(authenticator);
-		Mockito.verifyNoMoreInteractions(credentials);
-		Mockito.verifyNoMoreInteractions(store);
-		Mockito.verifyNoMoreInteractions(server);
-		Mockito.verifyNoMoreInteractions(client);
+		Mockito.verifyNoMoreInteractions(server, client, authenticator, credentials, store);
+	}
+
+	@Test
+	void execute_unsupportedAuthType() {
+
+		// mock
+		Mockito.doReturn(false).when(server).isAuthTypeSupported("LOGIN");
+
+		// prepare
+		Command command = new AUTH();
+
+		// test
+		Exception exception = assertThrows(ProtocolException.class, () -> command.execute("AUTH LOGIN", server, client));
+
+		// assert
+		assertThat(exception).hasMessage("504 5.5.4 Unrecognized authentication type");
+
+		// verify
+		Mockito.verify(server).logout();
+		Mockito.verify(server).isAuthTypeSupported("LOGIN");
+
+		Mockito.verifyNoMoreInteractions(server, client, authenticator, credentials, store);
+	}
+
+	@Test
+	void execute_wrongPassword() throws IOException {
+
+		// mock
+		Mockito.doReturn(true).when(server).isAuthTypeSupported("PLAIN");
+		Mockito.doReturn(authenticator).when(server).getAuthenticator("PLAIN");
+		Mockito.doReturn(store).when(server).getStore();
+		Mockito.doReturn(credentials).when(authenticator).authenticate(null, client, store);
+		Mockito.doReturn("alice").when(credentials).getUsername();
+		Mockito.doReturn("password123").when(credentials).getSecret();
+		Mockito.doReturn(false).when(server).isAuthenticated();
+
+		// prepare
+		Command command = new AUTH();
+
+		// test
+		Exception exception = assertThrows(ProtocolException.class, () -> command.execute("AUTH PLAIN", server, client));
+
+		// assert
+		assertThat(exception).hasMessage("535 5.7.8 Authentication failed");
+
+		// verify
+		Mockito.verify(server).logout();
+		Mockito.verify(server).isAuthTypeSupported("PLAIN");
+		Mockito.verify(server).getAuthenticator("PLAIN");
+		Mockito.verify(server).getStore();
+		Mockito.verify(authenticator).authenticate(null, client, store);
+		Mockito.verify(credentials).getUsername();
+		Mockito.verify(credentials).getSecret();
+		Mockito.verify(server).login("alice", "password123");
+		Mockito.verify(server).isAuthenticated();
+
+		Mockito.verifyNoMoreInteractions(server, client, authenticator, credentials, store);
 	}
 
 }

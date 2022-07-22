@@ -34,8 +34,7 @@ class HELOTest extends CommandTest {
 		// verify
 		Mockito.verify(client).writeLine("250 OK");
 
-		Mockito.verifyNoInteractions(server);
-		Mockito.verifyNoMoreInteractions(client);
+		Mockito.verifyNoMoreInteractions(server, client);
 	}
 
 }

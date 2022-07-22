@@ -34,8 +34,7 @@ class QUITTest extends CommandTest {
 		// verify
 		Mockito.verify(client).writeLine("221 2.0.0 Goodbye");
 
-		Mockito.verifyNoMoreInteractions(server);
-		Mockito.verifyNoMoreInteractions(client);
+		Mockito.verifyNoMoreInteractions(server, client);
 	}
 
 }
