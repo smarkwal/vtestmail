@@ -35,7 +35,7 @@ public class CramMd5Authenticator implements Authenticator {
 
 		// send random challenge to client
 		String challenge = RandomStringUtils.randomAlphanumeric(9);
-		client.writeLine("334 " + AuthUtils.encodeBase64(challenge));
+		client.writeLine("334 " + AuthUtils.encodeBase64(challenge)); // TODO: support POP3-style auth
 
 		// read response from client
 		String response = client.readLine();

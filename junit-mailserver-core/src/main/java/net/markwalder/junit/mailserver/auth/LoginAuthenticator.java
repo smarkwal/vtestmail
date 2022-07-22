@@ -36,7 +36,7 @@ public class LoginAuthenticator implements Authenticator {
 		}
 
 		// ask client for username
-		client.writeLine("334 " + USERNAME_CHALLENGE);
+		client.writeLine("334 " + USERNAME_CHALLENGE); // TODO: support POP3-style auth
 		String response = client.readLine();
 		String username = AuthUtils.decodeBase64(response);
 		if (username == null) {
@@ -44,7 +44,7 @@ public class LoginAuthenticator implements Authenticator {
 		}
 
 		// ask client for password
-		client.writeLine("334 " + PASSWORD_CHALLENGE);
+		client.writeLine("334 " + PASSWORD_CHALLENGE); // TODO: support POP3-style auth
 		response = client.readLine();
 		String password = AuthUtils.decodeBase64(response);
 		if (password == null) {

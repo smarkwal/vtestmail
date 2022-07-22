@@ -34,7 +34,7 @@ public class PlainAuthenticator implements Authenticator {
 
 		if (parameters == null) {
 			// ask client for credentials
-			client.writeLine("334");
+			client.writeLine("334"); // TODO: support POP3-style auth
 			parameters = client.readLine();
 		}
 
