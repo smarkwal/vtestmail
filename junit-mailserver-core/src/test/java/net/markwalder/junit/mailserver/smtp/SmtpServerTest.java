@@ -17,8 +17,10 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
+import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import java.io.IOException;
@@ -192,15 +194,17 @@ class SmtpServerTest {
 
 		List<DynamicTest> tests = new ArrayList<>();
 		for (String authType : authTypes) {
-			DynamicTest test = DynamicTest.dynamicTest(authType, () -> testAuthentication(authType, false));
+			DynamicTest test = DynamicTest.dynamicTest(authType, () -> testAuthentication(authType, false, false));
 			tests.add(test);
-			test = DynamicTest.dynamicTest(authType + " (TLSv1.2)", () -> testAuthentication(authType, true));
+			test = DynamicTest.dynamicTest(authType + " (TLSv1.2)", () -> testAuthentication(authType, true, false));
+			tests.add(test);
+			test = DynamicTest.dynamicTest(authType + " (wrong password)", () -> testAuthentication(authType, false, true));
 			tests.add(test);
 		}
 		return tests;
 	}
 
-	private void testAuthentication(String authType, boolean encrypted) throws IOException, MessagingException {
+	private void testAuthentication(String authType, boolean encrypted, boolean wrongPassword) throws IOException, MessagingException {
 
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
@@ -222,14 +226,32 @@ class SmtpServerTest {
 			if (encrypted) {
 				clientBuilder.withEncryption("TLSv1.2");
 			}
-			clientBuilder.withAuthentication(authType, USERNAME, PASSWORD);
+			String password = wrongPassword ? PASSWORD + "!123" : PASSWORD;
+			clientBuilder.withAuthentication(authType, USERNAME, password);
 			SmtpClient client = clientBuilder.build();
 
 			// prepare: email
 			Message message = createTestMessage(client);
 
 			// test
-			client.send(message);
+			try {
+
+				client.send(message);
+
+			} catch (MessagingException e) {
+
+				if (wrongPassword) {
+					// assert: expected authentication error
+					assertThat(e)
+							.isInstanceOf(AuthenticationFailedException.class)
+							.hasMessageContaining("535 5.7.8 Authentication failed");
+				} else {
+					// unexpected exception
+					fail(e);
+				}
+
+				return;
+			}
 
 			// assert
 			Mailbox mailbox = store.getMailbox(USERNAME);

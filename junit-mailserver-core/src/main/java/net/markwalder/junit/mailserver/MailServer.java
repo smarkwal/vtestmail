@@ -315,6 +315,9 @@ public abstract class MailServer implements AutoCloseable {
 					if (command == null) {
 						System.out.println(protocol + " client closed connection");
 						break;
+					} else if (command.isEmpty()) {
+						// TODO: how should an empty line be handled?
+						//  (sent after failed authentication)
 					}
 					boolean quit = handleCommand(command);
 					if (quit) break;
