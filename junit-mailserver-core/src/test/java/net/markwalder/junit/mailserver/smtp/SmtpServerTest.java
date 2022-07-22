@@ -17,9 +17,11 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
+import com.sun.mail.smtp.SMTPSendFailedException;
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -257,6 +259,57 @@ class SmtpServerTest {
 			Mailbox mailbox = store.getMailbox(USERNAME);
 			List<Mailbox.Message> messages = mailbox.getMessages();
 			assertThat(messages).hasSize(1);
+		}
+	}
+
+	@Test
+	void testUnknownAuthenticationType() throws IOException, MessagingException {
+
+		// prepare: SMTP server
+		try (SmtpServer server = new SmtpServer(new MailboxStore())) {
+			server.setAuthenticationRequired(true);
+			server.setAuthTypes(AuthType.PLAIN);
+			server.start();
+
+			// prepare: SMTP client
+			SmtpClient.SmtpClientBuilder clientBuilder = SmtpClient.forServer(server);
+			clientBuilder.withAuthentication(AuthType.XOAUTH2, USERNAME, PASSWORD);
+			SmtpClient client = clientBuilder.build();
+
+			// prepare: email
+			Message message = createTestMessage(client);
+
+			// test and assert
+			assertThrows(
+					AuthenticationFailedException.class,
+					() -> client.send(message),
+					"No authentication mechanisms supported by both server and client"
+			);
+		}
+	}
+
+	@Test
+	void testAuthenticationRequired() throws IOException, MessagingException {
+
+		// prepare: SMTP server
+		try (SmtpServer server = new SmtpServer(new MailboxStore())) {
+			server.setAuthenticationRequired(true);
+			server.setAuthTypes(AuthType.PLAIN);
+			server.start();
+
+			// prepare: SMTP client
+			SmtpClient.SmtpClientBuilder clientBuilder = SmtpClient.forServer(server);
+			SmtpClient client = clientBuilder.build();
+
+			// prepare: email
+			Message message = createTestMessage(client);
+
+			// test and assert
+			assertThrows(
+					SMTPSendFailedException.class,
+					() -> client.send(message),
+					"530 5.7.0 Authentication required"
+			);
 		}
 	}
 
