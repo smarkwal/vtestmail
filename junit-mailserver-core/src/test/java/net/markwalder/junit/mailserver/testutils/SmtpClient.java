@@ -59,7 +59,7 @@ public class SmtpClient {
 			int port = server.getPort();
 
 			// SMTP properties:
-			// https://javaee.github.io/javamail/docs/api/com/sun/mail/smtp/package-summary.html
+			// https://eclipse-ee4j.github.io/mail/docs/api/jakarta.mail/com/sun/mail/smtp/package-summary.html
 
 			// SMTP server address (host name)
 			properties.put("mail.smtp.host", "localhost");

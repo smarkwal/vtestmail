@@ -51,7 +51,7 @@ public abstract class MailServer implements AutoCloseable {
 		// enable SSLv3, TLSv1 and TLSv1.1
 		Security.setProperty("jdk.tls.disabledAlgorithms", "");
 
-		// enable JavaMail debug output
+		// enable Jakarta Mail API debug output
 		// System.setProperty("mail.socket.debug", "true");
 	}
 

@@ -26,7 +26,7 @@ public class CAPA extends Command {
 	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
 
 		client.writeLine("+OK Capability list follows");
-		client.writeLine("USER");
+		client.writeLine("USER"); // TODO: skip USER if at least one auth type is set?
 		List<String> authTypes = server.getAuthTypes();
 		if (authTypes.size() > 0) {
 			client.writeLine("SASL " + String.join(" ", authTypes));

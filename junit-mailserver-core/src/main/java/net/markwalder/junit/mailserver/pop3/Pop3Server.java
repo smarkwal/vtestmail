@@ -32,7 +32,7 @@ import org.apache.commons.lang3.StringUtils;
  * Limitations:
  * <ul>
  *     <li>Only one client can connect to the server at a time.</li>
- *     <li>Support for SSL/TLS sockets and STARTTLS command is not implemented.</li>
+ *     <li>Support for STARTTLS command is not implemented.</li>
  *     <li>The format of messages is not validated.</li>
  *     <li>The mailbox is not exclusively locked by the server.</li>
  * </ul>

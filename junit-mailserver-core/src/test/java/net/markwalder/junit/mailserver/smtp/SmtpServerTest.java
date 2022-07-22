@@ -186,7 +186,7 @@ class SmtpServerTest {
 	@DisplayName("Authentication")
 	Collection<DynamicTest> testAuthentication() {
 
-		// note: CRAM-MD5 is not supported by JavaMail
+		// note: CRAM-MD5 is not supported by Jakarta Mail API 2.0.1
 		List<String> authTypes = Arrays.asList(
 				AuthType.LOGIN,
 				AuthType.PLAIN,
