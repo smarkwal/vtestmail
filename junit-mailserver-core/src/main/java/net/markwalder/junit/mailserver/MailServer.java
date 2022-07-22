@@ -163,7 +163,7 @@ public abstract class MailServer implements AutoCloseable {
 		return authTypes.contains(authType);
 	}
 
-	protected Authenticator getAuthenticator(String authType) {
+	public Authenticator getAuthenticator(String authType) {
 		return authenticators.get(authType);
 	}
 

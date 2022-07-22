@@ -107,11 +107,6 @@ public class SmtpServer extends MailServer {
 	// TODO: find a better pattern than overriding the following methods:
 
 	@Override
-	protected Authenticator getAuthenticator(String authType) {
-		return super.getAuthenticator(authType);
-	}
-
-	@Override
 	protected void login(String username, String secret) {
 		super.login(username, secret);
 	}
