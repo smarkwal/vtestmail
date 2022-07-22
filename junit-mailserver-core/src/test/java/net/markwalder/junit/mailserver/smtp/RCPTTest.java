@@ -17,14 +17,16 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class RCPTTest extends CommandTest {
 
 	@Test
-	@Disabled
 	void execute() throws ProtocolException, IOException {
+
+		// mock
+		Mockito.doReturn(false).when(server).isAuthenticationRequired();
 
 		// prepare
 		Command command = new RCPT();
@@ -33,7 +35,11 @@ class RCPTTest extends CommandTest {
 		command.execute("RCPT TO: <alice@localhost>", server, client);
 
 		// verify
-		// TODO: implement
+		Mockito.verify(server).isAuthenticationRequired();
+		Mockito.verify(client).writeLine("250 2.1.5 OK");
+		Mockito.verify(server).addRecipient("alice@localhost");
+
+		Mockito.verifyNoMoreInteractions(server, client);
 	}
 
 }
