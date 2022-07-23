@@ -127,26 +127,6 @@ public class SmtpClient {
 			return this;
 		}
 
-		public SmtpClientBuilder withSSLv3() {
-			return withEncryption("SSLv3");
-		}
-
-		public SmtpClientBuilder withTLSv1() {
-			return withEncryption("TLSv1");
-		}
-
-		public SmtpClientBuilder withTLSv11() {
-			return withEncryption("TLSv1.1");
-		}
-
-		public SmtpClientBuilder withTLSv12() {
-			return withEncryption("TLSv1.2");
-		}
-
-		public SmtpClientBuilder withTLSv13() {
-			return withEncryption("TLSv1.3");
-		}
-
 		public SmtpClientBuilder withStartTLS() {
 
 			// enable the use of the STARTTLS command

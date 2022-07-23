@@ -147,26 +147,6 @@ public class Pop3Client {
 			return this;
 		}
 
-		public Pop3ClientBuilder withSSLv3() {
-			return withEncryption("SSLv3");
-		}
-
-		public Pop3ClientBuilder withTLSv1() {
-			return withEncryption("TLSv1");
-		}
-
-		public Pop3ClientBuilder withTLSv11() {
-			return withEncryption("TLSv1.1");
-		}
-
-		public Pop3ClientBuilder withTLSv12() {
-			return withEncryption("TLSv1.2");
-		}
-
-		public Pop3ClientBuilder withTLSv13() {
-			return withEncryption("TLSv1.3");
-		}
-
 		public Pop3ClientBuilder withStartTLS() {
 
 			// enable the use of the STARTTLS command
