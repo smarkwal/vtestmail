@@ -26,13 +26,22 @@ public class CAPA extends Command {
 	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
 
 		client.writeLine("+OK Capability list follows");
-		client.writeLine("USER"); // TODO: skip USER if at least one auth type is set?
+		if (server.isCommandEnabled("USER")) {
+			client.writeLine("USER");
+		}
+		if (server.isCommandEnabled("APOP")) {
+			client.writeLine("APOP");
+		}
 		List<String> authTypes = server.getAuthTypes();
 		if (authTypes.size() > 0) {
 			client.writeLine("SASL " + String.join(" ", authTypes));
 		}
-		client.writeLine("TOP");
-		client.writeLine("UIDL");
+		if (server.isCommandEnabled("TOP")) {
+			client.writeLine("TOP");
+		}
+		if (server.isCommandEnabled("UIDL")) {
+			client.writeLine("UIDL");
+		}
 		client.writeLine("EXPIRE NEVER");
 		// TODO: client.writeLine("RESP-CODES");
 		client.writeLine("IMPLEMENTATION junit-mailserver");

@@ -64,12 +64,30 @@ public class Pop3Server extends MailServer {
 		UPDATE
 	}
 
+	private final Map<String, Boolean> enabledCommands = new HashMap<>();
+
 	private State state = null;
 	private String timestamp = null;
 	private String username = null;
 
 	public Pop3Server(MailboxStore store) {
 		super("POP3", store);
+	}
+
+	public Boolean isCommandEnabled(String command) {
+		if (command == null) throw new IllegalArgumentException("command must not be null");
+		command = command.toUpperCase();
+		return commands.containsKey(command) && enabledCommands.getOrDefault(command, true);
+	}
+
+	public void setCommandEnabled(String command, boolean enabled) {
+		if (command == null) throw new IllegalArgumentException("command must not be null");
+		command = command.toUpperCase();
+		if (enabled) {
+			enabledCommands.put(command, true);
+		} else {
+			enabledCommands.put(command, false);
+		}
 	}
 
 	/**
@@ -134,6 +152,11 @@ public class Pop3Server extends MailServer {
 		Command command = commands.get(name);
 		if (command == null) {
 			client.writeLine("-ERR Unknown command");
+			return false;
+		}
+
+		if (!isCommandEnabled(name)) {
+			client.writeLine("-ERR Disabled command");
 			return false;
 		}
 
