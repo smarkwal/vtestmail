@@ -121,10 +121,10 @@ public class Pop3ServerTest {
 	Collection<DynamicTest> testAuthentication() {
 
 		// note: CRAM-MD5 and DIGEST-MD5 are not supported by Jakarta Mail API 2.0.1
+		// note: LOGIN is implemented by Jakarta Mail using USER/PASS or APOP instead
 		List<String> authTypes = Arrays.asList(
-				// TODO: test with USER/PASS
-				// TODO: test with APOP
-				AuthType.LOGIN, // TODO: why does this use USER/PASS instead of AUTH LOGIN?
+				"USER",
+				"APOP",
 				AuthType.PLAIN,
 				AuthType.XOAUTH2
 		);
@@ -141,7 +141,7 @@ public class Pop3ServerTest {
 		return tests;
 	}
 
-	private void testAuthentication(String authType, boolean encrypted, boolean wrongPassword) throws IOException, MessagingException {
+	private void testAuthentication(String authType, boolean encrypted, boolean wrongPassword) throws IOException {
 
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
@@ -150,7 +150,24 @@ public class Pop3ServerTest {
 		// prepare: SMTP server
 		try (Pop3Server server = new Pop3Server(store)) {
 			server.setAuthenticationRequired(true);
-			server.setAuthTypes(authType);
+
+			// disable all authentication commands by default
+			server.setCommandEnabled("USER", false);
+			server.setCommandEnabled("PASS", false);
+			server.setCommandEnabled("APOP", false);
+			server.setCommandEnabled("AUTH", false);
+
+			// enable only the authentication command we want to test
+			if (authType.equals("APOP")) {
+				server.setCommandEnabled("APOP", true);
+			} else if (authType.equals("USER")) {
+				server.setCommandEnabled("USER", true);
+				server.setCommandEnabled("PASS", true);
+			} else {
+				server.setCommandEnabled("AUTH", true);
+				server.setAuthTypes(authType);
+			}
+
 			if (encrypted) {
 				server.setUseSSL(true);
 				server.setSSLProtocol("TLSv1.2");
@@ -181,13 +198,23 @@ public class Pop3ServerTest {
 							.hasMessage("Authentication failed");
 				} else {
 					// unexpected exception
-					fail(e);
+					fail("Unexpected exception: " + e, e);
 				}
 
 				return;
 			}
 
 			// assert
+			String log = server.getLog();
+			if (authType.equals("APOP")) {
+				assertThat(log).contains("APOP alice ");
+			} else if (authType.equals("USER")) {
+				assertThat(log).contains("USER alice", "PASS password123");
+			} else {
+				assertThat(log).contains("SASL " + authType);
+				assertThat(log).contains("AUTH " + authType + " ");
+			}
+
 			// TODO: implement test on messages
 
 		}

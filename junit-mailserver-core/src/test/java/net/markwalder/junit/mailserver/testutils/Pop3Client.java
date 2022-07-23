@@ -23,6 +23,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.Store;
 import java.util.Properties;
+import net.markwalder.junit.mailserver.AuthType;
 import net.markwalder.junit.mailserver.pop3.Pop3Server;
 
 public class Pop3Client {
@@ -73,8 +74,9 @@ public class Pop3Client {
 			// POP3 client address (host name)
 			properties.put("mail.pop3.localaddress", "localhost");
 
-			// enable APOP authentication
-			// TODO: properties.put("mail.pop3.apop.enable", "true");
+			// disable all authentication mechanisms by default
+			properties.put("mail.pop3.auth.mechanisms", "");
+			properties.put("mail.pop3.apop.enable", "false");
 
 			// disable encryption by default
 			properties.put("mail.pop3.ssl.enable", "false");
@@ -97,13 +99,31 @@ public class Pop3Client {
 			if (username == null) throw new IllegalArgumentException("username must not be null");
 			if (password == null) throw new IllegalArgumentException("password must not be null");
 
-			// If set, lists the authentication mechanisms to consider, and the
-			// order in which to consider them. Only mechanisms supported by
-			// the server and supported by the current implementation will be
-			// used. The default is "LOGIN PLAIN DIGEST-MD5 NTLM", which
-			// includes all the authentication mechanisms supported by the
-			// current implementation except XOAUTH2.
-			properties.put("mail.pop3.auth.mechanisms", authType);
+			// Jakarta Mail API special behavior:
+			// LOGIN is not supported.
+			// instead, if the client is configured to use LOGIN,
+			// the client will use either the USER/PASS or APOP commands.
+
+			if (authType.equalsIgnoreCase("USER")) {
+
+				properties.put("mail.pop3.auth.mechanisms", AuthType.LOGIN);
+
+			} else if (authType.equalsIgnoreCase("APOP")) {
+
+				properties.put("mail.pop3.apop.enable", "true");
+				properties.put("mail.pop3.auth.mechanisms", AuthType.LOGIN);
+
+			} else {
+
+				// If set, lists the authentication mechanisms to consider, and the
+				// order in which to consider them. Only mechanisms supported by
+				// the server and supported by the current implementation will be
+				// used. The default is "LOGIN PLAIN DIGEST-MD5 NTLM", which
+				// includes all the authentication mechanisms supported by the
+				// current implementation except XOAUTH2.
+				properties.put("mail.pop3.auth.mechanisms", authType);
+
+			}
 
 			// create authenticator
 			authenticator = new PasswordAuthenticator(username, password);
