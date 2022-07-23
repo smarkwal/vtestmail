@@ -263,6 +263,7 @@ class SmtpServerTest {
 	}
 
 	@Test
+	@DisplayName("Unknown authentication type")
 	void testUnknownAuthenticationType() throws IOException, MessagingException {
 
 		// prepare: SMTP server
@@ -288,6 +289,7 @@ class SmtpServerTest {
 	}
 
 	@Test
+	@DisplayName("Authentication required")
 	void testAuthenticationRequired() throws IOException, MessagingException {
 
 		// prepare: SMTP server
@@ -309,6 +311,61 @@ class SmtpServerTest {
 			// assert
 			assertThat(exception).hasMessageContaining("530 5.7.0 Authentication required");
 		}
+	}
+
+	@Test
+	@DisplayName("TO, CC, and BCC recipients")
+	void testRecipients() throws IOException, MessagingException {
+
+		// prepare: mailbox
+		MailboxStore store = new MailboxStore();
+		store.createMailbox(USERNAME, PASSWORD, TO);
+
+		// prepare: SMTP server
+		try (SmtpServer server = new SmtpServer(store)) {
+			server.start();
+
+			// prepare: SMTP client
+			SmtpClient.SmtpClientBuilder clientBuilder = SmtpClient.forServer(server);
+			SmtpClient client = clientBuilder.build();
+
+			// prepare: email
+			Message message = client.prepareMessage()
+					.from(FROM)
+					.to(TO)
+					.cc("chris@localhost")
+					.bcc("dan@localhost")
+					.subject("Test email")
+					.body("This is a test email.")
+					.build();
+
+			// test
+			client.send(message);
+
+			// assert
+			String log = server.getLog();
+			assertThat(log).contains(
+					"MAIL FROM:<bob@localhost>",
+					"RCPT TO:<alice@localhost>",
+					"RCPT TO:<chris@localhost>",
+					"RCPT TO:<dan@localhost>",
+					"From: bob@localhost",
+					"To: alice@localhost",
+					"Cc: chris@localhost"
+			);
+
+			// assert: email has been delivered to mailbox
+			Mailbox mailbox = store.getMailbox(USERNAME);
+			List<Mailbox.Message> messages = mailbox.getMessages();
+			assertThat(messages).hasSize(1);
+
+			// assert: BCC recipient is not included in message
+			Mailbox.Message email = messages.get(0);
+			String content = email.getContent();
+			assertThat(content).doesNotContain("dan@localhost");
+
+		}
+
 	}
 
 	private Message createTestMessage(SmtpClient client) throws MessagingException {
