@@ -24,7 +24,6 @@ import java.util.Locale;
 import java.util.Map;
 import net.markwalder.junit.mailserver.MailServer;
 import net.markwalder.junit.mailserver.MailboxStore;
-import net.markwalder.junit.mailserver.auth.Authenticator;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -72,12 +71,12 @@ public class SmtpServer extends MailServer {
 	}
 
 	@Override
-	protected void reset() {
+	protected void reset(boolean logout) {
 
 		// discard all recipients
 		recipients.clear();
 
-		super.reset();
+		super.reset(logout);
 	}
 
 	@Override

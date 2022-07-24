@@ -32,7 +32,7 @@ class RSETTest extends CommandTest {
 		command.execute("RSET", server, client);
 
 		// verify
-		Mockito.verify(server).reset();
+		Mockito.verify(server).reset(false);
 		Mockito.verify(client).writeLine("250 OK");
 
 		Mockito.verifyNoMoreInteractions(server, client);

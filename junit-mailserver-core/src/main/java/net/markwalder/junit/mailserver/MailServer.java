@@ -372,6 +372,9 @@ public abstract class MailServer implements AutoCloseable {
 
 				client = null;
 
+				// reset and logout (get ready for next client)
+				reset(true);
+
 			}
 
 		}
@@ -382,10 +385,11 @@ public abstract class MailServer implements AutoCloseable {
 
 	protected abstract boolean handleCommand(String command) throws IOException;
 
-	protected void reset() {
-
-		// reset authentication state
-		logout();
+	protected void reset(boolean logout) {
+		if (logout) {
+			// reset authentication state
+			logout();
+		}
 	}
 
 	public String getLog() {

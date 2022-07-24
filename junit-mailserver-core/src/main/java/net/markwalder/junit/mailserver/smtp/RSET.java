@@ -23,7 +23,10 @@ public class RSET extends Command {
 
 	@Override
 	protected void execute(String command, SmtpServer server, Client client) throws IOException, ProtocolException {
-		server.reset();
+
+		// clear sender and list of recipients
+		server.reset(false);
+
 		client.writeLine("250 OK");
 	}
 

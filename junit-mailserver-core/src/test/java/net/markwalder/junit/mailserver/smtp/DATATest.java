@@ -61,6 +61,7 @@ class DATATest extends CommandTest {
 		Mockito.verify(server).getRecipients();
 		Mockito.verify(store).findMailbox("alice@localhost");
 		Mockito.verify(mailbox).addMessage("Subject: Test\r\n\r\nHello World!\r\n.");
+		Mockito.verify(server).reset(false);
 		Mockito.verify(client).writeLine("250 2.6.0 Message accepted");
 
 		Mockito.verifyNoMoreInteractions(server, client, store, mailbox);

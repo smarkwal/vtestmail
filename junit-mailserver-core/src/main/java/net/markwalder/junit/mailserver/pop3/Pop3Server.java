@@ -119,14 +119,14 @@ public class Pop3Server extends MailServer {
 	}
 
 	@Override
-	protected void reset() {
+	protected void reset(boolean logout) {
 
 		// "forget" all state
 		state = null;
 		timestamp = null;
 		username = null;
 
-		super.reset();
+		super.reset(logout);
 	}
 
 	@Override
