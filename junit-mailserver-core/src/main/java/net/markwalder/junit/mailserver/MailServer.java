@@ -321,6 +321,11 @@ public abstract class MailServer implements AutoCloseable {
 			// 	System.out.println("Cipher suites: " + Arrays.toString(sslSocket.getEnabledCipherSuites()));
 			// }
 
+			// check if the server is still listening
+			if (serverSocket == null || !serverSocket.isBound() || serverSocket.isClosed()) {
+				break;
+			}
+
 			try (Socket socket = serverSocket.accept()) {
 
 				String clientInfo = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
