@@ -18,6 +18,10 @@ package net.markwalder.junit.mailserver.auth;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import javax.crypto.Mac;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.HmacAlgorithms;
+import org.apache.commons.codec.digest.HmacUtils;
 
 class AuthUtils {
 
@@ -36,6 +40,12 @@ class AuthUtils {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	static String calculateHmacMD5Hex(String challenge, String password) {
+		Mac mac = HmacUtils.getInitializedMac(HmacAlgorithms.HMAC_MD5, password.getBytes(StandardCharsets.UTF_8));
+		byte[] bytes = mac.doFinal(challenge.getBytes(StandardCharsets.UTF_8));
+		return Hex.encodeHexString(bytes);
 	}
 
 }

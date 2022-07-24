@@ -18,6 +18,7 @@ package net.markwalder.junit.mailserver.auth;
 
 import java.io.IOException;
 import net.markwalder.junit.mailserver.Client;
+import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxStore;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -27,6 +28,7 @@ public class CramMd5Authenticator implements Authenticator {
 	public Credentials authenticate(String parameters, Client client, MailboxStore store) throws IOException {
 
 		// https://mailtrap.io/blog/smtp-auth/
+		// https://datatracker.ietf.org/doc/html/rfc2195
 
 		if (parameters != null) {
 			// CRAM-MD5 does not accept parameters
@@ -34,20 +36,40 @@ public class CramMd5Authenticator implements Authenticator {
 		}
 
 		// send random challenge to client
-		String challenge = RandomStringUtils.randomAlphanumeric(9);
+		String challenge = RandomStringUtils.randomAscii(16);
 		client.writeContinue(AuthUtils.encodeBase64(challenge));
 
 		// read response from client
 		String response = client.readLine();
 
-		// decode credentials
+		// decode response
 		String data = AuthUtils.decodeBase64(response);
 		if (data == null) {
 			return null;
 		}
 
-		// TODO: implement
-		return null;
+		// extract username and password hash
+		int pos = data.lastIndexOf(' ');
+		if (pos < 0) {
+			return null;
+		}
+		String username = data.substring(0, pos);
+		String clientHash = data.substring(pos + 1);
+
+		// check if mailbox exists
+		Mailbox mailbox = store.getMailbox(username);
+		if (mailbox == null) {
+			return null;
+		}
+
+		// compare password hashes
+		String password = mailbox.getSecret();
+		String serverHash = AuthUtils.calculateHmacMD5Hex(challenge, password);
+		if (!clientHash.equals(serverHash)) {
+			return null;
+		}
+
+		return new Credentials(username, password);
 	}
 
 }
