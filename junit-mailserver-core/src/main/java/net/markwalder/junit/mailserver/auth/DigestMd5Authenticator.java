@@ -47,7 +47,7 @@ public class DigestMd5Authenticator implements Authenticator {
 
 		// send digest challenge to client
 		String digestChallenge = generateDigestChallenge(realm, nonce);
-		client.writeLine("334 " + AuthUtils.encodeBase64(digestChallenge)); // TODO: support POP3-style auth
+		client.writeContinue(AuthUtils.encodeBase64(digestChallenge));
 
 		// step 2 --------------------------------------------------------------
 
@@ -125,7 +125,7 @@ public class DigestMd5Authenticator implements Authenticator {
 		// create response value
 		String responseValue = calculateResponse(realm, username, password, Charset.forName(charset), nonce, nc, cnonce, qop, digestUri, authzid, false);
 		String responseAuth = "rspauth=" + responseValue;
-		client.writeLine("334 " + AuthUtils.encodeBase64(responseAuth)); // TODO: support POP3-style auth
+		client.writeContinue(AuthUtils.encodeBase64(responseAuth));
 
 		String line = client.readLine(); // TODO: must line be empty?
 		if (line == null) {

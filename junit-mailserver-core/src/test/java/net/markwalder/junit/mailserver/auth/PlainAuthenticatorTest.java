@@ -62,7 +62,7 @@ class PlainAuthenticatorTest extends AuthenticatorTest {
 		assertThat(credentials.getSecret()).isEqualTo("password123");
 
 		// verify
-		Mockito.verify(client).writeLine("334");
+		Mockito.verify(client).writeContinue(null);
 		Mockito.verify(client).readLine();
 		Mockito.verifyNoMoreInteractions(client, store);
 	}

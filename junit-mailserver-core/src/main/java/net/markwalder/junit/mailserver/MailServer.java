@@ -74,6 +74,8 @@ public abstract class MailServer implements AutoCloseable {
 	 */
 	private final LinkedList<String> authTypes = new LinkedList<>();
 
+	// TODO: store all client-specific state in Client object
+
 	/**
 	 * Username of currently authenticated user.
 	 */
@@ -342,7 +344,7 @@ public abstract class MailServer implements AutoCloseable {
 				// clear log (if there has been a previous connection)
 				log.setLength(0);
 
-				client = new Client(socket, log);
+				client = createClient(socket, log);
 
 				// greet client
 				handleNewClient();
@@ -380,6 +382,8 @@ public abstract class MailServer implements AutoCloseable {
 		}
 
 	}
+
+	protected abstract Client createClient(Socket socket, StringBuilder log) throws IOException;
 
 	protected abstract void handleNewClient() throws IOException;
 

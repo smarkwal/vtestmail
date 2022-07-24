@@ -17,11 +17,13 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import net.markwalder.junit.mailserver.Client;
 import net.markwalder.junit.mailserver.MailServer;
 import net.markwalder.junit.mailserver.MailboxStore;
 import org.apache.commons.lang3.StringUtils;
@@ -77,6 +79,11 @@ public class SmtpServer extends MailServer {
 		recipients.clear();
 
 		super.reset(logout);
+	}
+
+	@Override
+	protected Client createClient(Socket socket, StringBuilder log) throws IOException {
+		return new SmtpClient(socket, log);
 	}
 
 	@Override

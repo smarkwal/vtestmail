@@ -17,10 +17,12 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.markwalder.junit.mailserver.Client;
 import net.markwalder.junit.mailserver.MailServer;
 import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxStore;
@@ -127,6 +129,11 @@ public class Pop3Server extends MailServer {
 		username = null;
 
 		super.reset(logout);
+	}
+
+	@Override
+	protected Client createClient(Socket socket, StringBuilder log) throws IOException {
+		return new Pop3Client(socket, log);
 	}
 
 	@Override

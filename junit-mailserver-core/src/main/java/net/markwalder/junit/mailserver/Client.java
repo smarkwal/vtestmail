@@ -29,7 +29,7 @@ import net.markwalder.junit.mailserver.utils.LineReader;
 /**
  * Mail client connection.
  */
-public class Client {
+public abstract class Client {
 
 	private static final String CRLF = "\r\n";
 	private static final String LF = "\n";
@@ -37,8 +37,10 @@ public class Client {
 	private final LineReader reader;
 	private final BufferedWriter writer;
 	private final StringBuilder log;
+	private final String continuation;
 
-	Client(Socket socket, StringBuilder log) throws IOException {
+	protected Client(Socket socket, StringBuilder log, String continuation) throws IOException {
+		this.continuation = continuation;
 
 		InputStream inputStream = socket.getInputStream();
 		this.reader = new LineReader(new InputStreamReader(inputStream, StandardCharsets.US_ASCII));
@@ -76,6 +78,14 @@ public class Client {
 		writer.write(line);
 		writer.write(CRLF);
 		writer.flush();
+	}
+
+	public void writeContinue(String message) throws IOException {
+		if (message == null || message.isEmpty()) {
+			writeLine(continuation);
+		} else {
+			writeLine(continuation + " " + message);
+		}
 	}
 
 }
