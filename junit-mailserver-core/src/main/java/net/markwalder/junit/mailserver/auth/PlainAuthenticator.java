@@ -19,12 +19,13 @@ package net.markwalder.junit.mailserver.auth;
 import java.io.IOException;
 import net.markwalder.junit.mailserver.Client;
 import net.markwalder.junit.mailserver.MailboxStore;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Implementation of PLAIN authentication.
  */
 public class PlainAuthenticator implements Authenticator {
+
+	private static final String NULL = "\u0000";
 
 	@Override
 	public Credentials authenticate(String parameters, Client client, MailboxStore store) throws IOException {
@@ -45,13 +46,14 @@ public class PlainAuthenticator implements Authenticator {
 		}
 
 		// extract username and password
-		String[] parts = StringUtils.split(data, '\u0000');
+		String[] parts = data.split(NULL, -1);
 		if (parts.length < 3) {
 			return null;
 		}
 
-		String username = parts[1];
-		String password = parts[2];
+		// note: parts[0] is ignored // RFC 4616 authorization identity (authzid)
+		String username = parts[1]; // RFC 4616 authentication identity (authcid)
+		String password = parts[2]; // RFC 4616 password (passwd)
 
 		return new Credentials(username, password);
 	}
