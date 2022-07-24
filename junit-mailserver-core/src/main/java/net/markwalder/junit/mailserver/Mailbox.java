@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.StringUtils;
 
 public class Mailbox {
 
@@ -65,6 +64,8 @@ public class Mailbox {
 
 	public static class Message {
 
+		private static final String CRLF = "\r\n";
+
 		private final String content;
 		private boolean deleted;
 
@@ -101,14 +102,14 @@ public class Mailbox {
 		 * @return The first n lines of the message.
 		 */
 		public String getTop(int n) {
-			String[] lines = StringUtils.split(content, "\r\n");
+			String[] lines = content.split(CRLF, -1);
 			if (n >= lines.length) {
 				return content;
 			}
 			StringBuilder buffer = new StringBuilder();
 			for (int i = 0; i < n; i++) {
-				if (buffer.length() > 0) {
-					buffer.append("\r\n");
+				if (i > 0) {
+					buffer.append(CRLF);
 				}
 				buffer.append(lines[i]);
 			}
