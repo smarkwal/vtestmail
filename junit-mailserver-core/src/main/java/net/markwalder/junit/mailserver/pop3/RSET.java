@@ -27,10 +27,8 @@ public class RSET extends Command {
 	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
 		server.assertState(Pop3Server.State.TRANSACTION);
 
-		String username = server.getUsername();
-
 		// unmark all messages marked as deleted
-		List<Mailbox.Message> messages = server.getMessages(username);
+		List<Mailbox.Message> messages = server.getMessages();
 		for (Mailbox.Message message : messages) {
 			if (message.isDeleted()) {
 				message.setDeleted(false);

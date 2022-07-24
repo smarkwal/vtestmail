@@ -28,15 +28,13 @@ public class LIST extends Command {
 	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
 		server.assertState(Pop3Server.State.TRANSACTION);
 
-		String username = server.getUsername();
-
 		if (command.equalsIgnoreCase("LIST")) {
 
-			int count = server.getMessageCount(username);
-			int totalSize = server.getTotalSize(username);
+			int count = server.getMessageCount();
+			int totalSize = server.getTotalSize();
 			client.writeLine("+OK " + count + " messages (" + totalSize + " octets)");
 
-			List<Mailbox.Message> messages = server.getMessages(username);
+			List<Mailbox.Message> messages = server.getMessages();
 			for (int i = 0; i < messages.size(); i++) {
 				Mailbox.Message message = messages.get(i);
 				if (message.isDeleted()) {
@@ -53,7 +51,7 @@ public class LIST extends Command {
 
 			// try to find message by number
 			String msg = StringUtils.substringAfter(command, "LIST ");
-			Mailbox.Message message = server.getMessage(username, msg);
+			Mailbox.Message message = server.getMessage(msg);
 			if (message == null || message.isDeleted()) {
 				throw ProtocolException.MessageNotFound();
 			}

@@ -26,9 +26,9 @@ public class USER extends Command {
 	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
 		server.assertState(Pop3Server.State.AUTHORIZATION);
 
-		// remember username
-		String username = StringUtils.substringAfter(command, "USER ");
-		server.setUsername(username);
+		// remember user
+		String user = StringUtils.substringAfter(command, "USER ");
+		server.setUser(user);
 
 		client.writeLine("+OK User accepted");
 	}

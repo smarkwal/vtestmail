@@ -28,12 +28,10 @@ public class UIDL extends Command {
 	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
 		server.assertState(Pop3Server.State.TRANSACTION);
 
-		String username = server.getUsername();
-
 		if (command.equalsIgnoreCase("UIDL")) {
 
 			client.writeLine("+OK");
-			List<Mailbox.Message> messages = server.getMessages(username);
+			List<Mailbox.Message> messages = server.getMessages();
 			for (int i = 0; i < messages.size(); i++) {
 				Mailbox.Message message = messages.get(i);
 				if (message.isDeleted()) {
@@ -50,7 +48,7 @@ public class UIDL extends Command {
 
 			// try to find message by number
 			String msg = StringUtils.substringAfter(command, "UIDL ");
-			Mailbox.Message message = server.getMessage(username, msg);
+			Mailbox.Message message = server.getMessage(msg);
 			if (message == null || message.isDeleted()) {
 				throw ProtocolException.MessageNotFound();
 			}

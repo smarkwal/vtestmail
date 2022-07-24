@@ -19,7 +19,6 @@ package net.markwalder.junit.mailserver.pop3;
 import java.io.IOException;
 import net.markwalder.junit.mailserver.Client;
 import net.markwalder.junit.mailserver.Mailbox;
-import net.markwalder.junit.mailserver.MailboxStore;
 
 public class QUIT extends Command {
 
@@ -32,8 +31,7 @@ public class QUIT extends Command {
 		String username = server.getUsername();
 
 		// delete messages marked as deleted
-		MailboxStore store = server.getStore();
-		Mailbox mailbox = store.getMailbox(username);
+		Mailbox mailbox = server.getMailbox();
 		if (mailbox != null) {
 			mailbox.removeDeletedMessages();
 		}

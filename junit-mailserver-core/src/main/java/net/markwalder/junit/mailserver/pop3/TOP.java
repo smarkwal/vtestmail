@@ -27,12 +27,10 @@ public class TOP extends Command {
 	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
 		server.assertState(Pop3Server.State.TRANSACTION);
 
-		String username = server.getUsername();
-
 		// try to find message by number, and get top n lines
 		String msg = StringUtils.substringBetween(command, "TOP ", " ");
 		String n = StringUtils.substringAfterLast(command, " ");
-		String lines = getMessageLines(server, username, msg, n);
+		String lines = getMessageLines(server, msg, n);
 		if (lines == null) {
 			throw ProtocolException.MessageNotFound();
 		}
@@ -42,9 +40,9 @@ public class TOP extends Command {
 		client.writeLine(".");
 	}
 
-	private String getMessageLines(Pop3Server server, String username, String msg, String n) {
+	private String getMessageLines(Pop3Server server, String msg, String n) {
 
-		Mailbox.Message message = server.getMessage(username, msg);
+		Mailbox.Message message = server.getMessage(msg);
 		if (message == null || message.isDeleted()) {
 			return null;
 		}

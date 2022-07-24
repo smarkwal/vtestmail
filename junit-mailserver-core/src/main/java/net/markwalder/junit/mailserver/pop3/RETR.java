@@ -27,11 +27,9 @@ public class RETR extends Command {
 	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
 		server.assertState(Pop3Server.State.TRANSACTION);
 
-		String username = server.getUsername();
-
 		// try to find message by number
 		String msg = StringUtils.substringAfter(command, "RETR ");
-		Mailbox.Message message = server.getMessage(username, msg);
+		Mailbox.Message message = server.getMessage(msg);
 		if (message == null || message.isDeleted()) {
 			throw ProtocolException.MessageNotFound();
 		}

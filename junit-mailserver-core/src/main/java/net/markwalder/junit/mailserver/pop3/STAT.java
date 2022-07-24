@@ -25,9 +25,8 @@ public class STAT extends Command {
 	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
 		server.assertState(Pop3Server.State.TRANSACTION);
 
-		String username = server.getUsername();
-		int count = server.getMessageCount(username);
-		int totalSize = server.getTotalSize(username);
+		int count = server.getMessageCount();
+		int totalSize = server.getTotalSize();
 		client.writeLine("+OK " + count + " " + totalSize);
 	}
 

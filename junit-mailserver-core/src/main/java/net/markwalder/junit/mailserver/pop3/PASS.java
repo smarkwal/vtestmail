@@ -27,14 +27,16 @@ public class PASS extends Command {
 		server.assertState(Pop3Server.State.AUTHORIZATION);
 
 		// get username
-		String username = server.getUsername();
-		// TODO: return error if username is not set
+		String user = server.getUser();
+		if (user == null) {
+			throw new ProtocolException("USER command not received");
+		}
 
 		// get password
 		String password = StringUtils.substringAfter(command, "PASS ");
 
 		// try to authenticate
-		server.login(username, password);
+		server.login(user, password);
 
 		if (!server.isAuthenticated()) {
 			client.writeLine("-ERR Authentication failed");

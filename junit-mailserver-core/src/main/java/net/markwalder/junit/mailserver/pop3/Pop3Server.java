@@ -70,7 +70,8 @@ public class Pop3Server extends MailServer {
 
 	private State state = null;
 	private String timestamp = null;
-	private String username = null;
+	private String user = null;
+	private Mailbox mailbox = null;
 
 	public Pop3Server(MailboxStore store) {
 		super("POP3", store);
@@ -111,22 +112,24 @@ public class Pop3Server extends MailServer {
 		return timestamp;
 	}
 
-	@Override
-	public String getUsername() {
-		return username;
+	String getUser() {
+		return user;
 	}
 
-	void setUsername(String username) {
-		this.username = username;
+	void setUser(String user) {
+		this.user = user;
+	}
+
+	Mailbox getMailbox() {
+		return mailbox;
 	}
 
 	@Override
 	protected void reset(boolean logout) {
 
-		// "forget" all state
+		// discard all state
 		state = null;
 		timestamp = null;
-		username = null;
 
 		super.reset(logout);
 	}
@@ -179,6 +182,10 @@ public class Pop3Server extends MailServer {
 	@Override
 	protected void login(String username, String secret) {
 		super.login(username, secret);
+
+		if (isAuthenticated()) {
+			openMailbox(username);
+		}
 	}
 
 	@Override
@@ -186,13 +193,22 @@ public class Pop3Server extends MailServer {
 		super.login(username, digest, timestamp);
 
 		if (isAuthenticated()) {
-			// remember username for mailbox access
-			this.username = username;
+			openMailbox(username);
 		}
+	}
+
+	private void openMailbox(String username) {
+		// TODO: acquire exclusive lock on mailbox
+		mailbox = store.getMailbox(username);
 	}
 
 	@Override
 	protected void logout() {
+
+		// discard user and close mailbox
+		user = null;
+		mailbox = null;
+
 		super.logout();
 	}
 
@@ -218,8 +234,7 @@ public class Pop3Server extends MailServer {
 		return command;
 	}
 
-	List<Mailbox.Message> getMessages(String username) {
-		Mailbox mailbox = store.getMailbox(username);
+	List<Mailbox.Message> getMessages() {
 		if (mailbox == null) {
 			// mailbox not found -> return empty list
 			return Collections.emptyList();
@@ -227,7 +242,7 @@ public class Pop3Server extends MailServer {
 		return mailbox.getMessages();
 	}
 
-	Mailbox.Message getMessage(String username, String msg) {
+	Mailbox.Message getMessage(String msg) {
 
 		// try to parse parameter "msg"
 		int idx;
@@ -238,7 +253,7 @@ public class Pop3Server extends MailServer {
 			return null;
 		}
 
-		List<Mailbox.Message> messages = getMessages(username);
+		List<Mailbox.Message> messages = getMessages();
 		if (idx < 0 || idx >= messages.size()) {
 			// index out of range -> message not found
 			return null;
@@ -252,11 +267,10 @@ public class Pop3Server extends MailServer {
 	 * Get the total number of non-deleted messages in the mailbox of the given
 	 * user. If the mailbox does not exist, 0 is returned.
 	 *
-	 * @param username Mailbox owner.
 	 * @return Number of messages in the mailbox.
 	 */
-	int getMessageCount(String username) {
-		List<Mailbox.Message> messages = getMessages(username);
+	int getMessageCount() {
+		List<Mailbox.Message> messages = getMessages();
 		long count = messages.stream()
 				.filter(m -> !m.isDeleted()) // ignore deleted messages
 				.count();
@@ -267,11 +281,10 @@ public class Pop3Server extends MailServer {
 	 * Get the total size of all non-deleted messages in the mailbox of the
 	 * given user. If the mailbox does not exist, 0 is returned.
 	 *
-	 * @param username Mailbox owner.
 	 * @return Size to all messages in the mailbox.
 	 */
-	int getTotalSize(String username) {
-		List<Mailbox.Message> messages = getMessages(username);
+	int getTotalSize() {
+		List<Mailbox.Message> messages = getMessages();
 		return messages.stream()
 				.filter(m -> !m.isDeleted()) // ignore deleted messages
 				.mapToInt(Mailbox.Message::getSize)
