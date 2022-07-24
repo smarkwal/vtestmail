@@ -42,19 +42,42 @@ public class Pop3ServerTest {
 	private static final String EMAIL = "alice@localhost";
 
 	@Test
-	@DisplayName("Port")
 	void getPort() throws IOException {
 
 		// prepare: POP3 server
 		MailboxStore store = new MailboxStore();
 		try (Pop3Server server = new Pop3Server(store)) {
-			server.start();
 
-			// test
+			// test: before server has been started
 			int port = server.getPort();
 
 			// assert
+			assertThat(port).isZero();
+
+			server.start();
+
+			// test: after server has been started
+			port = server.getPort();
+
+			// assert
 			assertThat(port).isBetween(1024, 65535);
+		}
+	}
+
+	@Test
+	void setPort() throws IOException {
+
+		// prepare: POP3 server
+		MailboxStore store = new MailboxStore();
+		try (Pop3Server server = new Pop3Server(store)) {
+
+			// test
+			server.setPort(24277);
+			server.start();
+
+			// assert
+			int port = server.getPort();
+			assertThat(port).isEqualTo(24277);
 		}
 	}
 

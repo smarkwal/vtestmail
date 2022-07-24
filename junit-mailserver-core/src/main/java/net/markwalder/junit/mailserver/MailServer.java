@@ -58,6 +58,7 @@ public abstract class MailServer implements AutoCloseable {
 	private final String protocol;
 	protected final MailboxStore store;
 
+	private int port = 0; // 0 = select a free port
 	private boolean useSSL = false;
 	private String sslProtocol = "TLSv1.2";
 	private boolean authenticationRequired = false;
@@ -213,7 +214,7 @@ public abstract class MailServer implements AutoCloseable {
 			factory = ServerSocketFactory.getDefault();
 		}
 		InetAddress localhost = InetAddress.getLoopbackAddress();
-		serverSocket = factory.createServerSocket(0, 1, localhost);
+		serverSocket = factory.createServerSocket(port, 1, localhost);
 
 		if (serverSocket instanceof SSLServerSocket) {
 			SSLServerSocket sslServerSocket = (SSLServerSocket) serverSocket;
@@ -234,11 +235,43 @@ public abstract class MailServer implements AutoCloseable {
 		System.out.println(protocol + " server started");
 	}
 
+	/**
+	 * Get the port the server is listening on.
+	 * If this method is called after the server has been started, the method
+	 * will return the actual port the server is listening on.
+	 * If this method is called before the server has been started, the method
+	 * will return the port that has been configured by calling
+	 * {@link #setPort(int)}.
+	 *
+	 * @return Port the server is listening on.
+	 */
 	public int getPort() {
-		if (serverSocket == null) {
-			throw new IllegalStateException(protocol + " server is not running");
+
+		// if server is running, return the actual port
+		if (serverSocket != null && serverSocket.isBound()) {
+			return serverSocket.getLocalPort();
 		}
-		return serverSocket.getLocalPort();
+
+		// return the configured port
+		return port;
+	}
+
+	/**
+	 * Set the port to use for the server.
+	 * If set to {@code 0}, the server will find and use a free port.
+	 * Note that this method has no immediate effect if the server has already
+	 * been started. It will only take effect when the server is restarted.
+	 *
+	 * @param port Port to use for the server.
+	 */
+	public void setPort(int port) {
+		if (port < 0 || port > 65535) {
+			throw new IllegalArgumentException("port must be between 0 and 65535");
+		}
+		if (serverSocket != null) {
+			// TODO: close and reopen server socket?
+		}
+		this.port = port;
 	}
 
 	public void stop() throws IOException {
