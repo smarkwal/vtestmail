@@ -366,8 +366,10 @@ public abstract class MailServer implements AutoCloseable {
 			} catch (IOException e) {
 
 				if (!stop.get()) { // ignore exception if server has been stopped
+					System.out.flush();
 					System.err.println("Unexpected " + protocol + " I/O error:");
 					e.printStackTrace();
+					System.err.flush();
 				}
 
 			} finally {
