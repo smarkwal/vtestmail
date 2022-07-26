@@ -58,6 +58,7 @@ public class Pop3Server extends MailServer {
 		commands.put("NOOP", new NOOP());
 		commands.put("RSET", new RSET());
 		commands.put("QUIT", new QUIT());
+		// TODO: implement RFC 6856: UTF8 and LANG (https://www.rfc-editor.org/rfc/rfc6856)
 	}
 
 	enum State {

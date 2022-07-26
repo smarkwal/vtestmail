@@ -17,13 +17,16 @@
 package net.markwalder.junit.mailserver.auth;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import net.markwalder.junit.mailserver.Client;
 import net.markwalder.junit.mailserver.MailboxStore;
 
 public class LoginAuthenticator implements Authenticator {
 
-	private static final String USERNAME_CHALLENGE = AuthUtils.encodeBase64("Username:");
-	private static final String PASSWORD_CHALLENGE = AuthUtils.encodeBase64("Password:");
+	private static final Charset CHARSET = StandardCharsets.UTF_8;
+	private static final String USERNAME_CHALLENGE = AuthUtils.encodeBase64("Username:", CHARSET);
+	private static final String PASSWORD_CHALLENGE = AuthUtils.encodeBase64("Password:", CHARSET);
 
 	@Override
 	public Credentials authenticate(String parameters, Client client, MailboxStore store) throws IOException {
@@ -38,7 +41,7 @@ public class LoginAuthenticator implements Authenticator {
 		// ask client for username
 		client.writeContinue(USERNAME_CHALLENGE);
 		String response = client.readLine();
-		String username = AuthUtils.decodeBase64(response);
+		String username = AuthUtils.decodeBase64(response, CHARSET);
 		if (username == null) {
 			return null;
 		}
@@ -46,7 +49,7 @@ public class LoginAuthenticator implements Authenticator {
 		// ask client for password
 		client.writeContinue(PASSWORD_CHALLENGE);
 		response = client.readLine();
-		String password = AuthUtils.decodeBase64(response);
+		String password = AuthUtils.decodeBase64(response, CHARSET);
 		if (password == null) {
 			return null;
 		}

@@ -19,6 +19,7 @@ package net.markwalder.junit.mailserver.auth;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import net.markwalder.junit.mailserver.Client;
@@ -29,6 +30,8 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public class DigestMd5Authenticator implements Authenticator {
+
+	private static final Charset CHARSET = StandardCharsets.ISO_8859_1;
 
 	@Override
 	public Credentials authenticate(String parameters, Client client, MailboxStore store) throws IOException {
@@ -47,12 +50,12 @@ public class DigestMd5Authenticator implements Authenticator {
 
 		// send digest challenge to client
 		String digestChallenge = generateDigestChallenge(realm, nonce);
-		client.writeContinue(AuthUtils.encodeBase64(digestChallenge));
+		client.writeContinue(AuthUtils.encodeBase64(digestChallenge, CHARSET));
 
 		// step 2 --------------------------------------------------------------
 
 		// read digest response from client
-		String digestResponse = AuthUtils.decodeBase64(client.readLine());
+		String digestResponse = AuthUtils.decodeBase64(client.readLine(), CHARSET);
 		if (digestResponse == null) {
 			return null;
 		}
@@ -125,7 +128,7 @@ public class DigestMd5Authenticator implements Authenticator {
 		// create response value
 		String responseValue = calculateResponse(realm, username, password, Charset.forName(charset), nonce, nc, cnonce, qop, digestUri, authzid, false);
 		String responseAuth = "rspauth=" + responseValue;
-		client.writeContinue(AuthUtils.encodeBase64(responseAuth));
+		client.writeContinue(AuthUtils.encodeBase64(responseAuth, CHARSET));
 
 		String line = client.readLine(); // TODO: must line be empty?
 		if (line == null) {
@@ -136,7 +139,8 @@ public class DigestMd5Authenticator implements Authenticator {
 	}
 
 	private String generateDigestChallenge(String realm, String nonce) {
-		return "realm=\"" + realm + "\",nonce=\"" + nonce + "\",qop=\"auth\",charset=utf-8,algorithm=md5-sess";
+		// TODO: support charset=utf-8
+		return "realm=\"" + realm + "\",nonce=\"" + nonce + "\",qop=\"auth\",algorithm=md5-sess";
 	}
 
 	private static Map<String, String> parseDigestResponse(String digestResponse) {

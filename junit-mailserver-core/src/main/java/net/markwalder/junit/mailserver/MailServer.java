@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -186,7 +187,8 @@ public abstract class MailServer implements AutoCloseable {
 		this.username = null;
 		Mailbox mailbox = store.getMailbox(username);
 		if (mailbox != null) {
-			String hash = DigestUtils.md5Hex(timestamp + mailbox.getSecret());
+			String data = timestamp + mailbox.getSecret();
+			String hash = DigestUtils.md5Hex(data.getBytes(StandardCharsets.ISO_8859_1));
 			if (hash.equals(digest)) {
 				this.username = username;
 			}

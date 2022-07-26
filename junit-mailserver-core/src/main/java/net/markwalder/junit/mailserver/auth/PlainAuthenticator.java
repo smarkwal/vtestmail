@@ -17,6 +17,8 @@
 package net.markwalder.junit.mailserver.auth;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import net.markwalder.junit.mailserver.Client;
 import net.markwalder.junit.mailserver.MailboxStore;
 
@@ -25,6 +27,7 @@ import net.markwalder.junit.mailserver.MailboxStore;
  */
 public class PlainAuthenticator implements Authenticator {
 
+	private static final Charset CHARSET = StandardCharsets.UTF_8;
 	private static final String NULL = "\u0000";
 
 	@Override
@@ -40,7 +43,7 @@ public class PlainAuthenticator implements Authenticator {
 		}
 
 		// decode credentials
-		String data = AuthUtils.decodeBase64(parameters);
+		String data = AuthUtils.decodeBase64(parameters, CHARSET);
 		if (data == null) {
 			return null;
 		}

@@ -16,6 +16,7 @@
 
 package net.markwalder.junit.mailserver.auth;
 
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import javax.crypto.Mac;
@@ -25,17 +26,17 @@ import org.apache.commons.codec.digest.HmacUtils;
 
 class AuthUtils {
 
-	static String encodeBase64(String data) {
-		byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
+	static String encodeBase64(String data, Charset charset) {
+		byte[] bytes = data.getBytes(charset);
 		Base64.Encoder encoder = Base64.getEncoder();
 		return encoder.encodeToString(bytes);
 	}
 
-	static String decodeBase64(String data) {
+	static String decodeBase64(String data, Charset charset) {
 		Base64.Decoder decoder = Base64.getDecoder();
 		try {
 			byte[] bytes = decoder.decode(data);
-			return new String(bytes, StandardCharsets.UTF_8);
+			return new String(bytes, charset);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

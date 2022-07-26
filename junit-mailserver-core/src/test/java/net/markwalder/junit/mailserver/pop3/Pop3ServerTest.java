@@ -37,8 +37,8 @@ import org.junit.jupiter.api.TestFactory;
 
 public class Pop3ServerTest {
 
-	private static final String USERNAME = "alice";
-	private static final String PASSWORD = "password123";
+	private static final String USERNAME = "\u00E4li\u00E7\u00E9";
+	private static final String PASSWORD = "p\u00E4ssw\u00F6rd!123";
 	private static final String EMAIL = "alice@localhost";
 
 	@Test
@@ -230,9 +230,9 @@ public class Pop3ServerTest {
 			// assert
 			String log = server.getLog();
 			if (authType.equals("APOP")) {
-				assertThat(log).contains("APOP alice ");
+				assertThat(log).contains("APOP " + USERNAME + " ");
 			} else if (authType.equals("USER")) {
-				assertThat(log).contains("USER alice", "PASS password123");
+				assertThat(log).contains("USER " + USERNAME, "PASS " + PASSWORD);
 			} else {
 				assertThat(log).contains("SASL " + authType);
 				assertThat(log).contains("AUTH " + authType + " ");

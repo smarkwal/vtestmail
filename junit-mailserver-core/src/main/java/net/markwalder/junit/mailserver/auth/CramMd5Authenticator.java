@@ -17,12 +17,16 @@
 package net.markwalder.junit.mailserver.auth;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import net.markwalder.junit.mailserver.Client;
 import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxStore;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public class CramMd5Authenticator implements Authenticator {
+
+	private static final Charset CHARSET = StandardCharsets.ISO_8859_1;
 
 	@Override
 	public Credentials authenticate(String parameters, Client client, MailboxStore store) throws IOException {
@@ -37,13 +41,13 @@ public class CramMd5Authenticator implements Authenticator {
 
 		// send random challenge to client
 		String challenge = RandomStringUtils.randomAscii(16);
-		client.writeContinue(AuthUtils.encodeBase64(challenge));
+		client.writeContinue(AuthUtils.encodeBase64(challenge, CHARSET));
 
 		// read response from client
 		String response = client.readLine();
 
 		// decode response
-		String data = AuthUtils.decodeBase64(response);
+		String data = AuthUtils.decodeBase64(response, CHARSET);
 		if (data == null) {
 			return null;
 		}

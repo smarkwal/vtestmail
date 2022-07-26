@@ -45,8 +45,8 @@ class SmtpServerTest {
 
 	private static final String FROM = "bob@localhost";
 	private static final String TO = "alice@localhost";
-	private static final String USERNAME = "alice";
-	private static final String PASSWORD = "password123";
+	private static final String USERNAME = "\u00E4li\u00E7\u00E9";
+	private static final String PASSWORD = "p\u00E4ssw\u00F6rd!123";
 
 	@Test
 	void getPort() throws IOException {

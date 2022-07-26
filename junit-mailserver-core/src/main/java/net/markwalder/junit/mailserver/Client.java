@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import net.markwalder.junit.mailserver.utils.LineReader;
 
@@ -30,6 +31,8 @@ import net.markwalder.junit.mailserver.utils.LineReader;
  * Mail client connection.
  */
 public abstract class Client {
+
+	private static final Charset CHARSET = StandardCharsets.ISO_8859_1;
 
 	private static final String CRLF = "\r\n";
 	private static final String LF = "\n";
@@ -43,10 +46,10 @@ public abstract class Client {
 		this.continuation = continuation;
 
 		InputStream inputStream = socket.getInputStream();
-		this.reader = new LineReader(new InputStreamReader(inputStream, StandardCharsets.US_ASCII));
+		this.reader = new LineReader(new InputStreamReader(inputStream, CHARSET));
 
 		OutputStream outputStream = socket.getOutputStream();
-		this.writer = new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.US_ASCII));
+		this.writer = new BufferedWriter(new OutputStreamWriter(outputStream, CHARSET));
 
 		this.log = log;
 	}

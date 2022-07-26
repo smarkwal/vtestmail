@@ -16,11 +16,15 @@
 
 package net.markwalder.junit.mailserver.auth;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import net.markwalder.junit.mailserver.Client;
 import net.markwalder.junit.mailserver.MailboxStore;
 import org.apache.commons.lang3.StringUtils;
 
 public class XOauth2Authenticator implements Authenticator {
+
+	private static final Charset CHARSET = StandardCharsets.UTF_8;
 
 	@Override
 	public Credentials authenticate(String parameters, Client client, MailboxStore store) {
@@ -33,7 +37,7 @@ public class XOauth2Authenticator implements Authenticator {
 		}
 
 		// decode credentials
-		String data = AuthUtils.decodeBase64(parameters);
+		String data = AuthUtils.decodeBase64(parameters, CHARSET);
 		if (data == null) {
 			return null;
 		}

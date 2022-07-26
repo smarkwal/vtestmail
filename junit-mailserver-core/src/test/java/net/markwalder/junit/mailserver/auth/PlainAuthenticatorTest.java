@@ -19,11 +19,14 @@ package net.markwalder.junit.mailserver.auth;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 class PlainAuthenticatorTest extends AuthenticatorTest {
 
+	private static final Charset CHARSET = StandardCharsets.UTF_8;
 	private static final String NULL = "\u0000";
 
 	private final PlainAuthenticator authenticator = new PlainAuthenticator();
@@ -32,7 +35,7 @@ class PlainAuthenticatorTest extends AuthenticatorTest {
 	void authenticate_withInitialResponse() throws IOException {
 
 		// prepare
-		String parameters = AuthUtils.encodeBase64("alice@localhost" + NULL + "alice" + NULL + "password123");
+		String parameters = AuthUtils.encodeBase64("alice@localhost" + NULL + "alice" + NULL + "password123", CHARSET);
 
 		// test
 		Credentials credentials = authenticator.authenticate(parameters, client, store);
@@ -50,7 +53,7 @@ class PlainAuthenticatorTest extends AuthenticatorTest {
 	void authenticate_withoutInitialResponse() throws IOException {
 
 		// mock
-		String parameters = AuthUtils.encodeBase64("alice@localhost" + NULL + "alice" + NULL + "password123");
+		String parameters = AuthUtils.encodeBase64("alice@localhost" + NULL + "alice" + NULL + "password123", CHARSET);
 		Mockito.doReturn(parameters).when(client).readLine();
 
 		// test
@@ -71,7 +74,7 @@ class PlainAuthenticatorTest extends AuthenticatorTest {
 	void authenticate_withoutAuthorizationIdentity() throws IOException {
 
 		// prepare
-		String parameters = AuthUtils.encodeBase64(NULL + "alice" + NULL + "password123");
+		String parameters = AuthUtils.encodeBase64(NULL + "alice" + NULL + "password123", CHARSET);
 
 		// test
 		Credentials credentials = authenticator.authenticate(parameters, client, store);
@@ -86,10 +89,28 @@ class PlainAuthenticatorTest extends AuthenticatorTest {
 	}
 
 	@Test
+	void authenticate_withSpecialCharacters() throws IOException {
+
+		// prepare
+		String parameters = AuthUtils.encodeBase64(NULL + "\u00E4l\u00EE\u00E7e" + NULL + "p\u00E4\u0161\u015Bw\u00F6rd123", CHARSET);
+
+		// test
+		Credentials credentials = authenticator.authenticate(parameters, client, store);
+
+		// assert
+		assertThat(credentials).isNotNull();
+		assertThat(credentials.getUsername()).isEqualTo("\u00E4l\u00EE\u00E7e");
+		assertThat(credentials.getSecret()).isEqualTo("p\u00E4\u0161\u015Bw\u00F6rd123");
+
+		// verify
+		Mockito.verifyNoMoreInteractions(client, store);
+	}
+
+	@Test
 	void authenticate_withEmptyPassword() throws IOException {
 
 		// prepare
-		String parameters = AuthUtils.encodeBase64("alice@localhost" + NULL + "alice" + NULL);
+		String parameters = AuthUtils.encodeBase64("alice@localhost" + NULL + "alice" + NULL, CHARSET);
 
 		// test
 		Credentials credentials = authenticator.authenticate(parameters, client, store);
@@ -107,7 +128,7 @@ class PlainAuthenticatorTest extends AuthenticatorTest {
 	void authenticate_returnsNull_forInvalidResponse() throws IOException {
 
 		// prepare: invalid response
-		String parameters = AuthUtils.encodeBase64("alice" + NULL + "password123");
+		String parameters = AuthUtils.encodeBase64("alice" + NULL + "password123", CHARSET);
 
 		// test
 		Credentials credentials = authenticator.authenticate(parameters, client, store);
