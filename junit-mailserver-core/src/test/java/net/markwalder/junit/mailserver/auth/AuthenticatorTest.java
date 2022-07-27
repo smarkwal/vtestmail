@@ -16,13 +16,13 @@
 
 package net.markwalder.junit.mailserver.auth;
 
-import net.markwalder.junit.mailserver.Client;
-import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.MailClient;
+import net.markwalder.junit.mailserver.MailboxProvider;
 import org.mockito.Mockito;
 
 abstract class AuthenticatorTest {
 
-	protected final Client client = Mockito.mock(Client.class);
-	protected final MailboxStore store = Mockito.mock(MailboxStore.class);
+	protected final MailClient client = Mockito.mock(MailClient.class);
+	protected final MailboxProvider store = Mockito.mock(MailboxProvider.class);
 
 }

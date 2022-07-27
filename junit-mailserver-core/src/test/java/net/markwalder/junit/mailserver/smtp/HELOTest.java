@@ -29,12 +29,12 @@ class HELOTest extends CommandTest {
 		Command command = new HELO();
 
 		// test
-		command.execute("HELO", server, client);
+		command.execute("HELO", server, session, client);
 
 		// verify
 		Mockito.verify(client).writeLine("250 OK");
 
-		Mockito.verifyNoMoreInteractions(server, client);
+		Mockito.verifyNoMoreInteractions(server, session, client);
 	}
 
 }

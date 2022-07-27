@@ -17,7 +17,7 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Client;
+import net.markwalder.junit.mailserver.MailboxStore;
 import net.markwalder.junit.mailserver.auth.Authenticator;
 import net.markwalder.junit.mailserver.auth.Credentials;
 import org.apache.commons.lang3.StringUtils;
@@ -25,10 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 public class AUTH extends Command {
 
 	@Override
-	protected void execute(String command, SmtpServer server, Client client) throws IOException, ProtocolException {
-
-		// reset authentication state
-		server.logout();
+	protected void execute(String command, SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
 
 		// https://datatracker.ietf.org/doc/html/rfc4954
 		// https://www.iana.org/assignments/sasl-mechanisms/sasl-mechanisms.xhtml
@@ -46,7 +43,8 @@ public class AUTH extends Command {
 
 		// get user credentials from client
 		Authenticator authenticator = server.getAuthenticator(authType);
-		Credentials credentials = authenticator.authenticate(parameters, client, server.getStore());
+		MailboxStore store = server.getStore();
+		Credentials credentials = authenticator.authenticate(parameters, client, store);
 		if (credentials == null) {
 			throw ProtocolException.AuthenticationFailed();
 		}
@@ -54,9 +52,9 @@ public class AUTH extends Command {
 		// try to authenticate user
 		String username = credentials.getUsername();
 		String secret = credentials.getSecret();
-		server.login(username, secret);
+		session.login(username, secret, store);
 
-		if (!server.isAuthenticated()) {
+		if (!session.isAuthenticated()) {
 			throw ProtocolException.AuthenticationFailed();
 		}
 

@@ -19,9 +19,9 @@ package net.markwalder.junit.mailserver.auth;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import net.markwalder.junit.mailserver.Client;
+import net.markwalder.junit.mailserver.MailClient;
 import net.markwalder.junit.mailserver.Mailbox;
-import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.MailboxProvider;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public class CramMd5Authenticator implements Authenticator {
@@ -29,7 +29,7 @@ public class CramMd5Authenticator implements Authenticator {
 	private static final Charset CHARSET = StandardCharsets.ISO_8859_1;
 
 	@Override
-	public Credentials authenticate(String parameters, Client client, MailboxStore store) throws IOException {
+	public Credentials authenticate(String parameters, MailClient client, MailboxProvider store) throws IOException {
 
 		// https://mailtrap.io/blog/smtp-auth/
 		// https://datatracker.ietf.org/doc/html/rfc2195

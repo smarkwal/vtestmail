@@ -22,7 +22,7 @@ public class ProtocolException extends Exception {
 		return new ProtocolException("No such message");
 	}
 
-	public static ProtocolException IllegalState(Pop3Server.State state) {
+	public static ProtocolException IllegalState(State state) {
 		return new ProtocolException("Command is not allowed in " + state.name() + " state");
 	}
 

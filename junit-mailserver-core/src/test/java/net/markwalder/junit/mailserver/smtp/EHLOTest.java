@@ -35,7 +35,7 @@ class EHLOTest extends CommandTest {
 		Command command = new EHLO();
 
 		// test
-		command.execute("EHLO", server, client);
+		command.execute("EHLO", server, session, client);
 
 		// verify
 		Mockito.verify(server).getAuthTypes();
@@ -44,7 +44,7 @@ class EHLOTest extends CommandTest {
 		Mockito.verify(client).writeLine("250-ENHANCEDSTATUSCODES");
 		Mockito.verify(client).writeLine("250 OK");
 
-		Mockito.verifyNoMoreInteractions(server, client);
+		Mockito.verifyNoMoreInteractions(server, session, client);
 	}
 
 	@Test
@@ -56,7 +56,7 @@ class EHLOTest extends CommandTest {
 		Command command = new EHLO();
 
 		// test
-		command.execute("EHLO", server, client);
+		command.execute("EHLO", server, session, client);
 
 		// verify
 		Mockito.verify(server).getAuthTypes();
@@ -64,7 +64,7 @@ class EHLOTest extends CommandTest {
 		Mockito.verify(client).writeLine("250-ENHANCEDSTATUSCODES");
 		Mockito.verify(client).writeLine("250 OK");
 
-		Mockito.verifyNoMoreInteractions(server, client);
+		Mockito.verifyNoMoreInteractions(server, session, client);
 	}
 
 }

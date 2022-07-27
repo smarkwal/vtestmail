@@ -44,27 +44,27 @@ class DATATest extends CommandTest {
 				"."
 		).when(client).readLine();
 		Mockito.doReturn(store).when(server).getStore();
-		Mockito.doReturn(Collections.singletonList("alice@localhost")).when(server).getRecipients();
+		Mockito.doReturn(Collections.singletonList("alice@localhost")).when(session).getRecipients();
 		Mockito.doReturn(mailbox).when(store).findMailbox("alice@localhost");
 
 		// prepare
 		Command command = new DATA();
 
 		// test
-		command.execute("DATA", server, client);
+		command.execute("DATA", server, session, client);
 
 		// verify
 		Mockito.verify(server).isAuthenticationRequired();
 		Mockito.verify(client).writeLine("354 Send message, end with <CRLF>.<CRLF>");
 		Mockito.verify(client, Mockito.times(5)).readLine();
 		Mockito.verify(server).getStore();
-		Mockito.verify(server).getRecipients();
+		Mockito.verify(session).getRecipients();
 		Mockito.verify(store).findMailbox("alice@localhost");
 		Mockito.verify(mailbox).addMessage("Subject: Test\r\n\r\nHello World!\r\n.");
-		Mockito.verify(server).reset(false);
+		Mockito.verify(session).clearRecipients();
 		Mockito.verify(client).writeLine("250 2.6.0 Message accepted");
 
-		Mockito.verifyNoMoreInteractions(server, client, store, mailbox);
+		Mockito.verifyNoMoreInteractions(server, session, client, store, mailbox);
 	}
 
 	@Test
@@ -77,7 +77,7 @@ class DATATest extends CommandTest {
 		Command command = new DATA();
 
 		// test
-		Exception exception = assertThrows(ProtocolException.class, () -> command.execute("DATA", server, client));
+		Exception exception = assertThrows(ProtocolException.class, () -> command.execute("DATA", server, session, client));
 
 		// assert
 		assertThat(exception).hasMessage("530 5.7.0 Authentication required");
@@ -85,7 +85,7 @@ class DATATest extends CommandTest {
 		// verify
 		Mockito.verify(server).isAuthenticationRequired();
 
-		Mockito.verifyNoMoreInteractions(server, client, store, mailbox);
+		Mockito.verifyNoMoreInteractions(server, session, client, store, mailbox);
 	}
 
 }

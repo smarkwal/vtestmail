@@ -18,17 +18,16 @@ package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
 import java.util.List;
-import net.markwalder.junit.mailserver.Client;
 import net.markwalder.junit.mailserver.Mailbox;
 
 public class RSET extends Command {
 
 	@Override
-	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
-		server.assertState(Pop3Server.State.TRANSACTION);
+	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+		session.assertState(State.TRANSACTION);
 
 		// unmark all messages marked as deleted
-		List<Mailbox.Message> messages = server.getMessages();
+		List<Mailbox.Message> messages = session.getMessages();
 		for (Mailbox.Message message : messages) {
 			if (message.isDeleted()) {
 				message.setDeleted(false);

@@ -17,14 +17,14 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Client;
+import net.markwalder.junit.mailserver.MailClient;
 import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxStore;
 
 public class DATA extends Command {
 
 	@Override
-	protected void execute(String command, SmtpServer server, Client client) throws IOException, ProtocolException {
+	protected void execute(String command, SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
 
 		if (server.isAuthenticationRequired()) {
 			throw ProtocolException.AuthenticationRequired();
@@ -32,10 +32,10 @@ public class DATA extends Command {
 
 		client.writeLine("354 Send message, end with <CRLF>.<CRLF>");
 		String message = readMessage(client);
-		deliverMessage(message, server);
+		deliverMessage(message, server, session);
 
 		// clear sender and list of recipients
-		server.reset(false);
+		session.clearRecipients();
 
 		client.writeLine("250 2.6.0 Message accepted");
 	}
@@ -43,7 +43,7 @@ public class DATA extends Command {
 	/**
 	 * Read message until a line with only a dot is received.
 	 */
-	private String readMessage(Client client) throws IOException {
+	private String readMessage(MailClient client) throws IOException {
 
 		StringBuilder message = new StringBuilder();
 		while (true) {
@@ -73,9 +73,9 @@ public class DATA extends Command {
 	/**
 	 * Deliver message to mailboxes of known recipients.
 	 */
-	private void deliverMessage(String message, SmtpServer server) {
+	private void deliverMessage(String message, SmtpServer server, SmtpSession session) {
 		MailboxStore store = server.getStore();
-		for (String email : server.getRecipients()) {
+		for (String email : session.getRecipients()) {
 			Mailbox mailbox = store.findMailbox(email);
 			if (mailbox != null) {
 				mailbox.addMessage(message);

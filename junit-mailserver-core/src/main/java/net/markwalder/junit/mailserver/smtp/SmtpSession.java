@@ -16,30 +16,25 @@
 
 package net.markwalder.junit.mailserver.smtp;
 
-import java.io.IOException;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import net.markwalder.junit.mailserver.MailSession;
 
-class RCPTTest extends CommandTest {
+public class SmtpSession extends MailSession {
 
-	@Test
-	void execute() throws ProtocolException, IOException {
+	private final List<String> recipients = new ArrayList<>();
 
-		// mock
-		Mockito.doReturn(false).when(server).isAuthenticationRequired();
+	public void addRecipient(String email) {
+		recipients.add(email);
+	}
 
-		// prepare
-		Command command = new RCPT();
+	public List<String> getRecipients() {
+		return Collections.unmodifiableList(recipients);
+	}
 
-		// test
-		command.execute("RCPT TO: <alice@localhost>", server, session, client);
-
-		// verify
-		Mockito.verify(server).isAuthenticationRequired();
-		Mockito.verify(client).writeLine("250 2.1.5 OK");
-		Mockito.verify(session).addRecipient("alice@localhost");
-
-		Mockito.verifyNoMoreInteractions(server, session, client);
+	public void clearRecipients() {
+		recipients.clear();
 	}
 
 }

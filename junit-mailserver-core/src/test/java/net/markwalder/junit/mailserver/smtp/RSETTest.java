@@ -29,13 +29,13 @@ class RSETTest extends CommandTest {
 		Command command = new RSET();
 
 		// test
-		command.execute("RSET", server, client);
+		command.execute("RSET", server, session, client);
 
 		// verify
-		Mockito.verify(server).reset(false);
+		Mockito.verify(session).clearRecipients();
 		Mockito.verify(client).writeLine("250 OK");
 
-		Mockito.verifyNoMoreInteractions(server, client);
+		Mockito.verifyNoMoreInteractions(server, session, client);
 	}
 
 }

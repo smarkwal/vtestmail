@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-package net.markwalder.junit.mailserver.smtp;
+package net.markwalder.junit.mailserver.pop3;
 
-import java.io.IOException;
-
-public class RSET extends Command {
-
-	@Override
-	protected void execute(String command, SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
-
-		// clear sender and list of recipients
-		session.clearRecipients();
-
-		client.writeLine("250 OK");
-	}
-
+enum State {
+	AUTHORIZATION,
+	TRANSACTION,
+	UPDATE
 }

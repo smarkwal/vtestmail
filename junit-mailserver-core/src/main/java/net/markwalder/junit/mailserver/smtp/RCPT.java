@@ -17,13 +17,12 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Client;
 import org.apache.commons.lang3.StringUtils;
 
 public class RCPT extends Command {
 
 	@Override
-	protected void execute(String command, SmtpServer server, Client client) throws IOException, ProtocolException {
+	protected void execute(String command, SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
 
 		if (server.isAuthenticationRequired()) {
 			throw ProtocolException.AuthenticationRequired();
@@ -36,7 +35,7 @@ public class RCPT extends Command {
 
 		// remember email address of recipient
 		// note: email address is not validated
-		server.addRecipient(email);
+		session.addRecipient(email);
 
 		client.writeLine("250 2.1.5 OK");
 

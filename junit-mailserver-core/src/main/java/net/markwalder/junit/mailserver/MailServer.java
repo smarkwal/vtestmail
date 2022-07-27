@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.security.Security;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -39,13 +38,12 @@ import net.markwalder.junit.mailserver.auth.DigestMd5Authenticator;
 import net.markwalder.junit.mailserver.auth.LoginAuthenticator;
 import net.markwalder.junit.mailserver.auth.PlainAuthenticator;
 import net.markwalder.junit.mailserver.auth.XOauth2Authenticator;
-import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  * Skeleton for a simulated/virtual SMTP, IMAP, or POP3 server.
  */
 @SuppressWarnings("unused")
-public abstract class MailServer implements AutoCloseable {
+public abstract class MailServer<S extends MailSession, C extends MailClient> implements AutoCloseable {
 
 	static {
 
@@ -75,16 +73,10 @@ public abstract class MailServer implements AutoCloseable {
 	 */
 	private final LinkedList<String> authTypes = new LinkedList<>();
 
-	// TODO: store all client-specific state in Client object
-
-	/**
-	 * Username of currently authenticated user.
-	 */
-	private String username = null;
-
 	private ServerSocket serverSocket;
 	private Thread thread;
-	protected Client client;
+	protected C client;
+	protected S session;
 
 	/**
 	 * Flag used to tell the worker thread to stop processing new connections.
@@ -93,6 +85,7 @@ public abstract class MailServer implements AutoCloseable {
 
 	/**
 	 * Communication log with all incoming and outgoing messages.
+	 * TODO: move log into session
 	 */
 	private final StringBuilder log = new StringBuilder();
 
@@ -133,7 +126,7 @@ public abstract class MailServer implements AutoCloseable {
 	// TODO: set cipher suites?
 
 	public boolean isAuthenticationRequired() {
-		return authenticationRequired && username == null;
+		return authenticationRequired && session.getUsername() == null;
 	}
 
 	public void setAuthenticationRequired(boolean authenticationRequired) {
@@ -173,38 +166,6 @@ public abstract class MailServer implements AutoCloseable {
 
 	protected void addAuthenticator(String authType, Authenticator authenticator) {
 		this.authenticators.put(authType, authenticator);
-	}
-
-	protected void login(String username, String secret) {
-		this.username = null;
-		Mailbox mailbox = store.getMailbox(username);
-		if (mailbox != null && mailbox.getSecret().equals(secret)) {
-			this.username = username;
-		}
-	}
-
-	protected void login(String username, String digest, String timestamp) {
-		this.username = null;
-		Mailbox mailbox = store.getMailbox(username);
-		if (mailbox != null) {
-			String data = timestamp + mailbox.getSecret();
-			String hash = DigestUtils.md5Hex(data.getBytes(StandardCharsets.ISO_8859_1));
-			if (hash.equals(digest)) {
-				this.username = username;
-			}
-		}
-	}
-
-	protected void logout() {
-		username = null;
-	}
-
-	public boolean isAuthenticated() {
-		return username != null;
-	}
-
-	public String getUsername() {
-		return username;
 	}
 
 	public void start() throws IOException {
@@ -347,6 +308,7 @@ public abstract class MailServer implements AutoCloseable {
 				log.setLength(0);
 
 				client = createClient(socket, log);
+				session = createSession();
 
 				// greet client
 				handleNewClient();
@@ -362,6 +324,7 @@ public abstract class MailServer implements AutoCloseable {
 						//  (sent after failed authentication)
 					}
 					boolean quit = handleCommand(command);
+					// TODO: check QUIT flag in session
 					if (quit) break;
 				}
 
@@ -376,10 +339,9 @@ public abstract class MailServer implements AutoCloseable {
 
 			} finally {
 
+				// discard client and session
 				client = null;
-
-				// reset and logout (get ready for next client)
-				reset(true);
+				session = null;
 
 			}
 
@@ -387,18 +349,13 @@ public abstract class MailServer implements AutoCloseable {
 
 	}
 
-	protected abstract Client createClient(Socket socket, StringBuilder log) throws IOException;
+	protected abstract C createClient(Socket socket, StringBuilder log) throws IOException;
+
+	protected abstract S createSession();
 
 	protected abstract void handleNewClient() throws IOException;
 
 	protected abstract boolean handleCommand(String command) throws IOException;
-
-	protected void reset(boolean logout) {
-		if (logout) {
-			// reset authentication state
-			logout();
-		}
-	}
 
 	public String getLog() {
 		return log.toString();

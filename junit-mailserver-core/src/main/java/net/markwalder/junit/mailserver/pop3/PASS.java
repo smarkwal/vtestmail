@@ -17,17 +17,16 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Client;
 import org.apache.commons.lang3.StringUtils;
 
 public class PASS extends Command {
 
 	@Override
-	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
-		server.assertState(Pop3Server.State.AUTHORIZATION);
+	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+		session.assertState(State.AUTHORIZATION);
 
 		// get username
-		String user = server.getUser();
+		String user = session.getUser();
 		if (user == null) {
 			throw new ProtocolException("USER command not received");
 		}
@@ -36,15 +35,12 @@ public class PASS extends Command {
 		String password = StringUtils.substringAfter(command, "PASS ");
 
 		// try to authenticate
-		server.login(user, password);
+		session.login(user, password, server.getStore());
 
-		if (!server.isAuthenticated()) {
+		if (!session.isAuthenticated()) {
 			client.writeLine("-ERR Authentication failed");
 			return;
 		}
-
-		// enter transaction state
-		server.setState(Pop3Server.State.TRANSACTION);
 
 		client.writeLine("+OK Authentication successful");
 	}

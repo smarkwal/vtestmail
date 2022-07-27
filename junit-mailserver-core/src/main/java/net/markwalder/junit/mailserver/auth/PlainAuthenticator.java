@@ -19,8 +19,8 @@ package net.markwalder.junit.mailserver.auth;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import net.markwalder.junit.mailserver.Client;
-import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.MailClient;
+import net.markwalder.junit.mailserver.MailboxProvider;
 
 /**
  * Implementation of PLAIN authentication.
@@ -31,7 +31,7 @@ public class PlainAuthenticator implements Authenticator {
 	private static final String NULL = "\u0000";
 
 	@Override
-	public Credentials authenticate(String parameters, Client client, MailboxStore store) throws IOException {
+	public Credentials authenticate(String parameters, MailClient client, MailboxProvider store) throws IOException {
 
 		// https://www.rfc-editor.org/rfc/rfc4616.html
 		// https://mailtrap.io/blog/smtp-auth/

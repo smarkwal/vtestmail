@@ -32,13 +32,13 @@ class MAILTest extends CommandTest {
 		Command command = new MAIL();
 
 		// test
-		command.execute("MAIL FROM:<alice@localhost>", server, client);
+		command.execute("MAIL FROM:<alice@localhost>", server, session, client);
 
 		// verify
 		Mockito.verify(server).isAuthenticationRequired();
 		Mockito.verify(client).writeLine("250 2.1.0 OK");
 
-		Mockito.verifyNoMoreInteractions(server, client);
+		Mockito.verifyNoMoreInteractions(server, session, client);
 	}
 
 }

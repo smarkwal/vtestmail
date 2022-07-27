@@ -17,28 +17,23 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Client;
 import net.markwalder.junit.mailserver.Mailbox;
 
 public class QUIT extends Command {
 
 	@Override
-	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
+	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
 
 		// enter update state
-		server.setState(Pop3Server.State.UPDATE);
-
-		String username = server.getUsername();
+		session.setState(State.UPDATE);
 
 		// delete messages marked as deleted
-		Mailbox mailbox = server.getMailbox();
+		Mailbox mailbox = session.getMailbox();
 		if (mailbox != null) {
 			mailbox.removeDeletedMessages();
 		}
 
-		// reset state
-		server.setState(null);
-
+		// TODO: set QUIT flag in session
 		client.writeLine("+OK Goodbye");
 	}
 

@@ -19,10 +19,11 @@ package net.markwalder.junit.mailserver;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MailboxStore {
+public class MailboxStore implements MailboxProvider {
 
 	private final Map<String, Mailbox> mailboxes = new HashMap<>();
 
+	@Override
 	public Mailbox getMailbox(String username) {
 		return mailboxes.get(username);
 	}

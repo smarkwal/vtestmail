@@ -30,7 +30,7 @@ import net.markwalder.junit.mailserver.utils.LineReader;
 /**
  * Mail client connection.
  */
-public abstract class Client {
+public abstract class MailClient {
 
 	private static final Charset CHARSET = StandardCharsets.ISO_8859_1;
 
@@ -42,7 +42,7 @@ public abstract class Client {
 	private final StringBuilder log;
 	private final String continuation;
 
-	protected Client(Socket socket, StringBuilder log, String continuation) throws IOException {
+	protected MailClient(Socket socket, StringBuilder log, String continuation) throws IOException {
 		this.continuation = continuation;
 
 		InputStream inputStream = socket.getInputStream();

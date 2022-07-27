@@ -18,9 +18,9 @@ package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
 import java.net.Socket;
-import net.markwalder.junit.mailserver.Client;
+import net.markwalder.junit.mailserver.MailClient;
 
-public class Pop3Client extends Client {
+public class Pop3Client extends MailClient {
 
 	protected Pop3Client(Socket socket, StringBuilder log) throws IOException {
 		super(socket, log, "+OK");

@@ -29,12 +29,12 @@ class NOOPTest extends CommandTest {
 		Command command = new NOOP();
 
 		// test
-		command.execute("NOOP", server, client);
+		command.execute("NOOP", server, session, client);
 
 		// verify
 		Mockito.verify(client).writeLine("250 OK");
 
-		Mockito.verifyNoMoreInteractions(server, client);
+		Mockito.verifyNoMoreInteractions(server, session, client);
 	}
 
 }

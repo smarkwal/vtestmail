@@ -22,9 +22,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import net.markwalder.junit.mailserver.Client;
+import net.markwalder.junit.mailserver.MailClient;
 import net.markwalder.junit.mailserver.Mailbox;
-import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.MailboxProvider;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -34,7 +34,7 @@ public class DigestMd5Authenticator implements Authenticator {
 	private static final Charset CHARSET = StandardCharsets.ISO_8859_1;
 
 	@Override
-	public Credentials authenticate(String parameters, Client client, MailboxStore store) throws IOException {
+	public Credentials authenticate(String parameters, MailClient client, MailboxProvider store) throws IOException {
 
 		// https://datatracker.ietf.org/doc/html/rfc2831
 

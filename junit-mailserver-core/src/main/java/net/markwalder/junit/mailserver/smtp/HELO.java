@@ -17,12 +17,11 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Client;
 
 public class HELO extends Command {
 
 	@Override
-	protected void execute(String command, SmtpServer server, Client client) throws IOException, ProtocolException {
+	protected void execute(String command, SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
 		client.writeLine("250 OK");
 	}
 

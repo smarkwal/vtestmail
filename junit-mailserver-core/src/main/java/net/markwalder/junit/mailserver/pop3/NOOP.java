@@ -17,13 +17,12 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Client;
 
 public class NOOP extends Command {
 
 	@Override
-	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
-		server.assertState(Pop3Server.State.TRANSACTION);
+	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+		session.assertState(State.TRANSACTION);
 		client.writeLine("+OK");
 	}
 

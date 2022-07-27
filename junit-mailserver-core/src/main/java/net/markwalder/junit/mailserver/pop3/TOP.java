@@ -17,20 +17,19 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Client;
 import net.markwalder.junit.mailserver.Mailbox;
 import org.apache.commons.lang3.StringUtils;
 
 public class TOP extends Command {
 
 	@Override
-	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
-		server.assertState(Pop3Server.State.TRANSACTION);
+	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+		session.assertState(State.TRANSACTION);
 
 		// try to find message by number, and get top n lines
 		String msg = StringUtils.substringBetween(command, "TOP ", " ");
 		String n = StringUtils.substringAfterLast(command, " ");
-		String lines = getMessageLines(server, msg, n);
+		String lines = getMessageLines(session, msg, n);
 		if (lines == null) {
 			throw ProtocolException.MessageNotFound();
 		}
@@ -40,9 +39,9 @@ public class TOP extends Command {
 		client.writeLine(".");
 	}
 
-	private String getMessageLines(Pop3Server server, String msg, String n) {
+	private String getMessageLines(Pop3Session session, String msg, String n) {
 
-		Mailbox.Message message = server.getMessage(msg);
+		Mailbox.Message message = session.getMessage(msg);
 		if (message == null || message.isDeleted()) {
 			return null;
 		}

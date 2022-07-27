@@ -17,14 +17,13 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Client;
 import org.apache.commons.lang3.StringUtils;
 
 public class APOP extends Command {
 
 	@Override
-	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
-		server.assertState(Pop3Server.State.AUTHORIZATION);
+	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+		session.assertState(State.AUTHORIZATION);
 
 		String[] parts = StringUtils.split(command, " ");
 		if (parts.length != 3) {
@@ -35,16 +34,13 @@ public class APOP extends Command {
 		String digest = parts[2];
 
 		// try to authenticate
-		String timestamp = server.getTimestamp();
-		server.login(username, digest, timestamp);
+		String timestamp = session.getTimestamp();
+		session.login(username, digest, timestamp, server.getStore());
 
-		if (!server.isAuthenticated()) {
+		if (!session.isAuthenticated()) {
 			client.writeLine("-ERR Authentication failed");
 			return;
 		}
-
-		// enter transaction state
-		server.setState(Pop3Server.State.TRANSACTION);
 
 		client.writeLine("+OK Authentication successful");
 	}

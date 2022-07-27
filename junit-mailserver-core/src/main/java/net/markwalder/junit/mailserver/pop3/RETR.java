@@ -17,19 +17,18 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Client;
 import net.markwalder.junit.mailserver.Mailbox;
 import org.apache.commons.lang3.StringUtils;
 
 public class RETR extends Command {
 
 	@Override
-	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
-		server.assertState(Pop3Server.State.TRANSACTION);
+	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+		session.assertState(State.TRANSACTION);
 
 		// try to find message by number
 		String msg = StringUtils.substringAfter(command, "RETR ");
-		Mailbox.Message message = server.getMessage(msg);
+		Mailbox.Message message = session.getMessage(msg);
 		if (message == null || message.isDeleted()) {
 			throw ProtocolException.MessageNotFound();
 		}

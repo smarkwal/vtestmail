@@ -17,10 +17,9 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Client;
 
 public abstract class Command {
 
-	protected abstract void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException;
+	protected abstract void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException;
 
 }

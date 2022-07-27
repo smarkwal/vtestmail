@@ -18,9 +18,9 @@ package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
 import java.net.Socket;
-import net.markwalder.junit.mailserver.Client;
+import net.markwalder.junit.mailserver.MailClient;
 
-public class SmtpClient extends Client {
+public class SmtpClient extends MailClient {
 
 	protected SmtpClient(Socket socket, StringBuilder log) throws IOException {
 		super(socket, log, "334");

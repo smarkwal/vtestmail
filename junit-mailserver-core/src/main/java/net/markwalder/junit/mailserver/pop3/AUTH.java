@@ -17,8 +17,7 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
-import java.util.List;
-import net.markwalder.junit.mailserver.Client;
+import net.markwalder.junit.mailserver.MailboxStore;
 import net.markwalder.junit.mailserver.auth.Authenticator;
 import net.markwalder.junit.mailserver.auth.Credentials;
 import org.apache.commons.lang3.StringUtils;
@@ -26,11 +25,8 @@ import org.apache.commons.lang3.StringUtils;
 public class AUTH extends Command {
 
 	@Override
-	protected void execute(String command, Pop3Server server, Client client) throws IOException, ProtocolException {
-		server.assertState(Pop3Server.State.AUTHORIZATION);
-
-		// reset authentication state
-		server.logout();
+	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+		session.assertState(State.AUTHORIZATION);
 
 		// https://datatracker.ietf.org/doc/html/rfc4954
 		// https://www.iana.org/assignments/sasl-mechanisms/sasl-mechanisms.xhtml
@@ -48,7 +44,8 @@ public class AUTH extends Command {
 
 		// get user credentials from client
 		Authenticator authenticator = server.getAuthenticator(authType);
-		Credentials credentials = authenticator.authenticate(parameters, client, server.getStore());
+		MailboxStore store = server.getStore();
+		Credentials credentials = authenticator.authenticate(parameters, client, store);
 		if (credentials == null) {
 			throw ProtocolException.AuthenticationFailed();
 		}
@@ -56,14 +53,11 @@ public class AUTH extends Command {
 		// try to authenticate user
 		String username = credentials.getUsername();
 		String secret = credentials.getSecret();
-		server.login(username, secret);
+		session.login(username, secret, store);
 
-		if (!server.isAuthenticated()) {
+		if (!session.isAuthenticated()) {
 			throw ProtocolException.AuthenticationFailed();
 		}
-
-		// enter transaction state
-		server.setState(Pop3Server.State.TRANSACTION);
 
 		client.writeLine("+OK Authentication successful");
 	}

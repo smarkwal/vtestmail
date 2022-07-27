@@ -18,12 +18,9 @@ package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import net.markwalder.junit.mailserver.Client;
 import net.markwalder.junit.mailserver.MailServer;
 import net.markwalder.junit.mailserver.MailboxStore;
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +38,7 @@ import org.apache.commons.lang3.StringUtils;
  *     <li>Messages are either delivered to a local mailbox, or silently discarded.</li>
  * </ul>
  */
-public class SmtpServer extends MailServer {
+public class SmtpServer extends MailServer<SmtpSession, SmtpClient> {
 
 	private static final Map<String, Command> commands = new HashMap<>();
 
@@ -58,32 +55,18 @@ public class SmtpServer extends MailServer {
 		commands.put("QUIT", new QUIT());
 	}
 
-	private final List<String> recipients = new ArrayList<>();
-
 	public SmtpServer(MailboxStore store) {
 		super("SMTP", store);
 	}
 
-	public void addRecipient(String email) {
-		recipients.add(email);
-	}
-
-	public List<String> getRecipients() {
-		return recipients;
-	}
-
 	@Override
-	protected void reset(boolean logout) {
-
-		// discard all recipients
-		recipients.clear();
-
-		super.reset(logout);
-	}
-
-	@Override
-	protected Client createClient(Socket socket, StringBuilder log) throws IOException {
+	protected SmtpClient createClient(Socket socket, StringBuilder log) throws IOException {
 		return new SmtpClient(socket, log);
+	}
+
+	@Override
+	protected SmtpSession createSession() {
+		return new SmtpSession();
 	}
 
 	@Override
@@ -102,29 +85,12 @@ public class SmtpServer extends MailServer {
 		}
 
 		try {
-			command.execute(line, this, client);
+			command.execute(line, this, session, client);
 		} catch (ProtocolException e) {
 			client.writeLine(e.getMessage());
 		}
 
 		return (command instanceof QUIT);
-	}
-
-	// TODO: find a better pattern than overriding the following methods:
-
-	@Override
-	protected void login(String username, String secret) {
-		super.login(username, secret);
-	}
-
-	@Override
-	protected void login(String username, String digest, String timestamp) {
-		super.login(username, digest, timestamp);
-	}
-
-	@Override
-	protected void logout() {
-		super.logout();
 	}
 
 }

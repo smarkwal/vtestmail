@@ -42,27 +42,26 @@ class AUTHTest extends CommandTest {
 		Mockito.doReturn(credentials).when(authenticator).authenticate(null, client, store);
 		Mockito.doReturn("alice").when(credentials).getUsername();
 		Mockito.doReturn("password123").when(credentials).getSecret();
-		Mockito.doReturn(true).when(server).isAuthenticated();
+		Mockito.doReturn(true).when(session).isAuthenticated();
 
 		// prepare
 		Command command = new AUTH();
 
 		// test
-		command.execute("AUTH LOGIN", server, client);
+		command.execute("AUTH LOGIN", server, session, client);
 
 		// verify
-		Mockito.verify(server).logout();
 		Mockito.verify(server).isAuthTypeSupported("LOGIN");
 		Mockito.verify(server).getAuthenticator("LOGIN");
 		Mockito.verify(server).getStore();
 		Mockito.verify(authenticator).authenticate(null, client, store);
 		Mockito.verify(credentials).getUsername();
 		Mockito.verify(credentials).getSecret();
-		Mockito.verify(server).login("alice", "password123");
-		Mockito.verify(server).isAuthenticated();
+		Mockito.verify(session).login("alice", "password123", store);
+		Mockito.verify(session).isAuthenticated();
 		Mockito.verify(client).writeLine("235 2.7.0 Authentication succeeded");
 
-		Mockito.verifyNoMoreInteractions(server, client, authenticator, credentials, store);
+		Mockito.verifyNoMoreInteractions(server, session, client, authenticator, credentials, store);
 	}
 
 	@Test
@@ -75,16 +74,15 @@ class AUTHTest extends CommandTest {
 		Command command = new AUTH();
 
 		// test
-		Exception exception = assertThrows(ProtocolException.class, () -> command.execute("AUTH LOGIN", server, client));
+		Exception exception = assertThrows(ProtocolException.class, () -> command.execute("AUTH LOGIN", server, session, client));
 
 		// assert
 		assertThat(exception).hasMessage("504 5.5.4 Unrecognized authentication type");
 
 		// verify
-		Mockito.verify(server).logout();
 		Mockito.verify(server).isAuthTypeSupported("LOGIN");
 
-		Mockito.verifyNoMoreInteractions(server, client, authenticator, credentials, store);
+		Mockito.verifyNoMoreInteractions(server, session, client, authenticator, credentials, store);
 	}
 
 	@Test
@@ -97,29 +95,28 @@ class AUTHTest extends CommandTest {
 		Mockito.doReturn(credentials).when(authenticator).authenticate(null, client, store);
 		Mockito.doReturn("alice").when(credentials).getUsername();
 		Mockito.doReturn("password123").when(credentials).getSecret();
-		Mockito.doReturn(false).when(server).isAuthenticated();
+		Mockito.doReturn(false).when(session).isAuthenticated();
 
 		// prepare
 		Command command = new AUTH();
 
 		// test
-		Exception exception = assertThrows(ProtocolException.class, () -> command.execute("AUTH PLAIN", server, client));
+		Exception exception = assertThrows(ProtocolException.class, () -> command.execute("AUTH PLAIN", server, session, client));
 
 		// assert
 		assertThat(exception).hasMessage("535 5.7.8 Authentication failed");
 
 		// verify
-		Mockito.verify(server).logout();
 		Mockito.verify(server).isAuthTypeSupported("PLAIN");
 		Mockito.verify(server).getAuthenticator("PLAIN");
 		Mockito.verify(server).getStore();
 		Mockito.verify(authenticator).authenticate(null, client, store);
 		Mockito.verify(credentials).getUsername();
 		Mockito.verify(credentials).getSecret();
-		Mockito.verify(server).login("alice", "password123");
-		Mockito.verify(server).isAuthenticated();
+		Mockito.verify(session).login("alice", "password123", store);
+		Mockito.verify(session).isAuthenticated();
 
-		Mockito.verifyNoMoreInteractions(server, client, authenticator, credentials, store);
+		Mockito.verifyNoMoreInteractions(server, session, client, authenticator, credentials, store);
 	}
 
 }

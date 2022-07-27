@@ -19,12 +19,11 @@ package net.markwalder.junit.mailserver.smtp;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import net.markwalder.junit.mailserver.Client;
 
 public class EHLO extends Command {
 
 	@Override
-	protected void execute(String command, SmtpServer server, Client client) throws IOException, ProtocolException {
+	protected void execute(String command, SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
 		List<String> options = getSupportedOptions(server);
 		for (String option : options) {
 			client.writeLine("250-" + option);

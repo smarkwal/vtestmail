@@ -29,12 +29,12 @@ class STARTTLSTest extends CommandTest {
 		Command command = new STARTTLS();
 
 		// test
-		command.execute("STARTTLS", server, client);
+		command.execute("STARTTLS", server, session, client);
 
 		// verify
 		Mockito.verify(client).writeLine("220 Ready to start TLS");
 
-		Mockito.verifyNoMoreInteractions(server, client);
+		Mockito.verifyNoMoreInteractions(server, session, client);
 	}
 
 }

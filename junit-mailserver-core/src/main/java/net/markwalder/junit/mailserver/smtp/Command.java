@@ -17,10 +17,9 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Client;
 
 public abstract class Command {
 
-	protected abstract void execute(String command, SmtpServer server, Client client) throws IOException, ProtocolException;
+	protected abstract void execute(String command, SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException;
 
 }

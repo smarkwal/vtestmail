@@ -17,11 +17,11 @@
 package net.markwalder.junit.mailserver.auth;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Client;
-import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.MailClient;
+import net.markwalder.junit.mailserver.MailboxProvider;
 
 public interface Authenticator {
 
-	Credentials authenticate(String parameters, Client client, MailboxStore store) throws IOException;
+	Credentials authenticate(String parameters, MailClient client, MailboxProvider store) throws IOException;
 
 }

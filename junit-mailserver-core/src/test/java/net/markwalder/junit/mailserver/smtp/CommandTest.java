@@ -16,12 +16,12 @@
 
 package net.markwalder.junit.mailserver.smtp;
 
-import net.markwalder.junit.mailserver.Client;
 import org.mockito.Mockito;
 
 abstract class CommandTest {
 
 	protected final SmtpServer server = Mockito.mock(SmtpServer.class);
-	protected final Client client = Mockito.mock(Client.class);
+	protected final SmtpSession session = Mockito.mock(SmtpSession.class);
+	protected final SmtpClient client = Mockito.mock(SmtpClient.class);
 
 }

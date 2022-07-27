@@ -29,12 +29,12 @@ class QUITTest extends CommandTest {
 		Command command = new QUIT();
 
 		// test
-		command.execute("QUIT", server, client);
+		command.execute("QUIT", server, session, client);
 
 		// verify
 		Mockito.verify(client).writeLine("221 2.0.0 Goodbye");
 
-		Mockito.verifyNoMoreInteractions(server, client);
+		Mockito.verifyNoMoreInteractions(server, session, client);
 	}
 
 }
