@@ -34,6 +34,7 @@ public class MAIL extends Command {
 		}
 
 		// note: email address is not validated
+		session.startTransaction(email);
 
 		client.writeLine("250 2.1.0 OK");
 

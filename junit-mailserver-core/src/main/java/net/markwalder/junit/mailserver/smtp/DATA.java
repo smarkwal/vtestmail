@@ -34,8 +34,8 @@ public class DATA extends Command {
 		String message = readMessage(client);
 		deliverMessage(message, server, session);
 
-		// clear sender and list of recipients
-		session.clearRecipients();
+		// clear sender, list of recipients, and message data
+		session.endTransaction(message);
 
 		client.writeLine("250 2.6.0 Message accepted");
 	}

@@ -16,17 +16,38 @@
 
 package net.markwalder.junit.mailserver.smtp;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-public class RSET extends Command {
+public class SmtpTransaction {
 
-	@Override
-	protected void execute(String command, SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
+	private String sender;
+	private final List<String> recipients = new ArrayList<>();
+	private String data;
 
-		// clear sender, list of recipients, and message data
-		session.endTransaction(null);
+	public String getSender() {
+		return sender;
+	}
 
-		client.writeLine("250 OK");
+	void setSender(String sender) {
+		this.sender = sender;
+	}
+
+	public List<String> getRecipients() {
+		return Collections.unmodifiableList(recipients);
+	}
+
+	void addRecipient(String recipient) {
+		recipients.add(recipient);
+	}
+
+	public String getData() {
+		return data;
+	}
+
+	void setData(String data) {
+		this.data = data;
 	}
 
 }

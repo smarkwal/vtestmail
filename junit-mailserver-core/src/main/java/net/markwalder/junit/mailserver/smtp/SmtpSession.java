@@ -23,18 +23,45 @@ import net.markwalder.junit.mailserver.MailSession;
 
 public class SmtpSession extends MailSession {
 
-	private final List<String> recipients = new ArrayList<>();
+	/**
+	 * Current active SMTP transaction.
+	 */
+	private SmtpTransaction transaction = null;
 
-	public void addRecipient(String email) {
-		recipients.add(email);
+	/**
+	 * History of completed SMTP transactions.
+	 */
+	private final List<SmtpTransaction> transactions = new ArrayList<>();
+
+	void startTransaction(String sender) {
+		transaction = new SmtpTransaction();
+		transaction.setSender(sender);
 	}
 
-	public List<String> getRecipients() {
-		return Collections.unmodifiableList(recipients);
+	void addRecipient(String email) {
+		if (transaction != null) {
+			transaction.addRecipient(email);
+		}
 	}
 
-	public void clearRecipients() {
-		recipients.clear();
+	List<String> getRecipients() {
+		if (transaction != null) {
+			return transaction.getRecipients();
+		} else {
+			return Collections.emptyList();
+		}
+	}
+
+	void endTransaction(String data) {
+		if (transaction != null) {
+			transaction.setData(data);
+			transactions.add(transaction);
+			transaction = null;
+		}
+	}
+
+	public List<SmtpTransaction> getTransactions() {
+		return Collections.unmodifiableList(transactions);
 	}
 
 }

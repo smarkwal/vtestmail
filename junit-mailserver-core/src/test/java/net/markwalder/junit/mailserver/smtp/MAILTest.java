@@ -36,6 +36,7 @@ class MAILTest extends CommandTest {
 
 		// verify
 		Mockito.verify(server).isAuthenticationRequired();
+		Mockito.verify(session).startTransaction("alice@localhost");
 		Mockito.verify(client).writeLine("250 2.1.0 OK");
 
 		Mockito.verifyNoMoreInteractions(server, session, client);

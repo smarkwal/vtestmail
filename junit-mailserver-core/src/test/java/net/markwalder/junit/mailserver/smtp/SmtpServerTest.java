@@ -141,13 +141,15 @@ class SmtpServerTest {
 			assertThat(session.getAuthType()).isNull();
 			assertThat(session.getUsername()).isNull();
 
+			List<SmtpTransaction> transactions = session.getTransactions();
+			assertThat(transactions).hasSize(1);
+			SmtpTransaction transaction = transactions.get(0);
+			assertThat(transaction.getSender()).isEqualTo(FROM);
+			assertThat(transaction.getRecipients()).containsExactly(TO);
+			assertThat(transaction.getData()).isEqualTo(content);
+
 			// TODO: add more assertions
 			// TODO: session.getLog();
-			// TODO: session.getMessages();
-			// TODO: message.getMailFrom();
-			// TODO: message.getRecipients();
-			// TODO: message.getData();
-
 		}
 	}
 
@@ -403,6 +405,16 @@ class SmtpServerTest {
 			String content = email.getContent();
 			assertThat(content).doesNotContain("dan@localhost");
 
+			List<SmtpSession> sessions = server.getSessions();
+			assertThat(sessions).hasSize(1);
+			SmtpSession session = sessions.get(0);
+
+			List<SmtpTransaction> transactions = session.getTransactions();
+			assertThat(transactions).hasSize(1);
+			SmtpTransaction transaction = transactions.get(0);
+			assertThat(transaction.getSender()).isEqualTo("bob@localhost");
+			assertThat(transaction.getRecipients()).containsExactly("alice@localhost", "chris@localhost", "dan@localhost");
+			assertThat(transaction.getData()).isEqualTo(content);
 		}
 
 	}

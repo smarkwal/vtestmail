@@ -23,6 +23,7 @@ import java.net.Socket;
 import java.security.Security;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -373,7 +374,7 @@ public abstract class MailServer<S extends MailSession, C extends MailClient> im
 	}
 
 	public List<S> getSessions() {
-		return new ArrayList<>(sessions);
+		return Collections.unmodifiableList(sessions);
 	}
 
 }
