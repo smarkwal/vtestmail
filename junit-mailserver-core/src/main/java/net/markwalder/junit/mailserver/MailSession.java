@@ -16,15 +16,68 @@
 
 package net.markwalder.junit.mailserver;
 
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 import org.apache.commons.codec.digest.DigestUtils;
 
 public class MailSession {
 
-	/**
-	 * Username of currently authenticated user.
-	 */
+	private String serverAddress = null;
+	private int serverPort = -1;
+	private String clientAddress = null;
+	private int clientPort = -1;
+	private String sslProtocol = null;
+	private String cipherSuite = null;
+
+	private String authType = null;
 	private String username = null;
+
+	void setSocketData(Socket socket) {
+
+		// get server and client address and port
+		serverAddress = socket.getLocalAddress().getHostAddress();
+		serverPort = socket.getLocalPort();
+		clientAddress = socket.getInetAddress().getHostAddress();
+		clientPort = socket.getPort();
+
+		// get SSL settings
+		if (socket instanceof SSLSocket) {
+			SSLSocket sslSocket = (SSLSocket) socket;
+			SSLSession sslSession = sslSocket.getSession();
+			sslProtocol = sslSession.getProtocol();
+			cipherSuite = sslSession.getCipherSuite();
+		}
+	}
+
+	public String getServerAddress() {
+		return serverAddress;
+	}
+
+	public int getServerPort() {
+		return serverPort;
+	}
+
+	public String getClientAddress() {
+		return clientAddress;
+	}
+
+	public int getClientPort() {
+		return clientPort;
+	}
+
+	public String getSSLProtocol() {
+		return sslProtocol;
+	}
+
+	public String getCipherSuite() {
+		return cipherSuite;
+	}
+
+	public String getAuthType() {
+		return authType;
+	}
 
 	public String getUsername() {
 		return username;
@@ -36,7 +89,7 @@ public class MailSession {
 
 	// TODO: move login methods somewhere else?
 
-	public void login(String username, String secret, MailboxProvider store) {
+	public void login(String authType, String username, String secret, MailboxProvider store) {
 		if (isAuthenticated()) {
 			throw new IllegalStateException("Already authenticated"); // TODO: return protocol error?
 		}
@@ -49,12 +102,13 @@ public class MailSession {
 			if (mailbox.getSecret().equals(secret)) {
 
 				// remember authenticated user
+				this.authType = authType;
 				this.username = username;
 			}
 		}
 	}
 
-	public void login(String username, String digest, String timestamp, MailboxProvider store) {
+	public void login(String authType, String username, String digest, String timestamp, MailboxProvider store) {
 		if (isAuthenticated()) {
 			throw new IllegalStateException("Already authenticated"); // TODO: return protocol error?
 		}
@@ -69,6 +123,7 @@ public class MailSession {
 			if (hash.equals(digest)) {
 
 				// remember authenticated user
+				this.authType = authType;
 				this.username = username;
 			}
 		}

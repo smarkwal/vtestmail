@@ -135,6 +135,11 @@ public class Pop3ServerTest {
 			// assert
 			// TODO: implement test on messages
 
+			List<Pop3Session> sessions = server.getSessions();
+			assertThat(sessions).hasSize(1);
+			Pop3Session session = sessions.get(0);
+			assertThat(session.getSSLProtocol()).isEqualTo(sslProtocol);
+			assertThat(session.getCipherSuite()).isNotEmpty();
 		}
 	}
 
@@ -240,8 +245,12 @@ public class Pop3ServerTest {
 
 			// TODO: implement test on messages
 
+			List<Pop3Session> sessions = server.getSessions();
+			assertThat(sessions).hasSize(1);
+			Pop3Session session = sessions.get(0);
+			assertThat(session.getAuthType()).isEqualTo(authType);
+			assertThat(session.getUsername()).isEqualTo(USERNAME);
 		}
 	}
-
 
 }

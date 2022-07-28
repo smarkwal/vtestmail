@@ -57,7 +57,7 @@ class AUTHTest extends CommandTest {
 		Mockito.verify(authenticator).authenticate(null, client, store);
 		Mockito.verify(credentials).getUsername();
 		Mockito.verify(credentials).getSecret();
-		Mockito.verify(session).login("alice", "password123", store);
+		Mockito.verify(session).login("LOGIN", "alice", "password123", store);
 		Mockito.verify(session).isAuthenticated();
 		Mockito.verify(client).writeLine("235 2.7.0 Authentication succeeded");
 
@@ -113,7 +113,7 @@ class AUTHTest extends CommandTest {
 		Mockito.verify(authenticator).authenticate(null, client, store);
 		Mockito.verify(credentials).getUsername();
 		Mockito.verify(credentials).getSecret();
-		Mockito.verify(session).login("alice", "password123", store);
+		Mockito.verify(session).login("PLAIN", "alice", "password123", store);
 		Mockito.verify(session).isAuthenticated();
 
 		Mockito.verifyNoMoreInteractions(server, session, client, authenticator, credentials, store);

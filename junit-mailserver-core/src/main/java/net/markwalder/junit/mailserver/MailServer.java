@@ -79,6 +79,11 @@ public abstract class MailServer<S extends MailSession, C extends MailClient> im
 	protected S session;
 
 	/**
+	 * History of sessions handled by this server.
+	 */
+	private final List<S> sessions = new ArrayList<>();
+
+	/**
 	 * Flag used to tell the worker thread to stop processing new connections.
 	 */
 	private final AtomicBoolean stop = new AtomicBoolean(false);
@@ -310,6 +315,9 @@ public abstract class MailServer<S extends MailSession, C extends MailClient> im
 				client = createClient(socket, log);
 				session = createSession();
 
+				// collect information about server and client
+				session.setSocketData(socket);
+
 				// greet client
 				handleNewClient();
 
@@ -339,6 +347,9 @@ public abstract class MailServer<S extends MailSession, C extends MailClient> im
 
 			} finally {
 
+				// add session to history
+				sessions.add(session);
+
 				// discard client and session
 				client = null;
 				session = null;
@@ -359,6 +370,10 @@ public abstract class MailServer<S extends MailSession, C extends MailClient> im
 
 	public String getLog() {
 		return log.toString();
+	}
+
+	public List<S> getSessions() {
+		return new ArrayList<>(sessions);
 	}
 
 }

@@ -52,7 +52,7 @@ public class AUTH extends Command {
 		// try to authenticate user
 		String username = credentials.getUsername();
 		String secret = credentials.getSecret();
-		session.login(username, secret, store);
+		session.login(authType, username, secret, store);
 
 		if (!session.isAuthenticated()) {
 			throw ProtocolException.AuthenticationFailed();

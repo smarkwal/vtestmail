@@ -34,8 +34,8 @@ public class Pop3Session extends MailSession {
 	private Mailbox mailbox = null;
 
 	@Override
-	public void login(String username, String secret, MailboxProvider store) {
-		super.login(username, secret, store);
+	public void login(String authType, String username, String secret, MailboxProvider store) {
+		super.login(authType, username, secret, store);
 
 		if (isAuthenticated()) {
 			postLogin(username, store);
@@ -43,8 +43,8 @@ public class Pop3Session extends MailSession {
 	}
 
 	@Override
-	public void login(String username, String digest, String timestamp, MailboxProvider store) {
-		super.login(username, digest, timestamp, store);
+	public void login(String authType, String username, String digest, String timestamp, MailboxProvider store) {
+		super.login(authType, username, digest, timestamp, store);
 
 		if (isAuthenticated()) {
 			postLogin(username, store);

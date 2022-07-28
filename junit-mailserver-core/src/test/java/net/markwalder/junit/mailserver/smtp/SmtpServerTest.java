@@ -129,16 +129,20 @@ class SmtpServerTest {
 							"This is a test email."
 			);
 
-			// TODO: add more assertions
+			List<SmtpSession> sessions = server.getSessions();
+			assertThat(sessions).hasSize(1);
+			SmtpSession session = sessions.get(0);
+			assertThat(session.getServerAddress()).isEqualTo("127.0.0.1");
+			assertThat(session.getServerPort()).isEqualTo(server.getPort());
+			assertThat(session.getClientAddress()).isEqualTo("127.0.0.1");
+			assertThat(session.getClientPort()).isBetween(1024, 65535);
+			assertThat(session.getSSLProtocol()).isNull();
+			assertThat(session.getCipherSuite()).isNull();
+			assertThat(session.getAuthType()).isNull();
+			assertThat(session.getUsername()).isNull();
 
-			// TODO: server.getSessions();
+			// TODO: add more assertions
 			// TODO: session.getLog();
-			// TODO: session.getClientAddress();
-			// TODO: session.getClientPort();
-			// TODO: session.getSSLProtocol();
-			// TODO: session.getCipherSuite();
-			// TODO: session.getAuthType();
-			// TODO: session.getUsername();
 			// TODO: session.getMessages();
 			// TODO: message.getMailFrom();
 			// TODO: message.getRecipients();
@@ -202,6 +206,12 @@ class SmtpServerTest {
 			Mailbox mailbox = store.getMailbox(USERNAME);
 			List<Mailbox.Message> messages = mailbox.getMessages();
 			assertThat(messages).hasSize(1);
+
+			List<SmtpSession> sessions = server.getSessions();
+			assertThat(sessions).hasSize(1);
+			SmtpSession session = sessions.get(0);
+			assertThat(session.getSSLProtocol()).isEqualTo(sslProtocol);
+			assertThat(session.getCipherSuite()).isNotEmpty();
 		}
 	}
 
@@ -282,6 +292,12 @@ class SmtpServerTest {
 			Mailbox mailbox = store.getMailbox(USERNAME);
 			List<Mailbox.Message> messages = mailbox.getMessages();
 			assertThat(messages).hasSize(1);
+
+			List<SmtpSession> sessions = server.getSessions();
+			assertThat(sessions).hasSize(1);
+			SmtpSession session = sessions.get(0);
+			assertThat(session.getAuthType()).isEqualTo(authType);
+			assertThat(session.getUsername()).isEqualTo(USERNAME);
 		}
 	}
 

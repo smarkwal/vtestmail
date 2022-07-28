@@ -35,7 +35,7 @@ public class PASS extends Command {
 		String password = StringUtils.substringAfter(command, "PASS ");
 
 		// try to authenticate
-		session.login(user, password, server.getStore());
+		session.login("USER", user, password, server.getStore());
 
 		if (!session.isAuthenticated()) {
 			client.writeLine("-ERR Authentication failed");

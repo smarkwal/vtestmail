@@ -35,7 +35,7 @@ public class APOP extends Command {
 
 		// try to authenticate
 		String timestamp = session.getTimestamp();
-		session.login(username, digest, timestamp, server.getStore());
+		session.login("APOP", username, digest, timestamp, server.getStore());
 
 		if (!session.isAuthenticated()) {
 			client.writeLine("-ERR Authentication failed");
