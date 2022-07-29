@@ -26,7 +26,7 @@ import net.markwalder.junit.mailserver.MailboxStore;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Virtual SMTP server for testing.
+ * Virtual POP3 server for testing.
  * <p>
  * Limitations:
  * <ul>

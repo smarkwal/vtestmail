@@ -21,8 +21,8 @@ import net.markwalder.junit.mailserver.MailCommand;
 
 public abstract class Pop3Command extends MailCommand {
 
-	public Pop3Command(String line) {
-		super(line);
+	public Pop3Command(String parameters) {
+		super(parameters);
 	}
 
 	protected abstract void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException;
