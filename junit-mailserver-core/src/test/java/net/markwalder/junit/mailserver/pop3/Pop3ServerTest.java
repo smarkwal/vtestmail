@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import jakarta.mail.AuthenticationFailedException;
-import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import net.markwalder.junit.mailserver.AuthType;
+import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxStore;
 import net.markwalder.junit.mailserver.testutils.Pop3Client;
 import org.junit.jupiter.api.DisplayName;
@@ -130,7 +130,7 @@ public class Pop3ServerTest {
 					.build();
 
 			// test
-			List<Message> messages = client.getMessages();
+			List<String> messages = client.getMessages();
 
 			// assert
 			assertThat(messages).isEmpty();
@@ -146,7 +146,6 @@ public class Pop3ServerTest {
 					new CAPA(null),
 					new AUTH("PLAIN w6RsacOnw6kAw6RsacOnw6kAcMOkc3N3w7ZyZCExMjM="),
 					new STAT(null),
-					new NOOP(null),
 					new QUIT(null)
 			);
 		}
@@ -222,10 +221,9 @@ public class Pop3ServerTest {
 			Pop3Client client = clientBuilder.build();
 
 			// test
-			List<Message> messages;
+			List<String> messages;
 			try {
 
-				// test
 				messages = client.getMessages();
 
 			} catch (MessagingException e) {
@@ -266,7 +264,6 @@ public class Pop3ServerTest {
 			assertThat(commands).contains(
 					new CAPA(null),
 					new STAT(null),
-					new NOOP(null),
 					new QUIT(null)
 			);
 
@@ -279,11 +276,63 @@ public class Pop3ServerTest {
 				assertThat(commands.get(1)).isInstanceOf(AUTH.class);
 			}
 
-			assertThat(commands).hasSize(authType.equals("USER") ? 6 : 5);
+			assertThat(commands).hasSize(authType.equals("USER") ? 5 : 4);
 		}
 	}
 
-	// TODO: implement POP3 test with messages in mailbox
+	@Test
+	void testGetMessages() throws IOException, MessagingException {
+
+		// prepare: mailbox
+		MailboxStore store = new MailboxStore();
+		Mailbox mailbox = store.createMailbox(USERNAME, PASSWORD, EMAIL);
+		mailbox.addMessage("Subject: Test 1\r\n\r\nTest message 1");
+		mailbox.addMessage("Subject: Test 2\r\n\r\nTest message 2");
+
+		// prepare: SMTP server
+		try (Pop3Server server = new Pop3Server(store)) {
+			server.setAuthenticationRequired(true);
+			server.start();
+
+			// prepare: SMTP client
+			Pop3Client.Pop3ClientBuilder clientBuilder = Pop3Client.forServer(server);
+			clientBuilder.withAuthentication("USER", USERNAME, PASSWORD);
+			Pop3Client client = clientBuilder.build();
+
+			// test
+			List<String> messages = client.getMessages();
+
+			// assert
+			assertThat(messages).hasSize(2);
+			assertThat(messages).containsExactly(
+					"Subject: Test 1\r\n\r\nTest message 1\r\n", // TODO: why is there a CRLF at the end?
+					"Subject: Test 2\r\n\r\nTest message 2\r\n" // TODO: why is there a CRLF at the end?
+			);
+
+			List<Pop3Session> sessions = server.getSessions();
+			assertThat(sessions).hasSize(1);
+			Pop3Session session = sessions.get(0);
+			assertThat(session.getAuthType()).isEqualTo("USER");
+			assertThat(session.getUsername()).isEqualTo(USERNAME);
+
+			List<Pop3Command> commands = session.getCommands();
+			assertThat(commands).contains(
+					new CAPA(null),
+					new USER(USERNAME),
+					new PASS(PASSWORD),
+					new STAT(null),
+					new TOP("1 0"),
+					new RETR("1"),
+					new TOP("2 0"),
+					new RETR("2"),
+					new QUIT(null)
+			);
+
+			// assert: messages have not been deleted
+			assertThat(mailbox.getMessages()).hasSize(2);
+		}
+
+	}
 
 	// TODO: implement POP3 test where messages are deleted from mailbox
 

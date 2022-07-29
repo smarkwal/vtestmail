@@ -16,13 +16,15 @@
 
 package net.markwalder.junit.mailserver.testutils;
 
+import com.sun.mail.pop3.POP3Message;
 import jakarta.mail.Authenticator;
 import jakarta.mail.Folder;
-import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.Store;
-import java.util.Arrays;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
 import net.markwalder.junit.mailserver.AuthType;
@@ -40,16 +42,38 @@ public class Pop3Client {
 		return new Pop3ClientBuilder(server);
 	}
 
-	public List<Message> getMessages() throws MessagingException {
+	public List<String> getMessages() throws MessagingException, IOException {
+
+		List<String> messages = new ArrayList<>();
+
 		Store store = session.getStore("pop3");
 		store.connect();
 		Folder inbox = store.getFolder("Inbox");
 		inbox.open(Folder.READ_ONLY);
-		Message[] messages = inbox.getMessages();
+
+		int count = inbox.getMessageCount();
+		for (int num = 1; num <= count; num++) {
+			POP3Message message = (POP3Message) inbox.getMessage(num);
+
+			StringBuilder text = new StringBuilder();
+			Enumeration<String> headers = message.getAllHeaderLines();
+			while (headers.hasMoreElements()) {
+				text.append(headers.nextElement());
+				text.append("\r\n");
+			}
+			text.append("\r\n");
+			text.append(message.getContent());
+			messages.add(text.toString());
+		}
 		inbox.close(true);
 		store.close();
-		return Arrays.asList(messages);
+
+		return messages;
 	}
+
+	// TODO: add methods to connect and disconnect
+	// TODO: add method to get a single message
+	// TODO: add method to delete a message
 
 	public static class Pop3ClientBuilder {
 
