@@ -71,15 +71,15 @@ tasks.withType<Test> {
     // test task output
     testLogging {
         events = mutableSetOf(
-            // TestLogEvent.STARTED,
-            // TestLogEvent.PASSED,
+            TestLogEvent.STARTED,
+            TestLogEvent.PASSED,
             TestLogEvent.FAILED,
             TestLogEvent.SKIPPED,
             TestLogEvent.STANDARD_OUT,
             TestLogEvent.STANDARD_ERROR
         )
         showStandardStreams = true
-        exceptionFormat = TestExceptionFormat.SHORT
+        exceptionFormat = TestExceptionFormat.FULL
         showExceptions = true
         showCauses = true
         showStackTraces = true
