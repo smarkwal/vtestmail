@@ -19,16 +19,20 @@ package net.markwalder.junit.mailserver.smtp;
 import java.io.IOException;
 import org.apache.commons.lang3.StringUtils;
 
-public class MAIL extends Command {
+public class MAIL extends SmtpCommand {
+
+	public MAIL(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
+	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
 
 		if (server.isAuthenticationRequired()) {
 			throw ProtocolException.AuthenticationRequired();
 		}
 
-		String email = StringUtils.substringBetween(command, "<", ">");
+		String email = StringUtils.substringBetween(line, "<", ">");
 		if (email == null) {
 			throw ProtocolException.SyntaxError();
 		}

@@ -18,10 +18,14 @@ package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
 
-public class STAT extends Command {
+public class STAT extends Pop3Command {
+
+	public STAT(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
 		session.assertState(State.TRANSACTION);
 
 		int count = session.getMessageCount();

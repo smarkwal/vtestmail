@@ -26,10 +26,10 @@ class QUITTest extends CommandTest {
 	void execute() throws ProtocolException, IOException {
 
 		// prepare
-		Command command = new QUIT();
+		SmtpCommand command = new QUIT("QUIT");
 
 		// test
-		command.execute("QUIT", server, session, client);
+		command.execute(server, session, client);
 
 		// verify
 		Mockito.verify(client).writeLine("221 2.0.0 Goodbye");

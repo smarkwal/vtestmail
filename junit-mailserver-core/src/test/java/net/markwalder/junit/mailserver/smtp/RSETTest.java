@@ -26,10 +26,10 @@ class RSETTest extends CommandTest {
 	void execute() throws ProtocolException, IOException {
 
 		// prepare
-		Command command = new RSET();
+		SmtpCommand command = new RSET("RSET");
 
 		// test
-		command.execute("RSET", server, session, client);
+		command.execute(server, session, client);
 
 		// verify
 		Mockito.verify(session).endTransaction(null);

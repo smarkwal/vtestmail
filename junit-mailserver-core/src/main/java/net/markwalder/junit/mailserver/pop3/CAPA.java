@@ -19,10 +19,14 @@ package net.markwalder.junit.mailserver.pop3;
 import java.io.IOException;
 import java.util.List;
 
-public class CAPA extends Command {
+public class CAPA extends Pop3Command {
+
+	public CAPA(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
 
 		client.writeLine("+OK Capability list follows");
 		if (server.isCommandEnabled("USER")) {

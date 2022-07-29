@@ -140,6 +140,15 @@ public class Pop3ServerTest {
 			Pop3Session session = sessions.get(0);
 			assertThat(session.getSSLProtocol()).isEqualTo(sslProtocol);
 			assertThat(session.getCipherSuite()).isNotEmpty();
+
+			List<Pop3Command> commands = session.getCommands();
+			assertThat(commands).containsExactly(
+					new CAPA("CAPA"),
+					new AUTH("AUTH PLAIN w6RsacOnw6kAw6RsacOnw6kAcMOkc3N3w7ZyZCExMjM="),
+					new STAT("STAT"),
+					new NOOP("NOOP"),
+					new QUIT("QUIT")
+			);
 		}
 	}
 
@@ -250,6 +259,25 @@ public class Pop3ServerTest {
 			Pop3Session session = sessions.get(0);
 			assertThat(session.getAuthType()).isEqualTo(authType);
 			assertThat(session.getUsername()).isEqualTo(USERNAME);
+
+			List<Pop3Command> commands = session.getCommands();
+			assertThat(commands).contains(
+					new CAPA("CAPA"),
+					new STAT("STAT"),
+					new NOOP("NOOP"),
+					new QUIT("QUIT")
+			);
+
+			if (authType.equals("APOP")) {
+				assertThat(commands.get(1)).isInstanceOf(APOP.class);
+			} else if (authType.equals("USER")) {
+				assertThat(commands.get(1)).isEqualTo(new USER("USER " + USERNAME));
+				assertThat(commands.get(2)).isEqualTo(new PASS("PASS " + PASSWORD));
+			} else {
+				assertThat(commands.get(1)).isInstanceOf(AUTH.class);
+			}
+
+			assertThat(commands).hasSize(authType.equals("USER") ? 6 : 5);
 		}
 	}
 

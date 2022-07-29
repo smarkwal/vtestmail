@@ -26,10 +26,10 @@ class STARTTLSTest extends CommandTest {
 	void execute() throws ProtocolException, IOException {
 
 		// prepare
-		Command command = new STARTTLS();
+		SmtpCommand command = new STARTTLS("STARTTLS");
 
 		// test
-		command.execute("STARTTLS", server, session, client);
+		command.execute(server, session, client);
 
 		// verify
 		Mockito.verify(client).writeLine("220 Ready to start TLS");

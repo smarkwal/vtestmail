@@ -20,10 +20,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EHLO extends Command {
+public class EHLO extends SmtpCommand {
+
+	public EHLO(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
+	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
 		List<String> options = getSupportedOptions(server);
 		for (String option : options) {
 			client.writeLine("250-" + option);

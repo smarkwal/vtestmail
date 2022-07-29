@@ -16,6 +16,7 @@
 
 package net.markwalder.junit.mailserver.pop3;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import net.markwalder.junit.mailserver.MailSession;
@@ -29,9 +30,19 @@ public class Pop3Session extends MailSession {
 	 */
 	private final String timestamp = "<" + System.currentTimeMillis() + "@localhost>";
 
+	private final List<Pop3Command> commands = new ArrayList<>();
+
 	private State state = State.AUTHORIZATION;
 	private String user = null;
 	private Mailbox mailbox = null;
+
+	void addCommand(Pop3Command command) {
+		commands.add(command);
+	}
+
+	public List<Pop3Command> getCommands() {
+		return Collections.unmodifiableList(commands);
+	}
 
 	@Override
 	public void login(String authType, String username, String secret, MailboxProvider store) {

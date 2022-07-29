@@ -19,8 +19,8 @@ package net.markwalder.junit.mailserver.smtp;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
+import java.util.function.Function;
 import net.markwalder.junit.mailserver.MailServer;
 import net.markwalder.junit.mailserver.MailboxStore;
 import org.apache.commons.lang3.StringUtils;
@@ -40,19 +40,19 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class SmtpServer extends MailServer<SmtpSession, SmtpClient> {
 
-	private static final Map<String, Command> commands = new HashMap<>();
+	private static final Map<String, Function<String, SmtpCommand>> commands = new HashMap<>();
 
 	static {
-		commands.put("HELO", new HELO());
-		commands.put("EHLO", new EHLO());
-		commands.put("STARTTLS", new STARTTLS());
-		commands.put("AUTH", new AUTH());
-		commands.put("MAIL", new MAIL());
-		commands.put("RCPT", new RCPT());
-		commands.put("DATA", new DATA());
-		commands.put("NOOP", new NOOP());
-		commands.put("RSET", new RSET());
-		commands.put("QUIT", new QUIT());
+		commands.put("HELO", HELO::new);
+		commands.put("EHLO", EHLO::new);
+		commands.put("STARTTLS", STARTTLS::new);
+		commands.put("AUTH", AUTH::new);
+		commands.put("MAIL", MAIL::new);
+		commands.put("RCPT", RCPT::new);
+		commands.put("DATA", DATA::new);
+		commands.put("NOOP", NOOP::new);
+		commands.put("RSET", RSET::new);
+		commands.put("QUIT", QUIT::new);
 	}
 
 	public SmtpServer(MailboxStore store) {
@@ -77,17 +77,34 @@ public class SmtpServer extends MailServer<SmtpSession, SmtpClient> {
 	@Override
 	protected boolean handleCommand(String line) throws IOException {
 
-		String name = StringUtils.substringBefore(line, " ").toUpperCase(Locale.ROOT);
-		Command command = commands.get(name);
-		if (command == null) {
+		// get name of command
+		String name = StringUtils.substringBefore(line, " ").toUpperCase();
+
+		// try to find command implementation class
+		Function<String, SmtpCommand> commandFactory = commands.get(name);
+		if (commandFactory == null) {
 			client.writeLine("502 5.5.1 Command not implemented");
 			return false;
 		}
 
+		// create command instance
+		SmtpCommand command = commandFactory.apply(line);
+
+		if (command instanceof DATA) {
+			// add command to history
+			session.addCommand(command);
+		}
+
+		// execute command
 		try {
-			command.execute(line, this, session, client);
+			command.execute(this, session, client);
 		} catch (ProtocolException e) {
 			client.writeLine(e.getMessage());
+		}
+
+		if (!(command instanceof DATA)) {
+			// add command to history
+			session.addCommand(command);
 		}
 
 		return (command instanceof QUIT);

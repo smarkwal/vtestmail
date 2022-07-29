@@ -23,6 +23,8 @@ import net.markwalder.junit.mailserver.MailSession;
 
 public class SmtpSession extends MailSession {
 
+	private final List<SmtpCommand> commands = new ArrayList<>();
+
 	/**
 	 * Current active SMTP transaction.
 	 */
@@ -32,6 +34,18 @@ public class SmtpSession extends MailSession {
 	 * History of completed SMTP transactions.
 	 */
 	private final List<SmtpTransaction> transactions = new ArrayList<>();
+
+	void addCommand(SmtpCommand command) {
+		if (transaction == null) {
+			commands.add(command);
+		} else {
+			transaction.addCommand(command);
+		}
+	}
+
+	public List<SmtpCommand> getCommands() {
+		return Collections.unmodifiableList(commands);
+	}
 
 	void startTransaction(String sender) {
 		transaction = new SmtpTransaction();

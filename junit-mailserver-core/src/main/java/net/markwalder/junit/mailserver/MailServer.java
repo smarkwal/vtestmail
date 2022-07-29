@@ -319,6 +319,9 @@ public abstract class MailServer<S extends MailSession, C extends MailClient> im
 				// collect information about server and client
 				session.setSocketData(socket);
 
+				// add session to history
+				sessions.add(session);
+
 				// greet client
 				handleNewClient();
 
@@ -347,9 +350,6 @@ public abstract class MailServer<S extends MailSession, C extends MailClient> im
 				}
 
 			} finally {
-
-				// add session to history
-				sessions.add(session);
 
 				// discard client and session
 				client = null;

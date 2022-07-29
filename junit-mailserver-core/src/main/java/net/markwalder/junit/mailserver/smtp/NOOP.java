@@ -18,10 +18,14 @@ package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
 
-public class NOOP extends Command {
+public class NOOP extends SmtpCommand {
+
+	public NOOP(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
+	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
 		client.writeLine("250 OK");
 	}
 

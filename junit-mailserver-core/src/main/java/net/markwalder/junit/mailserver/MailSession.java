@@ -34,6 +34,8 @@ public class MailSession {
 	private String authType = null;
 	private String username = null;
 
+	// TODO: keep session log
+
 	void setSocketData(Socket socket) {
 
 		// get server and client address and port

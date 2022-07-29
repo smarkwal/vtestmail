@@ -19,13 +19,17 @@ package net.markwalder.junit.mailserver.pop3;
 import java.io.IOException;
 import org.apache.commons.lang3.StringUtils;
 
-public class APOP extends Command {
+public class APOP extends Pop3Command {
+
+	public APOP(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
 		session.assertState(State.AUTHORIZATION);
 
-		String[] parts = StringUtils.split(command, " ");
+		String[] parts = StringUtils.split(line, " ");
 		if (parts.length != 3) {
 			throw new ProtocolException("Invalid APOP command");
 		}

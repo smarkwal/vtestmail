@@ -26,10 +26,10 @@ class NOOPTest extends CommandTest {
 	void execute() throws ProtocolException, IOException {
 
 		// prepare
-		Command command = new NOOP();
+		SmtpCommand command = new NOOP("NOOP");
 
 		// test
-		command.execute("NOOP", server, session, client);
+		command.execute(server, session, client);
 
 		// verify
 		Mockito.verify(client).writeLine("250 OK");

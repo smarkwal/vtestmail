@@ -18,10 +18,14 @@ package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
 
-public class STARTTLS extends Command {
+public class STARTTLS extends SmtpCommand {
+
+	public STARTTLS(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
+	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
 		client.writeLine("220 Ready to start TLS");
 		// TODO: implement STARTTLS
 	}

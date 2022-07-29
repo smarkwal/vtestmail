@@ -19,10 +19,14 @@ package net.markwalder.junit.mailserver.pop3;
 import java.io.IOException;
 import org.apache.commons.lang3.StringUtils;
 
-public class PASS extends Command {
+public class PASS extends Pop3Command {
+
+	public PASS(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
 		session.assertState(State.AUTHORIZATION);
 
 		// get username
@@ -32,7 +36,7 @@ public class PASS extends Command {
 		}
 
 		// get password
-		String password = StringUtils.substringAfter(command, "PASS ");
+		String password = StringUtils.substringAfter(line, "PASS ");
 
 		// try to authenticate
 		session.login("USER", user, password, server.getStore());

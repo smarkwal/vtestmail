@@ -19,10 +19,14 @@ package net.markwalder.junit.mailserver.pop3;
 import java.io.IOException;
 import net.markwalder.junit.mailserver.Mailbox;
 
-public class QUIT extends Command {
+public class QUIT extends Pop3Command {
+
+	public QUIT(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
 
 		// enter update state
 		session.setState(State.UPDATE);

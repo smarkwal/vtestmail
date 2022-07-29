@@ -17,28 +17,14 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
-import java.util.List;
-import net.markwalder.junit.mailserver.Mailbox;
+import net.markwalder.junit.mailserver.MailCommand;
 
-public class RSET extends Pop3Command {
+public abstract class Pop3Command extends MailCommand {
 
-	public RSET(String line) {
+	public Pop3Command(String line) {
 		super(line);
 	}
 
-	@Override
-	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
-		session.assertState(State.TRANSACTION);
-
-		// unmark all messages marked as deleted
-		List<Mailbox.Message> messages = session.getMessages();
-		for (Mailbox.Message message : messages) {
-			if (message.isDeleted()) {
-				message.setDeleted(false);
-			}
-		}
-
-		client.writeLine("+OK");
-	}
+	protected abstract void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException;
 
 }

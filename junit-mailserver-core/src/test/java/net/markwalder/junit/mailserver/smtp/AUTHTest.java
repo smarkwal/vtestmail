@@ -45,10 +45,10 @@ class AUTHTest extends CommandTest {
 		Mockito.doReturn(true).when(session).isAuthenticated();
 
 		// prepare
-		Command command = new AUTH();
+		SmtpCommand command = new AUTH("AUTH LOGIN");
 
 		// test
-		command.execute("AUTH LOGIN", server, session, client);
+		command.execute(server, session, client);
 
 		// verify
 		Mockito.verify(server).isAuthTypeSupported("LOGIN");
@@ -71,10 +71,10 @@ class AUTHTest extends CommandTest {
 		Mockito.doReturn(false).when(server).isAuthTypeSupported("LOGIN");
 
 		// prepare
-		Command command = new AUTH();
+		SmtpCommand command = new AUTH("AUTH LOGIN");
 
 		// test
-		Exception exception = assertThrows(ProtocolException.class, () -> command.execute("AUTH LOGIN", server, session, client));
+		Exception exception = assertThrows(ProtocolException.class, () -> command.execute(server, session, client));
 
 		// assert
 		assertThat(exception).hasMessage("504 5.5.4 Unrecognized authentication type");
@@ -98,10 +98,10 @@ class AUTHTest extends CommandTest {
 		Mockito.doReturn(false).when(session).isAuthenticated();
 
 		// prepare
-		Command command = new AUTH();
+		SmtpCommand command = new AUTH("AUTH PLAIN");
 
 		// test
-		Exception exception = assertThrows(ProtocolException.class, () -> command.execute("AUTH PLAIN", server, session, client));
+		Exception exception = assertThrows(ProtocolException.class, () -> command.execute(server, session, client));
 
 		// assert
 		assertThat(exception).hasMessage("535 5.7.8 Authentication failed");

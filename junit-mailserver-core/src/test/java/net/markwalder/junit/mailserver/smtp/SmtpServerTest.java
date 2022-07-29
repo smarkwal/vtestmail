@@ -141,12 +141,25 @@ class SmtpServerTest {
 			assertThat(session.getAuthType()).isNull();
 			assertThat(session.getUsername()).isNull();
 
+			List<SmtpCommand> commands = session.getCommands();
+			assertThat(commands).containsExactly(
+					new EHLO("EHLO localhost"),
+					new QUIT("QUIT")
+			);
+
 			List<SmtpTransaction> transactions = session.getTransactions();
 			assertThat(transactions).hasSize(1);
 			SmtpTransaction transaction = transactions.get(0);
 			assertThat(transaction.getSender()).isEqualTo(FROM);
 			assertThat(transaction.getRecipients()).containsExactly(TO);
 			assertThat(transaction.getData()).isEqualTo(content);
+
+			commands = transaction.getCommands();
+			assertThat(commands).containsExactly(
+					new MAIL("MAIL FROM:<bob@localhost>"),
+					new RCPT("RCPT TO:<alice@localhost>"),
+					new DATA("DATA")
+			);
 
 			// TODO: add more assertions
 			// TODO: session.getLog();

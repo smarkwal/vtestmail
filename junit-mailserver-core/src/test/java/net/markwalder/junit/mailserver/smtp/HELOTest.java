@@ -26,10 +26,10 @@ class HELOTest extends CommandTest {
 	void execute() throws ProtocolException, IOException {
 
 		// prepare
-		Command command = new HELO();
+		SmtpCommand command = new HELO("HELO");
 
 		// test
-		command.execute("HELO", server, session, client);
+		command.execute(server, session, client);
 
 		// verify
 		Mockito.verify(client).writeLine("250 OK");

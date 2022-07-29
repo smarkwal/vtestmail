@@ -19,14 +19,18 @@ package net.markwalder.junit.mailserver.pop3;
 import java.io.IOException;
 import org.apache.commons.lang3.StringUtils;
 
-public class USER extends Command {
+public class USER extends Pop3Command {
+
+	public USER(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
 		session.assertState(State.AUTHORIZATION);
 
 		// remember user
-		String user = StringUtils.substringAfter(command, "USER ");
+		String user = StringUtils.substringAfter(line, "USER ");
 		session.setUser(user);
 
 		client.writeLine("+OK User accepted");

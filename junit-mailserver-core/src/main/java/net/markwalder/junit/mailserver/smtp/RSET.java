@@ -18,10 +18,14 @@ package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
 
-public class RSET extends Command {
+public class RSET extends SmtpCommand {
+
+	public RSET(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
+	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
 
 		// clear sender, list of recipients, and message data
 		session.endTransaction(null);

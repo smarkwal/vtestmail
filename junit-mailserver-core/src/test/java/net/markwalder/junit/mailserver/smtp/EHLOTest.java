@@ -32,10 +32,10 @@ class EHLOTest extends CommandTest {
 		Mockito.doReturn(authTypes).when(server).getAuthTypes();
 
 		// prepare
-		Command command = new EHLO();
+		SmtpCommand command = new EHLO("EHLO");
 
 		// test
-		command.execute("EHLO", server, session, client);
+		command.execute(server, session, client);
 
 		// verify
 		Mockito.verify(server).getAuthTypes();
@@ -50,13 +50,15 @@ class EHLOTest extends CommandTest {
 	@Test
 	void execute_noAuthTypes() throws ProtocolException, IOException {
 
-		// prepare
+		// mock
 		List<Object> authTypes = Collections.emptyList();
 		Mockito.doReturn(authTypes).when(server).getAuthTypes();
-		Command command = new EHLO();
+
+		// prepare
+		SmtpCommand command = new EHLO("EHLO");
 
 		// test
-		command.execute("EHLO", server, session, client);
+		command.execute(server, session, client);
 
 		// verify
 		Mockito.verify(server).getAuthTypes();

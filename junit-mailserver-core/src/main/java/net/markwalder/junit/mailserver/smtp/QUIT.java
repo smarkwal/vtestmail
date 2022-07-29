@@ -18,10 +18,14 @@ package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
 
-public class QUIT extends Command {
+public class QUIT extends SmtpCommand {
+
+	public QUIT(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
+	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
 		// TODO: set QUIT flag in session
 		client.writeLine("221 2.0.0 Goodbye");
 	}

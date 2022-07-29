@@ -18,10 +18,14 @@ package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
 
-public class NOOP extends Command {
+public class NOOP extends Pop3Command {
+
+	public NOOP(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
 		session.assertState(State.TRANSACTION);
 		client.writeLine("+OK");
 	}

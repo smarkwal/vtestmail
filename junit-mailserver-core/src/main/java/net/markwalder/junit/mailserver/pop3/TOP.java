@@ -20,15 +20,19 @@ import java.io.IOException;
 import net.markwalder.junit.mailserver.Mailbox;
 import org.apache.commons.lang3.StringUtils;
 
-public class TOP extends Command {
+public class TOP extends Pop3Command {
+
+	public TOP(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
 		session.assertState(State.TRANSACTION);
 
 		// try to find message by number, and get top n lines
-		String msg = StringUtils.substringBetween(command, "TOP ", " ");
-		String n = StringUtils.substringAfterLast(command, " ");
+		String msg = StringUtils.substringBetween(line, "TOP ", " ");
+		String n = StringUtils.substringAfterLast(line, " ");
 		String lines = getMessageLines(session, msg, n);
 		if (lines == null) {
 			throw ProtocolException.MessageNotFound();

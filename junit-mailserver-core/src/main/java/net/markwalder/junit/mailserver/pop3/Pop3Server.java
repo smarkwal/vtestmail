@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import net.markwalder.junit.mailserver.MailServer;
 import net.markwalder.junit.mailserver.MailboxStore;
 import org.apache.commons.lang3.StringUtils;
@@ -37,26 +38,28 @@ import org.apache.commons.lang3.StringUtils;
  */
 public class Pop3Server extends MailServer<Pop3Session, Pop3Client> {
 
-	private static final Map<String, Command> commands = new HashMap<>();
+	// TODO: move commands into MailServer
+	private static final Map<String, Function<String, Pop3Command>> commands = new HashMap<>();
 
 	static {
-		commands.put("CAPA", new CAPA());
-		commands.put("AUTH", new AUTH());
-		commands.put("APOP", new APOP());
-		commands.put("USER", new USER());
-		commands.put("PASS", new PASS());
-		commands.put("STAT", new STAT());
-		commands.put("LIST", new LIST());
-		commands.put("UIDL", new UIDL());
-		commands.put("RETR", new RETR());
-		commands.put("DELE", new DELE());
-		commands.put("TOP", new TOP());
-		commands.put("NOOP", new NOOP());
-		commands.put("RSET", new RSET());
-		commands.put("QUIT", new QUIT());
+		commands.put("CAPA", CAPA::new);
+		commands.put("AUTH", AUTH::new);
+		commands.put("APOP", APOP::new);
+		commands.put("USER", USER::new);
+		commands.put("PASS", PASS::new);
+		commands.put("STAT", STAT::new);
+		commands.put("LIST", LIST::new);
+		commands.put("UIDL", UIDL::new);
+		commands.put("RETR", RETR::new);
+		commands.put("DELE", DELE::new);
+		commands.put("TOP", TOP::new);
+		commands.put("NOOP", NOOP::new);
+		commands.put("RSET", RSET::new);
+		commands.put("QUIT", QUIT::new);
 		// TODO: implement RFC 6856: UTF8 and LANG (https://www.rfc-editor.org/rfc/rfc6856)
 	}
 
+	// TODO: move enabledCommands into MailServer
 	private final Map<String, Boolean> enabledCommands = new HashMap<>();
 
 	public Pop3Server(MailboxStore store) {
@@ -102,9 +105,12 @@ public class Pop3Server extends MailServer<Pop3Session, Pop3Client> {
 		// (POP3 commands are case-insensitive)
 		line = convertToUppercase(line);
 
+		// get name of command
 		String name = StringUtils.substringBefore(line, " ");
-		Command command = commands.get(name);
-		if (command == null) {
+
+		// try to find command implementation class
+		Function<String, Pop3Command> commandFactory = commands.get(name);
+		if (commandFactory == null) {
 			client.writeLine("-ERR Unknown command");
 			return false;
 		}
@@ -114,8 +120,15 @@ public class Pop3Server extends MailServer<Pop3Session, Pop3Client> {
 			return false;
 		}
 
+		// create command instance
+		Pop3Command command = commandFactory.apply(line);
+
+		// add command to history
+		session.addCommand(command);
+
+		// execute command
 		try {
-			command.execute(line, this, session, client);
+			command.execute(this, session, client);
 		} catch (ProtocolException e) {
 			client.writeLine("-ERR " + e.getMessage());
 		}

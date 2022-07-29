@@ -22,10 +22,14 @@ import net.markwalder.junit.mailserver.auth.Authenticator;
 import net.markwalder.junit.mailserver.auth.Credentials;
 import org.apache.commons.lang3.StringUtils;
 
-public class AUTH extends Command {
+public class AUTH extends Pop3Command {
+
+	public AUTH(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
 		session.assertState(State.AUTHORIZATION);
 
 		// https://datatracker.ietf.org/doc/html/rfc4954
@@ -33,7 +37,7 @@ public class AUTH extends Command {
 		// https://datatracker.ietf.org/doc/html/rfc5248
 
 		// split command into POP3 verb ("AUTH"), auth type, and optional parameters
-		String[] parts = StringUtils.split(command, " ", 3);
+		String[] parts = StringUtils.split(line, " ", 3);
 		String authType = parts[1];
 		String parameters = parts.length > 2 ? parts[2] : null;
 

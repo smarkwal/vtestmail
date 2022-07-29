@@ -21,13 +21,17 @@ import java.util.List;
 import net.markwalder.junit.mailserver.Mailbox;
 import org.apache.commons.lang3.StringUtils;
 
-public class LIST extends Command {
+public class LIST extends Pop3Command {
+
+	public LIST(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
 		session.assertState(State.TRANSACTION);
 
-		if (command.equalsIgnoreCase("LIST")) {
+		if (line.equalsIgnoreCase("LIST")) {
 
 			int count = session.getMessageCount();
 			int totalSize = session.getTotalSize();
@@ -49,7 +53,7 @@ public class LIST extends Command {
 		} else {
 
 			// try to find message by number
-			String msg = StringUtils.substringAfter(command, "LIST ");
+			String msg = StringUtils.substringAfter(line, "LIST ");
 			Mailbox.Message message = session.getMessage(msg);
 			if (message == null || message.isDeleted()) {
 				throw ProtocolException.MessageNotFound();

@@ -14,12 +14,38 @@
  * limitations under the License.
  */
 
-package net.markwalder.junit.mailserver.pop3;
+package net.markwalder.junit.mailserver;
 
-import java.io.IOException;
+import java.util.Objects;
 
-public abstract class Command {
+public abstract class MailCommand {
 
-	protected abstract void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException;
+	protected final String line;
+
+	public MailCommand(String line) {
+		this.line = line;
+	}
+
+	public String getLine() {
+		return line;
+	}
+
+	@Override
+	public String toString() {
+		return line;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null || getClass() != obj.getClass()) return false;
+		MailCommand command = (MailCommand) obj;
+		return line.equals(command.line);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(line);
+	}
 
 }

@@ -20,14 +20,18 @@ import java.io.IOException;
 import net.markwalder.junit.mailserver.Mailbox;
 import org.apache.commons.lang3.StringUtils;
 
-public class RETR extends Command {
+public class RETR extends Pop3Command {
+
+	public RETR(String line) {
+		super(line);
+	}
 
 	@Override
-	protected void execute(String command, Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
 		session.assertState(State.TRANSACTION);
 
 		// try to find message by number
-		String msg = StringUtils.substringAfter(command, "RETR ");
+		String msg = StringUtils.substringAfter(line, "RETR ");
 		Mailbox.Message message = session.getMessage(msg);
 		if (message == null || message.isDeleted()) {
 			throw ProtocolException.MessageNotFound();

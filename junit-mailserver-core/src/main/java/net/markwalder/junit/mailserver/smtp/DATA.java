@@ -21,10 +21,14 @@ import net.markwalder.junit.mailserver.MailClient;
 import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxStore;
 
-public class DATA extends Command {
+public class DATA extends SmtpCommand {
+
+	public DATA(String command) {
+		super(command);
+	}
 
 	@Override
-	protected void execute(String command, SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
+	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
 
 		if (server.isAuthenticationRequired()) {
 			throw ProtocolException.AuthenticationRequired();

@@ -22,9 +22,18 @@ import java.util.List;
 
 public class SmtpTransaction {
 
+	private final List<SmtpCommand> commands = new ArrayList<>();
 	private String sender;
 	private final List<String> recipients = new ArrayList<>();
 	private String data;
+
+	void addCommand(SmtpCommand command) {
+		commands.add(command);
+	}
+
+	public List<SmtpCommand> getCommands() {
+		return Collections.unmodifiableList(commands);
+	}
 
 	public String getSender() {
 		return sender;
