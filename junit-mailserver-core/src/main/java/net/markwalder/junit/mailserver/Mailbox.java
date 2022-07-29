@@ -102,17 +102,40 @@ public class Mailbox {
 		 * @return The first n lines of the message.
 		 */
 		public String getTop(int n) {
+
+			// split message into lines
 			String[] lines = content.split(CRLF, -1);
-			if (n >= lines.length) {
-				return content;
-			}
+
+			// add all headers
+			boolean headers = true;
+
 			StringBuilder buffer = new StringBuilder();
-			for (int i = 0; i < n; i++) {
+			for (int i = 0; i < lines.length; i++) {
+
+				String line = lines[i];
+
+				if (headers) {
+					if (line.isEmpty()) {
+						// empty line found -> end of headers
+						headers = false;
+						if (n == 0) {
+							// no lines requested -> return only headers
+							break;
+						}
+					}
+				} else {
+					// countdown of body lines
+					if (n-- <= 0) {
+						break;
+					}
+				}
+
 				if (i > 0) {
 					buffer.append(CRLF);
 				}
-				buffer.append(lines[i]);
+				buffer.append(line);
 			}
+
 			return buffer.toString();
 		}
 

@@ -49,91 +49,43 @@ class MailboxMessageTest {
 	}
 
 	@Test
+	void getTop_onlyHeaders() {
+
+		// prepare
+		Mailbox.Message message = new Mailbox.Message("From: X\r\nTo: Y\r\nSubject: Test\r\n\r\nThis is a\r\ntest message.");
+
+		// test
+		String top = message.getTop(0);
+
+		// assert
+		assertThat(top).isEqualTo("From: X\r\nTo: Y\r\nSubject: Test");
+	}
+
+	@Test
 	void getTop_ifMessageIsShorter() {
 
 		// prepare
-		Mailbox.Message message = new Mailbox.Message("This is a test message.");
+		Mailbox.Message message = new Mailbox.Message("From: X\r\nTo: Y\r\nSubject: Test\r\n\r\nThis is a\r\ntest message.");
 
 		// test
 		String top = message.getTop(3);
 
 		// assert
-		assertThat(top).isEqualTo("This is a test message.");
+		assertThat(top).isEqualTo("From: X\r\nTo: Y\r\nSubject: Test\r\n\r\nThis is a\r\ntest message.");
 	}
 
 	@Test
 	void getTop_ifMessageIsLonger() {
 
 		// prepare
-		Mailbox.Message message = new Mailbox.Message("This\r\nis\r\ntest\r\nmessage.");
-
-		// test
-		String top = message.getTop(2);
-
-		// assert
-		assertThat(top).isEqualTo("This\r\nis");
-	}
-
-	@Test
-	void getTop_withMultipleEmptyLines() {
-
-		// prepare
-		Mailbox.Message message = new Mailbox.Message("\r\n\r\nThis\r\n\r\nis a\rtest\nmessage.\r\nBest, Ste\r\n\r\n");
+		Mailbox.Message message = new Mailbox.Message("From: X\r\nTo: Y\r\nSubject: Test\r\n\r\nThis is a\r\ntest message.");
 
 		// test
 		String top = message.getTop(1);
 
 		// assert
-		assertThat(top).isEqualTo("");
-
-		// test
-		top = message.getTop(2);
-
-		// assert
-		assertThat(top).isEqualTo("\r\n");
-
-		// test
-		top = message.getTop(3);
-
-		// assert
-		assertThat(top).isEqualTo("\r\n\r\nThis");
-
-		// test
-		top = message.getTop(4);
-
-		// assert
-		assertThat(top).isEqualTo("\r\n\r\nThis\r\n");
-
-		// test
-		top = message.getTop(5);
-
-		// assert
-		assertThat(top).isEqualTo("\r\n\r\nThis\r\n\r\nis a\rtest\nmessage.");
-
-		// test
-		top = message.getTop(6);
-
-		// assert
-		assertThat(top).isEqualTo("\r\n\r\nThis\r\n\r\nis a\rtest\nmessage.\r\nBest, Ste");
-
-		// test
-		top = message.getTop(7);
-
-		// assert
-		assertThat(top).isEqualTo("\r\n\r\nThis\r\n\r\nis a\rtest\nmessage.\r\nBest, Ste\r\n");
-
-		// test
-		top = message.getTop(8);
-
-		// assert
-		assertThat(top).isEqualTo("\r\n\r\nThis\r\n\r\nis a\rtest\nmessage.\r\nBest, Ste\r\n\r\n");
-
-		// test
-		top = message.getTop(9);
-
-		// assert
-		assertThat(top).isEqualTo("\r\n\r\nThis\r\n\r\nis a\rtest\nmessage.\r\nBest, Ste\r\n\r\n");
-
+		assertThat(top).isEqualTo("From: X\r\nTo: Y\r\nSubject: Test\r\n\r\nThis is a");
 	}
+
 
 }
