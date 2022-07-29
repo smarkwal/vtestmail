@@ -22,8 +22,8 @@ import java.util.List;
 
 public class EHLO extends SmtpCommand {
 
-	public EHLO(String line) {
-		super(line);
+	public EHLO(String parameters) {
+		super(parameters);
 	}
 
 	@Override

@@ -24,8 +24,8 @@ import org.apache.commons.lang3.StringUtils;
 
 public class AUTH extends SmtpCommand {
 
-	public AUTH(String line) {
-		super(line);
+	public AUTH(String parameters) {
+		super(parameters);
 	}
 
 	@Override
@@ -35,10 +35,10 @@ public class AUTH extends SmtpCommand {
 		// https://www.iana.org/assignments/sasl-mechanisms/sasl-mechanisms.xhtml
 		// https://datatracker.ietf.org/doc/html/rfc5248
 
-		// split command into SMTP verb ("AUTH"), auth type, and optional parameters
-		String[] parts = StringUtils.split(line, " ", 3);
-		String authType = parts[1];
-		String parameters = parts.length > 2 ? parts[2] : null;
+		// split command into auth type and optional parameters
+		String[] parts = StringUtils.split(parameters, " ", 2);
+		String authType = parts[0];
+		String parameters = parts.length > 1 ? parts[1] : null;
 
 		// check if authentication type is supported
 		if (!server.isAuthTypeSupported(authType)) {

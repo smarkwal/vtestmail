@@ -77,8 +77,10 @@ public class SmtpServer extends MailServer<SmtpSession, SmtpClient> {
 	@Override
 	protected boolean handleCommand(String line) throws IOException {
 
-		// get name of command
+		// split line into command name and parameters
 		String name = StringUtils.substringBefore(line, " ").toUpperCase();
+		String parameters = StringUtils.substringAfter(line, " ");
+		if (parameters.isEmpty()) parameters = null;
 
 		// try to find command implementation class
 		Function<String, SmtpCommand> commandFactory = commands.get(name);
@@ -88,7 +90,7 @@ public class SmtpServer extends MailServer<SmtpSession, SmtpClient> {
 		}
 
 		// create command instance
-		SmtpCommand command = commandFactory.apply(line);
+		SmtpCommand command = commandFactory.apply(parameters);
 
 		if (command instanceof DATA) {
 			// add command to history

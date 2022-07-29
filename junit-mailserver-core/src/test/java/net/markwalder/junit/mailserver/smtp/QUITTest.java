@@ -26,7 +26,7 @@ class QUITTest extends CommandTest {
 	void execute() throws ProtocolException, IOException {
 
 		// prepare
-		SmtpCommand command = new QUIT("QUIT");
+		SmtpCommand command = new QUIT(null);
 
 		// test
 		command.execute(server, session, client);

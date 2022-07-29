@@ -18,12 +18,11 @@ package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
 import net.markwalder.junit.mailserver.Mailbox;
-import org.apache.commons.lang3.StringUtils;
 
 public class DELE extends Pop3Command {
 
-	public DELE(String line) {
-		super(line);
+	public DELE(String parameters) {
+		super(parameters);
 	}
 
 	@Override
@@ -31,8 +30,7 @@ public class DELE extends Pop3Command {
 		session.assertState(State.TRANSACTION);
 
 		// try to find message by number
-		String msg = StringUtils.substringAfter(line, "DELE ");
-		Mailbox.Message message = session.getMessage(msg);
+		Mailbox.Message message = session.getMessage(parameters);
 		if (message == null || message.isDeleted()) {
 			throw ProtocolException.MessageNotFound();
 		}

@@ -32,7 +32,7 @@ class EHLOTest extends CommandTest {
 		Mockito.doReturn(authTypes).when(server).getAuthTypes();
 
 		// prepare
-		SmtpCommand command = new EHLO("EHLO");
+		SmtpCommand command = new EHLO("localhost");
 
 		// test
 		command.execute(server, session, client);
@@ -55,7 +55,7 @@ class EHLOTest extends CommandTest {
 		Mockito.doReturn(authTypes).when(server).getAuthTypes();
 
 		// prepare
-		SmtpCommand command = new EHLO("EHLO");
+		SmtpCommand command = new EHLO("localhost");
 
 		// test
 		command.execute(server, session, client);

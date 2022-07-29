@@ -26,7 +26,7 @@ class STARTTLSTest extends CommandTest {
 	void execute() throws ProtocolException, IOException {
 
 		// prepare
-		SmtpCommand command = new STARTTLS("STARTTLS");
+		SmtpCommand command = new STARTTLS(null);
 
 		// test
 		command.execute(server, session, client);

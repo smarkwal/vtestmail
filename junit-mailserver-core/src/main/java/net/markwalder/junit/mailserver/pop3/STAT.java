@@ -20,8 +20,8 @@ import java.io.IOException;
 
 public class STAT extends Pop3Command {
 
-	public STAT(String line) {
-		super(line);
+	public STAT(String parameters) {
+		super(parameters);
 	}
 
 	@Override

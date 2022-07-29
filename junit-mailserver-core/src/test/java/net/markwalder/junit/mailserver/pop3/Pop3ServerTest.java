@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import jakarta.mail.AuthenticationFailedException;
+import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -113,7 +114,6 @@ public class Pop3ServerTest {
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
 		store.createMailbox(USERNAME, PASSWORD, EMAIL);
-		// TODO: add messages to mailbox
 
 		// prepare: POP3 server
 		try (Pop3Server server = new Pop3Server(store)) {
@@ -130,10 +130,10 @@ public class Pop3ServerTest {
 					.build();
 
 			// test
-			client.getMessages(); // TODO: get messages
+			List<Message> messages = client.getMessages();
 
 			// assert
-			// TODO: implement test on messages
+			assertThat(messages).isEmpty();
 
 			List<Pop3Session> sessions = server.getSessions();
 			assertThat(sessions).hasSize(1);
@@ -143,11 +143,11 @@ public class Pop3ServerTest {
 
 			List<Pop3Command> commands = session.getCommands();
 			assertThat(commands).containsExactly(
-					new CAPA("CAPA"),
-					new AUTH("AUTH PLAIN w6RsacOnw6kAw6RsacOnw6kAcMOkc3N3w7ZyZCExMjM="),
-					new STAT("STAT"),
-					new NOOP("NOOP"),
-					new QUIT("QUIT")
+					new CAPA(null),
+					new AUTH("PLAIN w6RsacOnw6kAw6RsacOnw6kAcMOkc3N3w7ZyZCExMjM="),
+					new STAT(null),
+					new NOOP(null),
+					new QUIT(null)
 			);
 		}
 	}
@@ -222,9 +222,11 @@ public class Pop3ServerTest {
 			Pop3Client client = clientBuilder.build();
 
 			// test
+			List<Message> messages;
 			try {
 
-				client.getMessages();
+				// test
+				messages = client.getMessages();
 
 			} catch (MessagingException e) {
 
@@ -242,6 +244,8 @@ public class Pop3ServerTest {
 			}
 
 			// assert
+			assertThat(messages).isEmpty();
+
 			String log = server.getLog();
 			if (authType.equals("APOP")) {
 				assertThat(log).contains("APOP " + USERNAME + " ");
@@ -252,8 +256,6 @@ public class Pop3ServerTest {
 				assertThat(log).contains("AUTH " + authType + " ");
 			}
 
-			// TODO: implement test on messages
-
 			List<Pop3Session> sessions = server.getSessions();
 			assertThat(sessions).hasSize(1);
 			Pop3Session session = sessions.get(0);
@@ -262,17 +264,17 @@ public class Pop3ServerTest {
 
 			List<Pop3Command> commands = session.getCommands();
 			assertThat(commands).contains(
-					new CAPA("CAPA"),
-					new STAT("STAT"),
-					new NOOP("NOOP"),
-					new QUIT("QUIT")
+					new CAPA(null),
+					new STAT(null),
+					new NOOP(null),
+					new QUIT(null)
 			);
 
 			if (authType.equals("APOP")) {
 				assertThat(commands.get(1)).isInstanceOf(APOP.class);
 			} else if (authType.equals("USER")) {
-				assertThat(commands.get(1)).isEqualTo(new USER("USER " + USERNAME));
-				assertThat(commands.get(2)).isEqualTo(new PASS("PASS " + PASSWORD));
+				assertThat(commands.get(1)).isEqualTo(new USER(USERNAME));
+				assertThat(commands.get(2)).isEqualTo(new PASS(PASSWORD));
 			} else {
 				assertThat(commands.get(1)).isInstanceOf(AUTH.class);
 			}
@@ -280,5 +282,9 @@ public class Pop3ServerTest {
 			assertThat(commands).hasSize(authType.equals("USER") ? 6 : 5);
 		}
 	}
+
+	// TODO: implement POP3 test with messages in mailbox
+
+	// TODO: implement POP3 test where messages are deleted from mailbox
 
 }

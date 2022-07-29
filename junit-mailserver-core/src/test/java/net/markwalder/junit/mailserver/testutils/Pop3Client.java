@@ -22,6 +22,8 @@ import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.Store;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import net.markwalder.junit.mailserver.AuthType;
 import net.markwalder.junit.mailserver.pop3.Pop3Server;
@@ -38,18 +40,15 @@ public class Pop3Client {
 		return new Pop3ClientBuilder(server);
 	}
 
-	public void getMessages() throws MessagingException {
+	public List<Message> getMessages() throws MessagingException {
 		Store store = session.getStore("pop3");
 		store.connect();
 		Folder inbox = store.getFolder("Inbox");
 		inbox.open(Folder.READ_ONLY);
 		Message[] messages = inbox.getMessages();
-		for (Message message : messages) {
-			System.out.println(message);
-			// TODO: implement
-		}
 		inbox.close(true);
 		store.close();
+		return Arrays.asList(messages);
 	}
 
 	public static class Pop3ClientBuilder {

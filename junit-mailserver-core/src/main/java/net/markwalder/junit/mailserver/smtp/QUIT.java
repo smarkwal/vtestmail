@@ -20,8 +20,8 @@ import java.io.IOException;
 
 public class QUIT extends SmtpCommand {
 
-	public QUIT(String line) {
-		super(line);
+	public QUIT(String parameters) {
+		super(parameters);
 	}
 
 	@Override

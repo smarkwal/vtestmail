@@ -101,12 +101,9 @@ public class Pop3Server extends MailServer<Pop3Session, Pop3Client> {
 	@Override
 	protected boolean handleCommand(String line) throws IOException {
 
-		// convert the first word of the command to uppercase
-		// (POP3 commands are case-insensitive)
-		line = convertToUppercase(line);
-
-		// get name of command
-		String name = StringUtils.substringBefore(line, " ");
+		String name = StringUtils.substringBefore(line, " ").toUpperCase();
+		String parameters = StringUtils.substringAfter(line, " ");
+		if (parameters.isEmpty()) parameters = null;
 
 		// try to find command implementation class
 		Function<String, Pop3Command> commandFactory = commands.get(name);
@@ -121,7 +118,7 @@ public class Pop3Server extends MailServer<Pop3Session, Pop3Client> {
 		}
 
 		// create command instance
-		Pop3Command command = commandFactory.apply(line);
+		Pop3Command command = commandFactory.apply(parameters);
 
 		// add command to history
 		session.addCommand(command);
@@ -137,25 +134,5 @@ public class Pop3Server extends MailServer<Pop3Session, Pop3Client> {
 	}
 
 	// helper methods --------------------------------------------------
-
-	/**
-	 * Convert the first word in the given command to uppercase.
-	 * If the command is only a single word, the complete command is converted.
-	 * If the command is {@code null}, the method returns {@code null}.
-	 *
-	 * @param command Command (may be null)
-	 * @return Command with first word in uppercase.
-	 */
-	private static String convertToUppercase(String command) {
-		if (command != null) {
-			int pos = command.indexOf(' ');
-			if (pos > 0) {
-				command = command.substring(0, pos).toUpperCase() + command.substring(pos);
-			} else {
-				command = command.toUpperCase();
-			}
-		}
-		return command;
-	}
 
 }

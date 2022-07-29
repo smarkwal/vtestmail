@@ -21,21 +21,21 @@ import org.apache.commons.lang3.StringUtils;
 
 public class APOP extends Pop3Command {
 
-	public APOP(String line) {
-		super(line);
+	public APOP(String parameters) {
+		super(parameters);
 	}
 
 	@Override
 	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
 		session.assertState(State.AUTHORIZATION);
 
-		String[] parts = StringUtils.split(line, " ");
-		if (parts.length != 3) {
+		String[] parts = StringUtils.split(parameters, " ");
+		if (parts.length != 2) {
 			throw new ProtocolException("Invalid APOP command");
 		}
 
-		String username = parts[1];
-		String digest = parts[2];
+		String username = parts[0];
+		String digest = parts[1];
 
 		// try to authenticate
 		String timestamp = session.getTimestamp();

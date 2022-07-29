@@ -20,19 +20,29 @@ import java.util.Objects;
 
 public abstract class MailCommand {
 
-	protected final String line;
+	protected final String name;
+	protected final String parameters;
 
-	public MailCommand(String line) {
-		this.line = line;
+	public MailCommand(String parameters) {
+		this.name = this.getClass().getSimpleName();
+		this.parameters = parameters;
 	}
 
-	public String getLine() {
-		return line;
+	public String getName() {
+		return name;
+	}
+
+	public String getParameters() {
+		return parameters;
 	}
 
 	@Override
 	public String toString() {
-		return line;
+		if (parameters == null) {
+			return name;
+		} else {
+			return name + " " + parameters;
+		}
 	}
 
 	@Override
@@ -40,12 +50,12 @@ public abstract class MailCommand {
 		if (this == obj) return true;
 		if (obj == null || getClass() != obj.getClass()) return false;
 		MailCommand command = (MailCommand) obj;
-		return line.equals(command.line);
+		return name.equals(command.name) && Objects.equals(parameters, command.parameters);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(line);
+		return Objects.hash(name, parameters);
 	}
 
 }

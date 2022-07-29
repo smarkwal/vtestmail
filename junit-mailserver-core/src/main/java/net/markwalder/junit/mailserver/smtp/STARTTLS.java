@@ -20,8 +20,8 @@ import java.io.IOException;
 
 public class STARTTLS extends SmtpCommand {
 
-	public STARTTLS(String line) {
-		super(line);
+	public STARTTLS(String parameters) {
+		super(parameters);
 	}
 
 	@Override

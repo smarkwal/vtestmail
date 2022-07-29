@@ -17,12 +17,11 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
-import org.apache.commons.lang3.StringUtils;
 
 public class PASS extends Pop3Command {
 
-	public PASS(String line) {
-		super(line);
+	public PASS(String parameters) {
+		super(parameters);
 	}
 
 	@Override
@@ -35,11 +34,8 @@ public class PASS extends Pop3Command {
 			throw new ProtocolException("USER command not received");
 		}
 
-		// get password
-		String password = StringUtils.substringAfter(line, "PASS ");
-
 		// try to authenticate
-		session.login("USER", user, password, server.getStore());
+		session.login("USER", user, parameters, server.getStore());
 
 		if (!session.isAuthenticated()) {
 			client.writeLine("-ERR Authentication failed");

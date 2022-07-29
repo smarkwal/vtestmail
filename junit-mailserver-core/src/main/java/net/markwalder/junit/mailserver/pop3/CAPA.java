@@ -21,8 +21,8 @@ import java.util.List;
 
 public class CAPA extends Pop3Command {
 
-	public CAPA(String line) {
-		super(line);
+	public CAPA(String parameters) {
+		super(parameters);
 	}
 
 	@Override

@@ -19,19 +19,18 @@ package net.markwalder.junit.mailserver.pop3;
 import java.io.IOException;
 import java.util.List;
 import net.markwalder.junit.mailserver.Mailbox;
-import org.apache.commons.lang3.StringUtils;
 
 public class UIDL extends Pop3Command {
 
-	public UIDL(String line) {
-		super(line);
+	public UIDL(String parameters) {
+		super(parameters);
 	}
 
 	@Override
 	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
 		session.assertState(State.TRANSACTION);
 
-		if (line.equalsIgnoreCase("UIDL")) {
+		if (parameters == null) {
 
 			client.writeLine("+OK");
 			List<Mailbox.Message> messages = session.getMessages();
@@ -50,14 +49,13 @@ public class UIDL extends Pop3Command {
 		} else {
 
 			// try to find message by number
-			String msg = StringUtils.substringAfter(line, "UIDL ");
-			Mailbox.Message message = session.getMessage(msg);
+			Mailbox.Message message = session.getMessage(parameters);
 			if (message == null || message.isDeleted()) {
 				throw ProtocolException.MessageNotFound();
 			}
 
 			String uid = message.getUID();
-			client.writeLine("+OK " + msg + " " + uid);
+			client.writeLine("+OK " + parameters + " " + uid);
 
 		}
 

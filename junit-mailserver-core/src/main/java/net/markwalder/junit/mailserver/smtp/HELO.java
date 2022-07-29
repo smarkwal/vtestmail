@@ -20,8 +20,8 @@ import java.io.IOException;
 
 public class HELO extends SmtpCommand {
 
-	public HELO(String line) {
-		super(line);
+	public HELO(String parameters) {
+		super(parameters);
 	}
 
 	@Override

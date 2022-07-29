@@ -45,7 +45,7 @@ class AUTHTest extends CommandTest {
 		Mockito.doReturn(true).when(session).isAuthenticated();
 
 		// prepare
-		SmtpCommand command = new AUTH("AUTH LOGIN");
+		SmtpCommand command = new AUTH("LOGIN");
 
 		// test
 		command.execute(server, session, client);
@@ -71,7 +71,7 @@ class AUTHTest extends CommandTest {
 		Mockito.doReturn(false).when(server).isAuthTypeSupported("LOGIN");
 
 		// prepare
-		SmtpCommand command = new AUTH("AUTH LOGIN");
+		SmtpCommand command = new AUTH("LOGIN");
 
 		// test
 		Exception exception = assertThrows(ProtocolException.class, () -> command.execute(server, session, client));
@@ -98,7 +98,7 @@ class AUTHTest extends CommandTest {
 		Mockito.doReturn(false).when(session).isAuthenticated();
 
 		// prepare
-		SmtpCommand command = new AUTH("AUTH PLAIN");
+		SmtpCommand command = new AUTH("PLAIN");
 
 		// test
 		Exception exception = assertThrows(ProtocolException.class, () -> command.execute(server, session, client));

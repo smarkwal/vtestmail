@@ -26,7 +26,7 @@ class HELOTest extends CommandTest {
 	void execute() throws ProtocolException, IOException {
 
 		// prepare
-		SmtpCommand command = new HELO("HELO");
+		SmtpCommand command = new HELO(null);
 
 		// test
 		command.execute(server, session, client);

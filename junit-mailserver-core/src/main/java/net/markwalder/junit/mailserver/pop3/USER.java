@@ -17,12 +17,11 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
-import org.apache.commons.lang3.StringUtils;
 
 public class USER extends Pop3Command {
 
-	public USER(String line) {
-		super(line);
+	public USER(String parameters) {
+		super(parameters);
 	}
 
 	@Override
@@ -30,8 +29,7 @@ public class USER extends Pop3Command {
 		session.assertState(State.AUTHORIZATION);
 
 		// remember user
-		String user = StringUtils.substringAfter(line, "USER ");
-		session.setUser(user);
+		session.setUser(parameters);
 
 		client.writeLine("+OK User accepted");
 	}

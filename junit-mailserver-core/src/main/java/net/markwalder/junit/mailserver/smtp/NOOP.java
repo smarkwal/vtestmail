@@ -20,8 +20,8 @@ import java.io.IOException;
 
 public class NOOP extends SmtpCommand {
 
-	public NOOP(String line) {
-		super(line);
+	public NOOP(String parameters) {
+		super(parameters);
 	}
 
 	@Override

@@ -22,8 +22,8 @@ import org.apache.commons.lang3.StringUtils;
 
 public class TOP extends Pop3Command {
 
-	public TOP(String line) {
-		super(line);
+	public TOP(String parameters) {
+		super(parameters);
 	}
 
 	@Override
@@ -31,8 +31,8 @@ public class TOP extends Pop3Command {
 		session.assertState(State.TRANSACTION);
 
 		// try to find message by number, and get top n lines
-		String msg = StringUtils.substringBetween(line, "TOP ", " ");
-		String n = StringUtils.substringAfterLast(line, " ");
+		String msg = StringUtils.substringBefore(parameters, " ");
+		String n = StringUtils.substringAfter(parameters, " ");
 		String lines = getMessageLines(session, msg, n);
 		if (lines == null) {
 			throw ProtocolException.MessageNotFound();

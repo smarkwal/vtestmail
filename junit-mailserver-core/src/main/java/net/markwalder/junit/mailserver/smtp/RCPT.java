@@ -21,8 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 
 public class RCPT extends SmtpCommand {
 
-	public RCPT(String line) {
-		super(line);
+	public RCPT(String parameters) {
+		super(parameters);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class RCPT extends SmtpCommand {
 			throw ProtocolException.AuthenticationRequired();
 		}
 
-		String email = StringUtils.substringBetween(line, "<", ">");
+		String email = StringUtils.substringBetween(parameters, "<", ">");
 		if (email == null) {
 			throw ProtocolException.SyntaxError();
 		}

@@ -26,7 +26,7 @@ class NOOPTest extends CommandTest {
 	void execute() throws ProtocolException, IOException {
 
 		// prepare
-		SmtpCommand command = new NOOP("NOOP");
+		SmtpCommand command = new NOOP(null);
 
 		// test
 		command.execute(server, session, client);

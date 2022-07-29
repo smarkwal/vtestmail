@@ -48,7 +48,7 @@ class DATATest extends CommandTest {
 		Mockito.doReturn(mailbox).when(store).findMailbox("alice@localhost");
 
 		// prepare
-		SmtpCommand command = new DATA("DATA");
+		SmtpCommand command = new DATA(null);
 
 		// test
 		command.execute(server, session, client);

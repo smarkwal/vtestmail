@@ -21,8 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 
 public class MAIL extends SmtpCommand {
 
-	public MAIL(String line) {
-		super(line);
+	public MAIL(String parameters) {
+		super(parameters);
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class MAIL extends SmtpCommand {
 			throw ProtocolException.AuthenticationRequired();
 		}
 
-		String email = StringUtils.substringBetween(line, "<", ">");
+		String email = StringUtils.substringBetween(parameters, "<", ">");
 		if (email == null) {
 			throw ProtocolException.SyntaxError();
 		}
