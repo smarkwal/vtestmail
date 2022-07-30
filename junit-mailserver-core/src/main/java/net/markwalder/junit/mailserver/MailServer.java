@@ -373,6 +373,10 @@ public abstract class MailServer<S extends MailSession, C extends MailClient> im
 		return log.toString();
 	}
 
+	public S getActiveSession() {
+		return session;
+	}
+
 	public List<S> getSessions() {
 		return Collections.unmodifiableList(sessions);
 	}

@@ -183,7 +183,7 @@ public class Pop3ServerTest {
 		MailboxStore store = new MailboxStore();
 		store.createMailbox(USERNAME, PASSWORD, EMAIL);
 
-		// prepare: SMTP server
+		// prepare: POP3 server
 		try (Pop3Server server = new Pop3Server(store)) {
 			server.setAuthenticationRequired(true);
 
@@ -211,7 +211,7 @@ public class Pop3ServerTest {
 			}
 			server.start();
 
-			// prepare: SMTP client
+			// prepare: POP3 client
 			Pop3Client.Pop3ClientBuilder clientBuilder = Pop3Client.forServer(server);
 			if (encrypted) {
 				clientBuilder.withEncryption("TLSv1.2");
@@ -289,12 +289,12 @@ public class Pop3ServerTest {
 		mailbox.addMessage("Subject: Test 1\r\n\r\nTest message 1");
 		mailbox.addMessage("Subject: Test 2\r\n\r\nTest message 2");
 
-		// prepare: SMTP server
+		// prepare: POP3 server
 		try (Pop3Server server = new Pop3Server(store)) {
 			server.setAuthenticationRequired(true);
 			server.start();
 
-			// prepare: SMTP client
+			// prepare: POP3 client
 			Pop3Client.Pop3ClientBuilder clientBuilder = Pop3Client.forServer(server);
 			clientBuilder.withAuthentication("USER", USERNAME, PASSWORD);
 			Pop3Client client = clientBuilder.build();
