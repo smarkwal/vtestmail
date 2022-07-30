@@ -24,7 +24,11 @@ import org.apache.commons.lang3.StringUtils;
 
 public class AUTH extends Pop3Command {
 
-	public AUTH(String parameters) {
+	public AUTH(String authType, String parameters) {
+		this(authType + (parameters == null ? "" : " " + parameters));
+	}
+
+	AUTH(String parameters) {
 		super(parameters);
 	}
 

@@ -144,7 +144,7 @@ class SmtpServerTest {
 			List<SmtpCommand> commands = session.getCommands();
 			assertThat(commands).containsExactly(
 					new EHLO("localhost"),
-					new QUIT(null)
+					new QUIT()
 			);
 
 			List<SmtpTransaction> transactions = session.getTransactions();
@@ -158,7 +158,7 @@ class SmtpServerTest {
 			assertThat(commands).containsExactly(
 					new MAIL("FROM:<bob@localhost>"),
 					new RCPT("TO:<alice@localhost>"),
-					new DATA(null)
+					new DATA()
 			);
 
 			// TODO: add more assertions

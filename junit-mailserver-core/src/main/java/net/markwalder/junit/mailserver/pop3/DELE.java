@@ -21,7 +21,11 @@ import net.markwalder.junit.mailserver.Mailbox;
 
 public class DELE extends Pop3Command {
 
-	public DELE(String parameters) {
+	public DELE(int msg) {
+		this(String.valueOf(msg));
+	}
+
+	DELE(String parameters) {
 		super(parameters);
 	}
 

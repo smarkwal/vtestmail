@@ -21,7 +21,11 @@ import net.markwalder.junit.mailserver.Mailbox;
 
 public class RETR extends Pop3Command {
 
-	public RETR(String parameters) {
+	public RETR(int msg) {
+		this(String.valueOf(msg));
+	}
+
+	RETR(String parameters) {
 		super(parameters);
 	}
 

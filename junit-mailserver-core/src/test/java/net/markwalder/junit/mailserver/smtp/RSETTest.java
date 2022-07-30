@@ -26,7 +26,7 @@ class RSETTest extends CommandTest {
 	void execute() throws ProtocolException, IOException {
 
 		// prepare
-		SmtpCommand command = new RSET(null);
+		SmtpCommand command = new RSET();
 
 		// test
 		command.execute(server, session, client);

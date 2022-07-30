@@ -20,8 +20,8 @@ import java.io.IOException;
 
 public class PASS extends Pop3Command {
 
-	public PASS(String parameters) {
-		super(parameters);
+	public PASS(String password) {
+		super(password);
 	}
 
 	@Override

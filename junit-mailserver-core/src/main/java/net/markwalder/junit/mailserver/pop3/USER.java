@@ -20,8 +20,8 @@ import java.io.IOException;
 
 public class USER extends Pop3Command {
 
-	public USER(String parameters) {
-		super(parameters);
+	public USER(String username) {
+		super(username);
 	}
 
 	@Override

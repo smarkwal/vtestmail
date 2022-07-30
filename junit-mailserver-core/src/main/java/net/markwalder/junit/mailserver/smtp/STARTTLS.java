@@ -20,7 +20,11 @@ import java.io.IOException;
 
 public class STARTTLS extends SmtpCommand {
 
-	public STARTTLS(String parameters) {
+	public STARTTLS() {
+		this(null);
+	}
+
+	STARTTLS(String parameters) {
 		super(parameters);
 	}
 

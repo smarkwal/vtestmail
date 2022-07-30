@@ -22,7 +22,15 @@ import net.markwalder.junit.mailserver.Mailbox;
 
 public class LIST extends Pop3Command {
 
-	public LIST(String parameters) {
+	public LIST() {
+		this(null);
+	}
+
+	public LIST(int msg) {
+		this(String.valueOf(msg));
+	}
+
+	LIST(String parameters) {
 		super(parameters);
 	}
 

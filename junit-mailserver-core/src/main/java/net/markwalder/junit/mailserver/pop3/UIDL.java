@@ -22,7 +22,15 @@ import net.markwalder.junit.mailserver.Mailbox;
 
 public class UIDL extends Pop3Command {
 
-	public UIDL(String parameters) {
+	public UIDL() {
+		this(null);
+	}
+
+	public UIDL(int msg) {
+		this(String.valueOf(msg));
+	}
+
+	UIDL(String parameters) {
 		super(parameters);
 	}
 

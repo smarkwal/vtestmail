@@ -20,7 +20,11 @@ import java.io.IOException;
 
 public class QUIT extends SmtpCommand {
 
-	public QUIT(String parameters) {
+	public QUIT() {
+		this(null);
+	}
+
+	QUIT(String parameters) {
 		super(parameters);
 	}
 

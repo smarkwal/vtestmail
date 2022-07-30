@@ -22,7 +22,11 @@ import org.apache.commons.lang3.StringUtils;
 
 public class TOP extends Pop3Command {
 
-	public TOP(String parameters) {
+	public TOP(int msg, int n) {
+		this(msg + " " + n);
+	}
+
+	TOP(String parameters) {
 		super(parameters);
 	}
 

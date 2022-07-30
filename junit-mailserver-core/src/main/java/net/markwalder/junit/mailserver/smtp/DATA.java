@@ -23,7 +23,11 @@ import net.markwalder.junit.mailserver.MailboxStore;
 
 public class DATA extends SmtpCommand {
 
-	public DATA(String parameters) {
+	public DATA() {
+		this(null);
+	}
+
+	DATA(String parameters) {
 		super(parameters);
 	}
 

@@ -20,7 +20,11 @@ import java.io.IOException;
 
 public class STAT extends Pop3Command {
 
-	public STAT(String parameters) {
+	public STAT() {
+		super(null);
+	}
+
+	STAT(String parameters) {
 		super(parameters);
 	}
 

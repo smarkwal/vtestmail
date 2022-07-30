@@ -20,7 +20,11 @@ import java.io.IOException;
 
 public class NOOP extends Pop3Command {
 
-	public NOOP(String parameters) {
+	public NOOP() {
+		this(null);
+	}
+
+	NOOP(String parameters) {
 		super(parameters);
 	}
 

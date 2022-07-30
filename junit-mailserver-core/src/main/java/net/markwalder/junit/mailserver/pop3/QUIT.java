@@ -21,7 +21,11 @@ import net.markwalder.junit.mailserver.Mailbox;
 
 public class QUIT extends Pop3Command {
 
-	public QUIT(String parameters) {
+	public QUIT() {
+		this(null);
+	}
+
+	QUIT(String parameters) {
 		super(parameters);
 	}
 

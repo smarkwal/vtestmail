@@ -48,7 +48,7 @@ class DATATest extends CommandTest {
 		Mockito.doReturn(mailbox).when(store).findMailbox("alice@localhost");
 
 		// prepare
-		SmtpCommand command = new DATA(null);
+		SmtpCommand command = new DATA();
 
 		// test
 		command.execute(server, session, client);
@@ -74,7 +74,7 @@ class DATATest extends CommandTest {
 		Mockito.doReturn(true).when(server).isAuthenticationRequired();
 
 		// prepare
-		SmtpCommand command = new DATA("DATA");
+		SmtpCommand command = new DATA();
 
 		// test
 		Exception exception = assertThrows(ProtocolException.class, () -> command.execute(server, session, client));

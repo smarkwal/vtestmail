@@ -21,7 +21,11 @@ import org.apache.commons.lang3.StringUtils;
 
 public class APOP extends Pop3Command {
 
-	public APOP(String parameters) {
+	public APOP(String username, String digest) {
+		this(username + " " + digest);
+	}
+
+	APOP(String parameters) {
 		super(parameters);
 	}
 

@@ -20,7 +20,11 @@ import java.io.IOException;
 
 public class RSET extends SmtpCommand {
 
-	public RSET(String parameters) {
+	public RSET() {
+		this(null);
+	}
+
+	RSET(String parameters) {
 		super(parameters);
 	}
 

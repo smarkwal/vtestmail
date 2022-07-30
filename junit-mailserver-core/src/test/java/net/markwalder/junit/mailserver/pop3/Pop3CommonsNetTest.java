@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
 import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxStore;
 import org.apache.commons.net.pop3.POP3Client;
@@ -212,6 +213,35 @@ class Pop3CommonsNetTest {
 
 				// assert: message has been deleted
 				assertThat(mailbox.getMessages()).hasSize(1);
+
+				List<Pop3Command> commands = session.getCommands();
+				assertThat(commands).hasSize(24);
+				assertThat(commands).containsExactly(
+						new CAPA(),
+						new USER(USERNAME),
+						new PASS("wrong password"),
+						new USER(USERNAME),
+						new PASS(PASSWORD),
+						new STAT(),
+						new UIDL(),
+						new UIDL(1),
+						new LIST(),
+						new LIST(2),
+						new NOOP(),
+						new RETR(1),
+						new TOP(2, 0),
+						new DELE(1),
+						new RSET(),
+						new DELE(2),
+						new UIDL(),
+						new UIDL(2),
+						new LIST(),
+						new LIST(2),
+						new RETR(2),
+						new TOP(2, 0),
+						new DELE(2),
+						new QUIT()
+				);
 
 			} finally {
 
