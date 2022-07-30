@@ -42,19 +42,19 @@ jobs:
       if: ${{ always() }}
       with:
         name: reports
-        path: build/reports
+        path: junit-mailserver-core/build/reports
         retention-days: 3
 
     - name: Upload libs
       uses: actions/upload-artifact@v2
       with:
         name: libs
-        path: build/libs
+        path: junit-mailserver-core/build/libs
         retention-days: 3
 
     - name: Upload docs
       uses: actions/upload-artifact@v2
       with:
         name: docs
-        path: build/docs
+        path: junit-mailserver-core/build/docs
         retention-days: 3
