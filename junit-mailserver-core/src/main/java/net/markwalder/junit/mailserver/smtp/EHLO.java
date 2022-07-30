@@ -41,7 +41,9 @@ public class EHLO extends SmtpCommand {
 
 		// support TLS
 		// TODO: why does removing STARTTLS break authentication?
-		options.add("STARTTLS");
+		if (server.isCommandEnabled("STARTTLS")) {
+			options.add("STARTTLS");
+		}
 
 		// supported authentication types
 		List<String> authTypes = server.getAuthTypes();

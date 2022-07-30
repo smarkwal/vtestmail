@@ -18,8 +18,6 @@ package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 import net.markwalder.junit.mailserver.MailServer;
 import net.markwalder.junit.mailserver.MailboxStore;
@@ -38,25 +36,22 @@ import org.apache.commons.lang3.StringUtils;
  *     <li>Messages are either delivered to a local mailbox, or silently discarded.</li>
  * </ul>
  */
-public class SmtpServer extends MailServer<SmtpSession, SmtpClient> {
-
-	private static final Map<String, Function<String, SmtpCommand>> commands = new HashMap<>();
-
-	static {
-		commands.put("HELO", HELO::new);
-		commands.put("EHLO", EHLO::new);
-		commands.put("STARTTLS", STARTTLS::new);
-		commands.put("AUTH", AUTH::new);
-		commands.put("MAIL", MAIL::new);
-		commands.put("RCPT", RCPT::new);
-		commands.put("DATA", DATA::new);
-		commands.put("NOOP", NOOP::new);
-		commands.put("RSET", RSET::new);
-		commands.put("QUIT", QUIT::new);
-	}
+public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient> {
 
 	public SmtpServer(MailboxStore store) {
 		super("SMTP", store);
+
+		// register available SMTP commands
+		addCommand("HELO", HELO::new);
+		addCommand("EHLO", EHLO::new);
+		addCommand("STARTTLS", STARTTLS::new);
+		addCommand("AUTH", AUTH::new);
+		addCommand("MAIL", MAIL::new);
+		addCommand("RCPT", RCPT::new);
+		addCommand("DATA", DATA::new);
+		addCommand("NOOP", NOOP::new);
+		addCommand("RSET", RSET::new);
+		addCommand("QUIT", QUIT::new);
 	}
 
 	@Override
@@ -77,6 +72,8 @@ public class SmtpServer extends MailServer<SmtpSession, SmtpClient> {
 	@Override
 	protected boolean handleCommand(String line) throws IOException {
 
+		// TODO: try to move some of the following code into MailServer
+
 		// split line into command name and parameters
 		String name = StringUtils.substringBefore(line, " ").toUpperCase();
 		String parameters = StringUtils.substringAfter(line, " ");
@@ -89,11 +86,18 @@ public class SmtpServer extends MailServer<SmtpSession, SmtpClient> {
 			return false;
 		}
 
+		if (!isCommandEnabled(name)) {
+			client.writeLine("502 5.5.1 Disabled command");
+			return false;
+		}
+
 		// create command instance
+		// TODO: validate parameters in factory
 		SmtpCommand command = commandFactory.apply(parameters);
 
 		if (command instanceof DATA) {
 			// add command to history
+			// (before DATA is closing the current transaction)
 			session.addCommand(command);
 		}
 

@@ -18,8 +18,6 @@ package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 import net.markwalder.junit.mailserver.MailServer;
 import net.markwalder.junit.mailserver.MailboxStore;
@@ -36,50 +34,27 @@ import org.apache.commons.lang3.StringUtils;
  *     <li>The mailbox is not exclusively locked by the server.</li>
  * </ul>
  */
-public class Pop3Server extends MailServer<Pop3Session, Pop3Client> {
-
-	// TODO: move commands into MailServer
-	private static final Map<String, Function<String, Pop3Command>> commands = new HashMap<>();
-
-	static {
-		commands.put("CAPA", CAPA::new);
-		commands.put("AUTH", AUTH::new);
-		commands.put("APOP", APOP::new);
-		commands.put("USER", USER::new);
-		commands.put("PASS", PASS::new);
-		commands.put("STAT", STAT::new);
-		commands.put("LIST", LIST::new);
-		commands.put("UIDL", UIDL::new);
-		commands.put("RETR", RETR::new);
-		commands.put("DELE", DELE::new);
-		commands.put("TOP", TOP::new);
-		commands.put("NOOP", NOOP::new);
-		commands.put("RSET", RSET::new);
-		commands.put("QUIT", QUIT::new);
-		// TODO: implement RFC 6856: UTF8 and LANG (https://www.rfc-editor.org/rfc/rfc6856)
-	}
-
-	// TODO: move enabledCommands into MailServer
-	private final Map<String, Boolean> enabledCommands = new HashMap<>();
+public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client> {
 
 	public Pop3Server(MailboxStore store) {
 		super("POP3", store);
-	}
 
-	public Boolean isCommandEnabled(String command) {
-		if (command == null) throw new IllegalArgumentException("command must not be null");
-		command = command.toUpperCase();
-		return commands.containsKey(command) && enabledCommands.getOrDefault(command, true);
-	}
-
-	public void setCommandEnabled(String command, boolean enabled) {
-		if (command == null) throw new IllegalArgumentException("command must not be null");
-		command = command.toUpperCase();
-		if (enabled) {
-			enabledCommands.put(command, true);
-		} else {
-			enabledCommands.put(command, false);
-		}
+		// register available POP3 commands
+		addCommand("CAPA", CAPA::new);
+		addCommand("AUTH", AUTH::new);
+		addCommand("APOP", APOP::new);
+		addCommand("USER", USER::new);
+		addCommand("PASS", PASS::new);
+		addCommand("STAT", STAT::new);
+		addCommand("LIST", LIST::new);
+		addCommand("UIDL", UIDL::new);
+		addCommand("RETR", RETR::new);
+		addCommand("DELE", DELE::new);
+		addCommand("TOP", TOP::new);
+		addCommand("NOOP", NOOP::new);
+		addCommand("RSET", RSET::new);
+		addCommand("QUIT", QUIT::new);
+		// TODO: implement RFC 6856: UTF8 and LANG (https://www.rfc-editor.org/rfc/rfc6856)
 	}
 
 	@Override
@@ -101,6 +76,8 @@ public class Pop3Server extends MailServer<Pop3Session, Pop3Client> {
 	@Override
 	protected boolean handleCommand(String line) throws IOException {
 
+		// TODO: try to move some of the following code into MailServer
+
 		String name = StringUtils.substringBefore(line, " ").toUpperCase();
 		String parameters = StringUtils.substringAfter(line, " ");
 		if (parameters.isEmpty()) parameters = null;
@@ -118,6 +95,7 @@ public class Pop3Server extends MailServer<Pop3Session, Pop3Client> {
 		}
 
 		// create command instance
+		// TODO: validate parameters in factory
 		Pop3Command command = commandFactory.apply(parameters);
 
 		// add command to history

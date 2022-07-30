@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSession;
@@ -44,7 +45,7 @@ import net.markwalder.junit.mailserver.auth.XOauth2Authenticator;
  * Skeleton for a simulated/virtual SMTP, IMAP, or POP3 server.
  */
 @SuppressWarnings("unused")
-public abstract class MailServer<S extends MailSession, C extends MailClient> implements AutoCloseable {
+public abstract class MailServer<T extends MailCommand, S extends MailSession, C extends MailClient> implements AutoCloseable {
 
 	static {
 
@@ -54,6 +55,10 @@ public abstract class MailServer<S extends MailSession, C extends MailClient> im
 		// enable Jakarta Mail API debug output
 		// System.setProperty("mail.socket.debug", "true");
 	}
+
+	// TODO: create a dedicated factory interface instead of using Function
+	protected final Map<String, Function<String, T>> commands = new HashMap<>();
+	private final Map<String, Boolean> enabledCommands = new HashMap<>();
 
 	private final String protocol;
 	protected final MailboxStore store;
@@ -106,6 +111,29 @@ public abstract class MailServer<S extends MailSession, C extends MailClient> im
 		addAuthenticator(AuthType.CRAM_MD5, new CramMd5Authenticator());
 		addAuthenticator(AuthType.DIGEST_MD5, new DigestMd5Authenticator());
 		addAuthenticator(AuthType.XOAUTH2, new XOauth2Authenticator());
+	}
+
+	protected void addCommand(String command, Function<String, T> factory) {
+		if (command == null) throw new IllegalArgumentException("command must not be null");
+		if (factory == null) throw new IllegalArgumentException("factory must not be null");
+		command = command.toUpperCase();
+		commands.put(command, factory);
+	}
+
+	public boolean isCommandEnabled(String command) {
+		if (command == null) throw new IllegalArgumentException("command must not be null");
+		command = command.toUpperCase();
+		return commands.containsKey(command) && enabledCommands.getOrDefault(command, true);
+	}
+
+	public void setCommandEnabled(String command, boolean enabled) {
+		if (command == null) throw new IllegalArgumentException("command must not be null");
+		command = command.toUpperCase();
+		if (enabled) {
+			enabledCommands.put(command, true);
+		} else {
+			enabledCommands.put(command, false);
+		}
 	}
 
 	public MailboxStore getStore() {
