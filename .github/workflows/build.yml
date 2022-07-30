@@ -36,3 +36,24 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         arguments: 'build ${{ github.event.inputs.additionalGradleOptions }}'
+
+    - name: Upload reports
+      uses: actions/upload-artifact@v2
+      with:
+        name: reports
+        path: build/reports
+        retention-days: 3
+
+    - name: Upload libs
+      uses: actions/upload-artifact@v2
+      with:
+        name: libs
+        path: build/libs
+        retention-days: 3
+
+    - name: Upload docs
+      uses: actions/upload-artifact@v2
+      with:
+        name: docs
+        path: build/docs
+        retention-days: 3
