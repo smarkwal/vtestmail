@@ -34,6 +34,10 @@ public class ProtocolException extends Exception {
 		return new ProtocolException("Authentication failed");
 	}
 
+	public static ProtocolException SyntaxError() {
+		return new ProtocolException("Syntax error");
+	}
+
 	public ProtocolException(String message) {
 		super(message);
 	}

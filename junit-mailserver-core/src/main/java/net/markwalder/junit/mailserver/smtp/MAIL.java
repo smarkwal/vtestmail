@@ -17,7 +17,7 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
-import org.apache.commons.lang3.StringUtils;
+import net.markwalder.junit.mailserver.utils.StringUtils;
 
 public class MAIL extends SmtpCommand {
 

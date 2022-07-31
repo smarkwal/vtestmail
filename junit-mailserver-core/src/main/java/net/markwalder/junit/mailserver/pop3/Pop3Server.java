@@ -21,7 +21,7 @@ import java.net.Socket;
 import java.util.function.Function;
 import net.markwalder.junit.mailserver.MailServer;
 import net.markwalder.junit.mailserver.MailboxStore;
-import org.apache.commons.lang3.StringUtils;
+import net.markwalder.junit.mailserver.utils.StringUtils;
 
 /**
  * Virtual POP3 server for testing.
@@ -80,7 +80,6 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client>
 
 		String name = StringUtils.substringBefore(line, " ").toUpperCase();
 		String parameters = StringUtils.substringAfter(line, " ");
-		if (parameters.isEmpty()) parameters = null;
 
 		// try to find command implementation class
 		Function<String, Pop3Command> commandFactory = commands.get(name);

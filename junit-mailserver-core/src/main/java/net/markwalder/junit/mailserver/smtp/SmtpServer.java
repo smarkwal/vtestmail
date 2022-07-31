@@ -21,7 +21,7 @@ import java.net.Socket;
 import java.util.function.Function;
 import net.markwalder.junit.mailserver.MailServer;
 import net.markwalder.junit.mailserver.MailboxStore;
-import org.apache.commons.lang3.StringUtils;
+import net.markwalder.junit.mailserver.utils.StringUtils;
 
 /**
  * Virtual SMTP server for testing.
@@ -77,7 +77,6 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient>
 		// split line into command name and parameters
 		String name = StringUtils.substringBefore(line, " ").toUpperCase();
 		String parameters = StringUtils.substringAfter(line, " ");
-		if (parameters.isEmpty()) parameters = null;
 
 		// try to find command implementation class
 		Function<String, SmtpCommand> commandFactory = commands.get(name);

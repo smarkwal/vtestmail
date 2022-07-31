@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 import net.markwalder.junit.mailserver.MailClient;
 import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxProvider;
-import org.apache.commons.lang3.RandomStringUtils;
+import net.markwalder.junit.mailserver.utils.RandomStringUtils;
 
 public class CramMd5Authenticator implements Authenticator {
 

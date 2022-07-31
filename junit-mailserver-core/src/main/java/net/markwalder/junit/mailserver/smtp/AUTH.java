@@ -20,7 +20,7 @@ import java.io.IOException;
 import net.markwalder.junit.mailserver.MailboxStore;
 import net.markwalder.junit.mailserver.auth.Authenticator;
 import net.markwalder.junit.mailserver.auth.Credentials;
-import org.apache.commons.lang3.StringUtils;
+import net.markwalder.junit.mailserver.utils.StringUtils;
 
 public class AUTH extends SmtpCommand {
 
@@ -40,9 +40,11 @@ public class AUTH extends SmtpCommand {
 		// https://datatracker.ietf.org/doc/html/rfc5248
 
 		// split command into auth type and optional parameters
-		String[] parts = StringUtils.split(parameters, " ", 2);
-		String authType = parts[0];
-		String parameters = parts.length > 1 ? parts[1] : null;
+		String authType = StringUtils.substringBefore(this.parameters, " ");
+		String parameters = StringUtils.substringAfter(this.parameters, " ");
+		if (authType == null) {
+			throw ProtocolException.SyntaxError();
+		}
 
 		// check if authentication type is supported
 		if (!server.isAuthTypeSupported(authType)) {

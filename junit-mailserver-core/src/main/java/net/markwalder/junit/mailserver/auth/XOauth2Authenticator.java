@@ -20,7 +20,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import net.markwalder.junit.mailserver.MailClient;
 import net.markwalder.junit.mailserver.MailboxProvider;
-import org.apache.commons.lang3.StringUtils;
+import net.markwalder.junit.mailserver.utils.StringUtils;
 
 public class XOauth2Authenticator implements Authenticator {
 

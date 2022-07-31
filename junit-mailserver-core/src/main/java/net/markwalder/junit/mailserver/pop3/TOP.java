@@ -18,7 +18,7 @@ package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
 import net.markwalder.junit.mailserver.Mailbox;
-import org.apache.commons.lang3.StringUtils;
+import net.markwalder.junit.mailserver.utils.StringUtils;
 
 public class TOP extends Pop3Command {
 

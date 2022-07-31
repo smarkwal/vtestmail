@@ -27,7 +27,7 @@ import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxProvider;
 import net.markwalder.junit.mailserver.utils.DigestUtils;
 import net.markwalder.junit.mailserver.utils.Hex;
-import org.apache.commons.lang3.RandomStringUtils;
+import net.markwalder.junit.mailserver.utils.RandomStringUtils;
 
 public class DigestMd5Authenticator implements Authenticator {
 

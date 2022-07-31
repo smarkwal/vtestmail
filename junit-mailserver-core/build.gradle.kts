@@ -23,9 +23,6 @@ repositories {
 
 dependencies {
 
-    // TODO: get rid of as many dependencies as possible
-    implementation("org.apache.commons:commons-lang3:3.12.0")
-
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation("org.mockito:mockito-core:4.6.1")
     testImplementation("org.assertj:assertj-core:3.23.1")
