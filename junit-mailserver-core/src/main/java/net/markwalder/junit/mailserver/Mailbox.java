@@ -16,10 +16,12 @@
 
 package net.markwalder.junit.mailserver;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import org.apache.commons.codec.digest.DigestUtils;
+import net.markwalder.junit.mailserver.utils.DigestUtils;
 
 public class Mailbox {
 
@@ -87,7 +89,7 @@ public class Mailbox {
 		}
 
 		public String getUID() {
-			return DigestUtils.md5Hex(content);
+			return DigestUtils.md5Hex(content, UTF_8);
 		}
 
 		public int getSize() {

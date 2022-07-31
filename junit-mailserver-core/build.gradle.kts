@@ -25,7 +25,6 @@ dependencies {
 
     // TODO: get rid of as many dependencies as possible
     implementation("org.apache.commons:commons-lang3:3.12.0")
-    implementation("commons-codec:commons-codec:1.15")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation("org.mockito:mockito-core:4.6.1")

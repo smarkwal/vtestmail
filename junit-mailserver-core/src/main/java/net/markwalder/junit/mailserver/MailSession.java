@@ -16,11 +16,12 @@
 
 package net.markwalder.junit.mailserver;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
-import org.apache.commons.codec.digest.DigestUtils;
+import net.markwalder.junit.mailserver.utils.DigestUtils;
 
 public class MailSession {
 
@@ -121,7 +122,7 @@ public class MailSession {
 
 			// compare password hash
 			String data = timestamp + mailbox.getSecret();
-			String hash = DigestUtils.md5Hex(data.getBytes(StandardCharsets.ISO_8859_1));
+			String hash = DigestUtils.md5Hex(data, ISO_8859_1);
 			if (hash.equals(digest)) {
 
 				// remember authenticated user

@@ -25,8 +25,8 @@ import java.util.Map;
 import net.markwalder.junit.mailserver.MailClient;
 import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxProvider;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.digest.DigestUtils;
+import net.markwalder.junit.mailserver.utils.DigestUtils;
+import net.markwalder.junit.mailserver.utils.Hex;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public class DigestMd5Authenticator implements Authenticator {
@@ -198,11 +198,11 @@ public class DigestMd5Authenticator implements Authenticator {
 	}
 
 	private static byte[] KD(String k, String s) {
-		return DigestUtils.md5(k + ":" + s);
+		return DigestUtils.md5(k + ":" + s, CHARSET);
 	}
 
 	private static String HEX(byte[] data) {
-		return Hex.encodeHexString(data);
+		return Hex.encode(data);
 	}
 
 }
