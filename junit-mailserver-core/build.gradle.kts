@@ -54,6 +54,14 @@ tasks.withType<JavaCompile> {
     options.encoding = "ASCII"
 }
 
+tasks.register<Test>("testOnJava17") {
+    group = "verification"
+    description = "Runs the test suite on Java 17."
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    })
+}
+
 tasks.withType<Test> {
 
     // use JUnit 5
