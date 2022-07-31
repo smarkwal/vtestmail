@@ -204,6 +204,7 @@ class SmtpServerTest {
 		try (SmtpServer server = new SmtpServer(store)) {
 			server.setUseSSL(true);
 			server.setSSLProtocol(sslProtocol);
+			server.setCommandEnabled("STARTTLS", useStarTLS);
 			// TODO: require encryption
 			server.start();
 

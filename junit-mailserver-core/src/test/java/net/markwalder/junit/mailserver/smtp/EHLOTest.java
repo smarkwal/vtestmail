@@ -28,7 +28,10 @@ class EHLOTest extends CommandTest {
 	void execute() throws ProtocolException, IOException {
 
 		// mock
+		Mockito.doReturn("localhost").when(session).getServerAddress();
+		Mockito.doReturn("localhost").when(session).getClientAddress();
 		Mockito.doReturn(true).when(server).isCommandEnabled("STARTTLS");
+		Mockito.doReturn(true).when(server).isCommandEnabled("AUTH");
 		List<String> authTypes = List.of("PLAIN", "LOGIN");
 		Mockito.doReturn(authTypes).when(server).getAuthTypes();
 
@@ -39,7 +42,11 @@ class EHLOTest extends CommandTest {
 		command.execute(server, session, client);
 
 		// verify
+		Mockito.verify(session).getServerAddress();
+		Mockito.verify(session).getClientAddress();
+		Mockito.verify(client).writeLine("250-localhost Hello localhost");
 		Mockito.verify(server).isCommandEnabled("STARTTLS");
+		Mockito.verify(server).isCommandEnabled("AUTH");
 		Mockito.verify(server).getAuthTypes();
 		Mockito.verify(client).writeLine("250-STARTTLS");
 		Mockito.verify(client).writeLine("250-AUTH PLAIN LOGIN");
@@ -53,7 +60,10 @@ class EHLOTest extends CommandTest {
 	void execute_noAuthTypes() throws ProtocolException, IOException {
 
 		// mock
+		Mockito.doReturn("localhost").when(session).getServerAddress();
+		Mockito.doReturn("localhost").when(session).getClientAddress();
 		Mockito.doReturn(true).when(server).isCommandEnabled("STARTTLS");
+		Mockito.doReturn(true).when(server).isCommandEnabled("AUTH");
 		List<Object> authTypes = Collections.emptyList();
 		Mockito.doReturn(authTypes).when(server).getAuthTypes();
 
@@ -64,7 +74,11 @@ class EHLOTest extends CommandTest {
 		command.execute(server, session, client);
 
 		// verify
+		Mockito.verify(session).getServerAddress();
+		Mockito.verify(session).getClientAddress();
+		Mockito.verify(client).writeLine("250-localhost Hello localhost");
 		Mockito.verify(server).isCommandEnabled("STARTTLS");
+		Mockito.verify(server).isCommandEnabled("AUTH");
 		Mockito.verify(server).getAuthTypes();
 		Mockito.verify(client).writeLine("250-STARTTLS");
 		Mockito.verify(client).writeLine("250-ENHANCEDSTATUSCODES");

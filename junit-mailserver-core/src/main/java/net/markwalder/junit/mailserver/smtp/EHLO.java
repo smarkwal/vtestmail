@@ -28,33 +28,42 @@ public class EHLO extends SmtpCommand {
 
 	@Override
 	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
-		List<String> options = getSupportedOptions(server);
-		for (String option : options) {
-			client.writeLine("250-" + option);
+
+		// send greeting to client
+		String greeting = session.getServerAddress() + " Hello " + session.getClientAddress();
+		client.writeLine("250-" + greeting);
+
+		// send supported extensions to client
+		List<String> extensions = getSupportedExtensions(server);
+		for (String extension : extensions) {
+			client.writeLine("250-" + extension);
 		}
+
 		client.writeLine("250 OK");
 	}
 
-	private List<String> getSupportedOptions(SmtpServer server) {
+	// TODO: move this method into SmtpServer?
+	private List<String> getSupportedExtensions(SmtpServer server) {
 
-		List<String> options = new ArrayList<>();
+		List<String> extensions = new ArrayList<>();
 
-		// support TLS
-		// TODO: why does removing STARTTLS break authentication?
+		// support STARTTLS
 		if (server.isCommandEnabled("STARTTLS")) {
-			options.add("STARTTLS");
+			extensions.add("STARTTLS");
 		}
 
 		// supported authentication types
-		List<String> authTypes = server.getAuthTypes();
-		if (authTypes.size() > 0) {
-			options.add("AUTH " + String.join(" ", authTypes));
+		if (server.isCommandEnabled("AUTH")) {
+			List<String> authTypes = server.getAuthTypes();
+			if (authTypes.size() > 0) {
+				extensions.add("AUTH " + String.join(" ", authTypes));
+			}
 		}
 
 		// support enhanced status codes (ESMPT)
-		options.add("ENHANCEDSTATUSCODES");
+		extensions.add("ENHANCEDSTATUSCODES");
 
-		return options;
+		return extensions;
 	}
 
 }
