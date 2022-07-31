@@ -26,9 +26,6 @@ dependencies {
     // TODO: get rid of as many dependencies as possible
     implementation("org.apache.commons:commons-lang3:3.12.0")
     implementation("commons-codec:commons-codec:1.15")
-    implementation("org.bouncycastle:bcprov-jdk18on:1.71")
-    implementation("org.bouncycastle:bcutil-jdk18on:1.71")
-    implementation("org.bouncycastle:bcpkix-jdk18on:1.71")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation("org.mockito:mockito-core:4.6.1")
@@ -91,4 +88,28 @@ tasks.withType<Test> {
 // disable generation of Gradle module metadata file
 tasks.withType<GenerateModuleMetadata> {
     enabled = false
+}
+
+tasks.register("createKeystore") {
+    group = "other"
+    description = "Creates a keystore with an RSA keypair and self-signed certificate for localhost."
+    doLast {
+        val keystore = file("src/main/resources/junit-mailserver.pfx")
+        if (keystore.exists()) keystore.delete()
+        exec {
+            commandLine(
+                "keytool", "-genkey",
+                "-alias", "localhost",
+                "-dname", "CN=localhost",
+                "-keyalg", "RSA",
+                "-keysize", "2048",
+                "-sigalg", "SHA256WithRSA",
+                "-validity", "3653", // 10 years
+                "-keypass", "changeit",
+                "-storetype", "PKCS12",
+                "-storepass", "changeit",
+                "-keystore", keystore.absolutePath
+            )
+        }
+    }
 }

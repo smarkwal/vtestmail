@@ -21,7 +21,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.Security;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -208,7 +207,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 		// open a server socket on a free port
 		ServerSocketFactory factory;
 		if (useSSL) {
-			factory = SSLUtils.createFactoryForSelfSignedCertificate(sslProtocol, 2048, "localhost", Duration.ofDays(365));
+			factory = SSLUtils.createFactoryWithSelfSignedCertificate(sslProtocol);
 		} else {
 			factory = ServerSocketFactory.getDefault();
 		}
