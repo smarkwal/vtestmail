@@ -35,6 +35,8 @@ public class MailSession {
 	private String authType = null;
 	private String username = null;
 
+	private boolean closed = false;
+
 	// TODO: keep session log
 
 	void setSocketData(Socket socket) {
@@ -130,6 +132,26 @@ public class MailSession {
 				this.username = username;
 			}
 		}
+	}
+
+	/**
+	 * Mark this session as closed. This method is expected to be called in
+	 * SMTP and POP3 commands like QUIT. The server will stop waiting for new
+	 * commands and close the connection to the client.
+	 */
+	public void close() {
+		closed = true;
+	}
+
+	/**
+	 * Check if this session has been closed. If the server detects that the
+	 * session has been closed, it should stop waiting for new commands and
+	 * close the connection to the client.
+	 *
+	 * @return true if this session has been closed, false otherwise.
+	 */
+	public boolean isClosed() {
+		return closed;
 	}
 
 }

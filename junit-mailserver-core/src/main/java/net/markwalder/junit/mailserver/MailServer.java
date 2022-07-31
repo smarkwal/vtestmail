@@ -326,16 +326,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 
 			try (Socket socket = serverSocket.accept()) {
 
-				String clientInfo = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
-				if (socket instanceof SSLSocket) {
-					SSLSocket sslSocket = (SSLSocket) socket;
-					SSLSession sslSession = sslSocket.getSession();
-					String sslProtocol = sslSession.getProtocol();
-					String cipherSuite = sslSession.getCipherSuite();
-					// TODO: make information available for assertions
-					clientInfo += " (" + sslProtocol + ", " + cipherSuite + ")";
-				}
-				System.out.println(protocol + " connection from " + clientInfo);
+				System.out.println(protocol + " connection from " + getClientInfo(socket));
 
 				// clear log (if there has been a previous connection)
 				log.setLength(0);
@@ -354,17 +345,32 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 
 				// read and handle client commands
 				while (true) {
+
+					// read next command from client
 					String command = client.readLine();
 					if (command == null) {
+
+						// client has closed the connection
 						System.out.println(protocol + " client closed connection");
+
+						// stop waiting for new commands
 						break;
+
 					} else if (command.isEmpty()) {
 						// TODO: how should an empty line be handled?
 						//  (sent after failed authentication)
 					}
-					boolean quit = handleCommand(command);
-					// TODO: check QUIT flag in session
-					if (quit) break;
+
+					// execute command
+					handleCommand(command);
+
+					// check if the session has been closed (with a QUIT command)
+					boolean quit = session.isClosed();
+					if (quit) {
+						// stop waiting for new commands and close the connection
+						// (if not already closed by the client)
+						break;
+					}
 				}
 
 			} catch (IOException e) {
@@ -394,7 +400,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 
 	protected abstract void handleNewClient() throws IOException;
 
-	protected abstract boolean handleCommand(String command) throws IOException;
+	protected abstract void handleCommand(String command) throws IOException;
 
 	public String getLog() {
 		return log.toString();
@@ -406,6 +412,18 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 
 	public List<S> getSessions() {
 		return Collections.unmodifiableList(sessions);
+	}
+
+	private String getClientInfo(Socket socket) {
+		String clientInfo = socket.getInetAddress().getHostAddress() + ":" + socket.getPort();
+		if (socket instanceof SSLSocket) {
+			SSLSocket sslSocket = (SSLSocket) socket;
+			SSLSession sslSession = sslSocket.getSession();
+			String sslProtocol = sslSession.getProtocol();
+			String cipherSuite = sslSession.getCipherSuite();
+			clientInfo += " (" + sslProtocol + ", " + cipherSuite + ")";
+		}
+		return clientInfo;
 	}
 
 }

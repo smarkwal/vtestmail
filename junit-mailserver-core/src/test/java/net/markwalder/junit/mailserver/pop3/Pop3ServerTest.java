@@ -140,6 +140,7 @@ public class Pop3ServerTest {
 			Pop3Session session = sessions.get(0);
 			assertThat(session.getSSLProtocol()).isEqualTo(sslProtocol);
 			assertThat(session.getCipherSuite()).isNotEmpty();
+			assertThat(session.isClosed()).isTrue();
 
 			List<Pop3Command> commands = session.getCommands();
 			assertThat(commands).containsExactly(
@@ -259,6 +260,7 @@ public class Pop3ServerTest {
 			Pop3Session session = sessions.get(0);
 			assertThat(session.getAuthType()).isEqualTo(authType);
 			assertThat(session.getUsername()).isEqualTo(USERNAME);
+			assertThat(session.isClosed()).isTrue();
 
 			List<Pop3Command> commands = session.getCommands();
 			assertThat(commands).contains(
@@ -314,6 +316,7 @@ public class Pop3ServerTest {
 			Pop3Session session = sessions.get(0);
 			assertThat(session.getAuthType()).isEqualTo("USER");
 			assertThat(session.getUsername()).isEqualTo(USERNAME);
+			assertThat(session.isClosed()).isTrue();
 
 			List<Pop3Command> commands = session.getCommands();
 			assertThat(commands).contains(

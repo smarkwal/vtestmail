@@ -43,9 +43,6 @@ public class AUTH extends Pop3Command {
 		// split command into auth type and optional parameters
 		String authType = StringUtils.substringBefore(this.parameters, " ");
 		String parameters = StringUtils.substringAfter(this.parameters, " ");
-		if (authType == null) {
-			throw ProtocolException.SyntaxError();
-		}
 
 		// check if authentication type is supported
 		if (!server.isAuthTypeSupported(authType)) {

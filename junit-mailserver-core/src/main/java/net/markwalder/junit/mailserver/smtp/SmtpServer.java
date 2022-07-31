@@ -70,7 +70,7 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient>
 	}
 
 	@Override
-	protected boolean handleCommand(String line) throws IOException {
+	protected void handleCommand(String line) throws IOException {
 
 		// TODO: try to move some of the following code into MailServer
 
@@ -82,12 +82,12 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient>
 		Function<String, SmtpCommand> commandFactory = commands.get(name);
 		if (commandFactory == null) {
 			client.writeLine("502 5.5.1 Command not implemented");
-			return false;
+			return;
 		}
 
 		if (!isCommandEnabled(name)) {
 			client.writeLine("502 5.5.1 Disabled command");
-			return false;
+			return;
 		}
 
 		// create command instance
@@ -111,8 +111,6 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient>
 			// add command to history
 			session.addCommand(command);
 		}
-
-		return (command instanceof QUIT);
 	}
 
 }

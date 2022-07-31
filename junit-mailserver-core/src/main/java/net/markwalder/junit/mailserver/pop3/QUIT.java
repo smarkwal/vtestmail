@@ -41,7 +41,9 @@ public class QUIT extends Pop3Command {
 			mailbox.removeDeletedMessages();
 		}
 
-		// TODO: set QUIT flag in session
+		// set "closed" flag in session
+		session.close();
+
 		client.writeLine("+OK Goodbye");
 	}
 

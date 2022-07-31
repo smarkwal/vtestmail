@@ -74,7 +74,7 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client>
 	}
 
 	@Override
-	protected boolean handleCommand(String line) throws IOException {
+	protected void handleCommand(String line) throws IOException {
 
 		// TODO: try to move some of the following code into MailServer
 
@@ -85,12 +85,12 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client>
 		Function<String, Pop3Command> commandFactory = commands.get(name);
 		if (commandFactory == null) {
 			client.writeLine("-ERR Unknown command");
-			return false;
+			return;
 		}
 
 		if (!isCommandEnabled(name)) {
 			client.writeLine("-ERR Disabled command");
-			return false;
+			return;
 		}
 
 		// create command instance
@@ -106,8 +106,6 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client>
 		} catch (ProtocolException e) {
 			client.writeLine("-ERR " + e.getMessage());
 		}
-
-		return (command instanceof QUIT);
 	}
 
 	// helper methods --------------------------------------------------

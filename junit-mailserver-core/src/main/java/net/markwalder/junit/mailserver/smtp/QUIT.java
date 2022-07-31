@@ -30,7 +30,10 @@ public class QUIT extends SmtpCommand {
 
 	@Override
 	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
-		// TODO: set QUIT flag in session
+
+		// set "closed" flag in session
+		session.close();
+
 		client.writeLine("221 2.0.0 Goodbye");
 	}
 

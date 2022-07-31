@@ -32,6 +32,7 @@ class QUITTest extends CommandTest {
 		command.execute(server, session, client);
 
 		// verify
+		Mockito.verify(session).close();
 		Mockito.verify(client).writeLine("221 2.0.0 Goodbye");
 
 		Mockito.verifyNoMoreInteractions(server, session, client);

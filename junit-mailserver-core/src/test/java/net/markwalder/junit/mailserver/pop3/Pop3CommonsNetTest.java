@@ -214,6 +214,10 @@ class Pop3CommonsNetTest {
 				// assert: message has been deleted
 				assertThat(mailbox.getMessages()).hasSize(1);
 
+				// assert: session has been closed
+				assertThat(session.isClosed()).isTrue();
+
+				// assert: commands have been recorded
 				List<Pop3Command> commands = session.getCommands();
 				assertThat(commands).hasSize(24);
 				assertThat(commands).containsExactly(
