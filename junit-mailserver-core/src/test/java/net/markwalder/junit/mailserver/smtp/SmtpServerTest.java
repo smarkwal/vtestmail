@@ -101,7 +101,7 @@ class SmtpServerTest {
 			server.start();
 
 			// prepare: SMTP client
-			SmtpClient client = SmtpClient.forServer(server).build();
+			SmtpClient client = SmtpClient.forServer(server).withEHLO(false).build();
 
 			// prepare: email
 			Message message = createTestMessage(client);
@@ -145,7 +145,7 @@ class SmtpServerTest {
 
 			List<SmtpCommand> commands = session.getCommands();
 			assertThat(commands).containsExactly(
-					new EHLO("localhost"),
+					new HELO("localhost"),
 					new QUIT()
 			);
 

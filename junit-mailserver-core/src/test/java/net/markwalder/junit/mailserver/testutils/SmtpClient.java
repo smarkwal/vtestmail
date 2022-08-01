@@ -139,6 +139,14 @@ public class SmtpClient {
 			return this;
 		}
 
+		public SmtpClientBuilder withEHLO(boolean enabled) {
+
+			// use EHLO instead of HELO
+			properties.put("mail.smtp.ehlo", String.valueOf(enabled));
+
+			return this;
+		}
+
 		public SmtpClient build() {
 			Session session = Session.getInstance(properties, authenticator);
 			return new SmtpClient(session);
