@@ -116,11 +116,17 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 		addAuthenticator(AuthType.XOAUTH2, new XOauth2Authenticator());
 	}
 
-	protected void addCommand(String command, MailCommand.Parser<T, E> factory) {
+	public void addCommand(String command, MailCommand.Parser<T, E> factory) {
 		Assert.isNotEmpty(command, "command");
 		Assert.isNotNull(factory, "factory");
 		command = command.toUpperCase();
 		commands.put(command, factory);
+	}
+
+	public void removeCommand(String command) {
+		Assert.isNotEmpty(command, "command");
+		command = command.toUpperCase();
+		commands.remove(command);
 	}
 
 	public boolean isCommandEnabled(String command) {
