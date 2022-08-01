@@ -24,9 +24,7 @@ public class STARTTLS extends SmtpCommand {
 	}
 
 	public static STARTTLS parse(String parameters) throws SmtpException {
-		if (parameters != null) {
-			throw SmtpException.SyntaxError();
-		}
+		isNull(parameters);
 		return new STARTTLS();
 	}
 

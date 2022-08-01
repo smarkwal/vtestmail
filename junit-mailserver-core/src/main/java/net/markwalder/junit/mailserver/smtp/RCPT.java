@@ -17,6 +17,7 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
+import net.markwalder.junit.mailserver.utils.Assert;
 import net.markwalder.junit.mailserver.utils.StringUtils;
 
 public class RCPT extends SmtpCommand {
@@ -24,18 +25,14 @@ public class RCPT extends SmtpCommand {
 	private final String email;
 
 	public RCPT(String email) {
+		Assert.isNotEmpty(email, "email");
 		this.email = email;
 	}
 
 	public static RCPT parse(String parameters) throws SmtpException {
-		if (parameters == null || parameters.isEmpty()) {
-			throw SmtpException.SyntaxError();
-		}
+		isNotEmpty(parameters);
 		String email = StringUtils.substringBetween(parameters, "<", ">");
-		if (email == null) {
-			throw SmtpException.SyntaxError();
-		}
-		// TODO: validate email address
+		isValidEmail(email);
 		return new RCPT(email);
 	}
 

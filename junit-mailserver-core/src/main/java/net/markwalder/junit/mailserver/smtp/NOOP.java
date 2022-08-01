@@ -24,9 +24,7 @@ public class NOOP extends SmtpCommand {
 	}
 
 	public static NOOP parse(String parameters) throws SmtpException {
-		if (parameters != null) {
-			throw SmtpException.SyntaxError();
-		}
+		isNull(parameters);
 		return new NOOP();
 	}
 

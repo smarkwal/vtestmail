@@ -24,9 +24,7 @@ public class RSET extends SmtpCommand {
 	}
 
 	public static RSET parse(String parameters) throws SmtpException {
-		if (parameters != null) {
-			throw SmtpException.SyntaxError();
-		}
+		isNull(parameters);
 		return new RSET();
 	}
 

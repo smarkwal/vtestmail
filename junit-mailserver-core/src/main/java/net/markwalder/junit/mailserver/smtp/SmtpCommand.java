@@ -23,4 +23,26 @@ public abstract class SmtpCommand extends MailCommand {
 
 	protected abstract void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, SmtpException;
 
+	protected static void isNull(String value) throws SmtpException {
+		if (value != null) {
+			throw SmtpException.SyntaxError();
+		}
+	}
+
+	protected static void isNotEmpty(String value) throws SmtpException {
+		if (value == null || value.isEmpty()) {
+			throw SmtpException.SyntaxError();
+		}
+	}
+
+	protected static void isValidDomain(String domain) throws SmtpException {
+		isNotEmpty(domain);
+		// TODO: validate domain
+	}
+
+	protected static void isValidEmail(String email) throws SmtpException {
+		isNotEmpty(email);
+		// TODO: validate email address
+	}
+
 }

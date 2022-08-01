@@ -18,6 +18,7 @@ package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
 import net.markwalder.junit.mailserver.Mailbox;
+import net.markwalder.junit.mailserver.utils.Assert;
 import net.markwalder.junit.mailserver.utils.StringUtils;
 
 public class TOP extends Pop3Command {
@@ -26,14 +27,14 @@ public class TOP extends Pop3Command {
 	private final int lines;
 
 	public TOP(int messageNumber, int lines) {
+		Assert.isInRange(messageNumber, 1, Integer.MAX_VALUE, "messageNumber");
+		Assert.isInRange(lines, 0, Integer.MAX_VALUE, "lines");
 		this.messageNumber = messageNumber;
 		this.lines = lines;
 	}
 
 	public static TOP parse(String parameters) throws Pop3Exception {
-		if (parameters == null || parameters.isEmpty()) {
-			throw Pop3Exception.SyntaxError();
-		}
+		isNotEmpty(parameters);
 		String msg = StringUtils.substringBefore(parameters, " ");
 		String n = StringUtils.substringAfter(parameters, " ");
 		int messageNumber = parseMessageNumber(msg);

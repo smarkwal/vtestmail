@@ -19,22 +19,20 @@ package net.markwalder.junit.mailserver.smtp;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import net.markwalder.junit.mailserver.utils.Assert;
 
 public class EHLO extends SmtpCommand {
 
 	private final String domain;
 
 	public EHLO(String domain) {
+		Assert.isNotEmpty(domain, "domain");
 		this.domain = domain;
 	}
 
 	public static EHLO parse(String parameters) throws SmtpException {
-		if (parameters == null || parameters.isEmpty()) {
-			throw SmtpException.SyntaxError();
-		}
-		String domain = parameters;
-		// TODO: validate domain
-		return new EHLO(domain);
+		isValidDomain(parameters);
+		return new EHLO(parameters);
 	}
 
 	@Override

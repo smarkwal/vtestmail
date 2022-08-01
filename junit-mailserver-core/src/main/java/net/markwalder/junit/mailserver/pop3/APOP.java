@@ -17,6 +17,7 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
+import net.markwalder.junit.mailserver.utils.Assert;
 import net.markwalder.junit.mailserver.utils.StringUtils;
 
 public class APOP extends Pop3Command {
@@ -25,19 +26,18 @@ public class APOP extends Pop3Command {
 	private final String digest;
 
 	public APOP(String username, String digest) {
+		Assert.isNotEmpty(username, "username");
+		Assert.isNotEmpty(digest, "digest");
 		this.username = username;
 		this.digest = digest;
 	}
 
 	public static APOP parse(String parameters) throws Pop3Exception {
-		if (parameters == null || parameters.isEmpty()) {
-			throw Pop3Exception.SyntaxError();
-		}
+		isNotEmpty(parameters);
 		String username = StringUtils.substringBefore(parameters, " ");
 		String digest = StringUtils.substringAfter(parameters, " ");
-		if (digest == null) {
-			throw Pop3Exception.SyntaxError();
-		}
+		isNotEmpty(username);
+		isNotEmpty(digest);
 		return new APOP(username, digest);
 	}
 

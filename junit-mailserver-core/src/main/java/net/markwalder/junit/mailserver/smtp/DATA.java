@@ -27,9 +27,7 @@ public class DATA extends SmtpCommand {
 	}
 
 	public static DATA parse(String parameters) throws SmtpException {
-		if (parameters != null) {
-			throw SmtpException.SyntaxError();
-		}
+		isNull(parameters);
 		return new DATA();
 	}
 

@@ -381,6 +381,8 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 						//  (sent after failed authentication)
 					}
 
+					// TODO: implement command listener
+
 					// execute command
 					handleCommand(command);
 

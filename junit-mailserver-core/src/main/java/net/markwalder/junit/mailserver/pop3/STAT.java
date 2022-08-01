@@ -24,9 +24,7 @@ public class STAT extends Pop3Command {
 	}
 
 	public static STAT parse(String parameters) throws Pop3Exception {
-		if (parameters != null) {
-			throw Pop3Exception.SyntaxError();
-		}
+		isNull(parameters);
 		return new STAT();
 	}
 

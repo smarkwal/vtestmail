@@ -25,9 +25,7 @@ public class QUIT extends Pop3Command {
 	}
 
 	public static QUIT parse(String parameters) throws Pop3Exception {
-		if (parameters != null) {
-			throw Pop3Exception.SyntaxError();
-		}
+		isNull(parameters);
 		return new QUIT();
 	}
 

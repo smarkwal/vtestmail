@@ -28,9 +28,7 @@ public abstract class Pop3Command extends MailCommand {
 	}
 
 	protected static int parseNumber(String text, int minValue) throws Pop3Exception {
-		if (text == null || text.isEmpty()) {
-			throw Pop3Exception.SyntaxError();
-		}
+		isNotEmpty(text);
 		try {
 			// TODO: do not accept values starting with "+"
 			int number = Integer.parseInt(text);
@@ -39,6 +37,18 @@ public abstract class Pop3Command extends MailCommand {
 			}
 			return number;
 		} catch (NumberFormatException e) {
+			throw Pop3Exception.SyntaxError();
+		}
+	}
+
+	protected static void isNull(String value) throws Pop3Exception {
+		if (value != null) {
+			throw Pop3Exception.SyntaxError();
+		}
+	}
+
+	protected static void isNotEmpty(String value) throws Pop3Exception {
+		if (value == null || value.isEmpty()) {
 			throw Pop3Exception.SyntaxError();
 		}
 	}

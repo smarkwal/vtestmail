@@ -17,19 +17,19 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
+import net.markwalder.junit.mailserver.utils.Assert;
 
 public class USER extends Pop3Command {
 
 	private final String username;
 
 	public USER(String username) {
+		Assert.isNotEmpty(username, "username");
 		this.username = username;
 	}
 
 	public static USER parse(String parameters) throws Pop3Exception {
-		if (parameters == null || parameters.isEmpty()) {
-			throw Pop3Exception.SyntaxError();
-		}
+		isNotEmpty(parameters);
 		return new USER(parameters);
 	}
 

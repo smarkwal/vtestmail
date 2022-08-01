@@ -24,9 +24,7 @@ public class QUIT extends SmtpCommand {
 	}
 
 	public static QUIT parse(String parameters) throws SmtpException {
-		if (parameters != null) {
-			throw SmtpException.SyntaxError();
-		}
+		isNull(parameters);
 		return new QUIT();
 	}
 

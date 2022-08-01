@@ -19,16 +19,18 @@ package net.markwalder.junit.mailserver.pop3;
 import java.io.IOException;
 import java.util.List;
 import net.markwalder.junit.mailserver.Mailbox;
+import net.markwalder.junit.mailserver.utils.Assert;
 
 public class LIST extends Pop3Command {
 
 	private final int messageNumber;
 
 	public LIST() {
-		this(-1);
+		this.messageNumber = -1;
 	}
 
 	public LIST(int messageNumber) {
+		Assert.isInRange(messageNumber, 1, Integer.MAX_VALUE, "messageNumber");
 		this.messageNumber = messageNumber;
 	}
 

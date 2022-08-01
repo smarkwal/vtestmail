@@ -18,19 +18,19 @@ package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
 import net.markwalder.junit.mailserver.Mailbox;
+import net.markwalder.junit.mailserver.utils.Assert;
 
 public class DELE extends Pop3Command {
 
 	private final int messageNumber;
 
 	public DELE(int messageNumber) {
+		Assert.isInRange(messageNumber, 1, Integer.MAX_VALUE, "messageNumber");
 		this.messageNumber = messageNumber;
 	}
 
 	public static DELE parse(String parameters) throws Pop3Exception {
-		if (parameters == null || parameters.isEmpty()) {
-			throw Pop3Exception.SyntaxError();
-		}
+		isNotEmpty(parameters);
 		int messageNumber = parseMessageNumber(parameters);
 		return new DELE(messageNumber);
 	}

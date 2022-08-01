@@ -17,22 +17,20 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
+import net.markwalder.junit.mailserver.utils.Assert;
 
 public class HELO extends SmtpCommand {
 
 	private final String domain;
 
 	public HELO(String domain) {
+		Assert.isNotEmpty(domain, "domain");
 		this.domain = domain;
 	}
 
 	public static HELO parse(String parameters) throws SmtpException {
-		if (parameters == null || parameters.isEmpty()) {
-			throw SmtpException.SyntaxError();
-		}
-		String domain = parameters;
-		// TODO: validate domain
-		return new HELO(domain);
+		isValidDomain(parameters);
+		return new HELO(parameters);
 	}
 
 	@Override

@@ -17,19 +17,19 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
+import net.markwalder.junit.mailserver.utils.Assert;
 
 public class PASS extends Pop3Command {
 
 	private final String password;
 
 	public PASS(String password) {
+		Assert.isNotNull(password, "password");
 		this.password = password;
 	}
 
 	public static PASS parse(String parameters) throws Pop3Exception {
-		if (parameters == null || parameters.isEmpty()) {
-			throw Pop3Exception.SyntaxError();
-		}
+		isNotEmpty(parameters);
 		return new PASS(parameters);
 	}
 

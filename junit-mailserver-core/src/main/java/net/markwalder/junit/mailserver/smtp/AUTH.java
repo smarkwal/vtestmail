@@ -20,6 +20,7 @@ import java.io.IOException;
 import net.markwalder.junit.mailserver.MailboxStore;
 import net.markwalder.junit.mailserver.auth.Authenticator;
 import net.markwalder.junit.mailserver.auth.Credentials;
+import net.markwalder.junit.mailserver.utils.Assert;
 import net.markwalder.junit.mailserver.utils.StringUtils;
 
 public class AUTH extends SmtpCommand {
@@ -32,16 +33,16 @@ public class AUTH extends SmtpCommand {
 	}
 
 	public AUTH(String authType, String initialResponse) {
+		Assert.isNotEmpty(authType, "authType");
 		this.authType = authType;
 		this.initialResponse = initialResponse;
 	}
 
 	public static AUTH parse(String parameters) throws SmtpException {
-		if (parameters == null || parameters.isEmpty()) {
-			throw SmtpException.SyntaxError();
-		}
+		isNotEmpty(parameters);
 		String authType = StringUtils.substringBefore(parameters, " ");
 		String initialResponse = StringUtils.substringAfter(parameters, " ");
+		isNotEmpty(authType);
 		return new AUTH(authType, initialResponse);
 	}
 
