@@ -21,6 +21,7 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import java.net.Socket;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
+import net.markwalder.junit.mailserver.utils.Assert;
 import net.markwalder.junit.mailserver.utils.DigestUtils;
 
 public class MailSession {
@@ -40,6 +41,7 @@ public class MailSession {
 	// TODO: keep session log
 
 	void setSocketData(Socket socket) {
+		Assert.isNotNull(socket, "socket");
 
 		// get server and client address and port
 		serverAddress = socket.getLocalAddress().getHostAddress();
@@ -95,6 +97,11 @@ public class MailSession {
 	// TODO: move login methods somewhere else?
 
 	public void login(String authType, String username, String secret, MailboxProvider store) {
+		Assert.isNotEmpty(authType, "authType");
+		Assert.isNotEmpty(username, "username");
+		Assert.isNotNull(secret, "secret");
+		Assert.isNotNull(store, "store");
+
 		if (isAuthenticated()) {
 			throw new IllegalStateException("Already authenticated"); // TODO: return protocol error?
 		}
@@ -114,6 +121,12 @@ public class MailSession {
 	}
 
 	public void login(String authType, String username, String digest, String timestamp, MailboxProvider store) {
+		Assert.isNotEmpty(authType, "authType");
+		Assert.isNotEmpty(username, "username");
+		Assert.isNotEmpty(digest, "digest");
+		Assert.isNotEmpty(timestamp, "timestamp");
+		Assert.isNotNull(store, "store");
+
 		if (isAuthenticated()) {
 			throw new IllegalStateException("Already authenticated"); // TODO: return protocol error?
 		}

@@ -25,6 +25,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import net.markwalder.junit.mailserver.utils.Assert;
 import net.markwalder.junit.mailserver.utils.LineReader;
 
 /**
@@ -43,6 +44,10 @@ public abstract class MailClient {
 	private final String continuation;
 
 	protected MailClient(Socket socket, StringBuilder log, String continuation) throws IOException {
+		Assert.isNotNull(socket, "socket");
+		Assert.isNotNull(log, "log");
+		Assert.isNotEmpty(continuation, "continuation");
+
 		this.continuation = continuation;
 
 		InputStream inputStream = socket.getInputStream();
@@ -76,6 +81,7 @@ public abstract class MailClient {
 	 * @throws IOException If an I/O error occurs.
 	 */
 	public void writeLine(String line) throws IOException {
+		Assert.isNotNull(line, "line");
 		System.out.println("Server: " + line);
 		log.append(line).append(LF);
 		writer.write(line);

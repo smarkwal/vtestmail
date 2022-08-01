@@ -23,6 +23,7 @@ public class RandomStringUtils {
 	private static final Random RANDOM = new Random();
 
 	public static String randomAscii(int count) {
+		Assert.isInRange(count, 1, Integer.MAX_VALUE, "count");
 		StringBuilder buffer = new StringBuilder(count);
 		for (int i = 0; i < count; i++) {
 			int value = 33 + RANDOM.nextInt(95);
@@ -32,6 +33,7 @@ public class RandomStringUtils {
 	}
 
 	public static String randomAlphanumeric(int count) {
+		Assert.isInRange(count, 1, Integer.MAX_VALUE, "count");
 		StringBuilder buffer = new StringBuilder(count);
 		for (int i = 0; i < count; i++) {
 			int value = RANDOM.nextInt(62);

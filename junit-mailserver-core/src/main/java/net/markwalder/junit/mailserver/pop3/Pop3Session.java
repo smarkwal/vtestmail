@@ -22,6 +22,7 @@ import java.util.List;
 import net.markwalder.junit.mailserver.MailSession;
 import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxProvider;
+import net.markwalder.junit.mailserver.utils.Assert;
 
 public class Pop3Session extends MailSession {
 
@@ -36,12 +37,29 @@ public class Pop3Session extends MailSession {
 	private String user = null;
 	private Mailbox mailbox = null;
 
+	/**
+	 * Add a command to the list of commands executed in this session.
+	 *
+	 * @param command Command
+	 */
 	void addCommand(Pop3Command command) {
-		commands.add(command);
+		Assert.isNotNull(command, "command");
+		synchronized (commands) {
+			commands.add(command);
+		}
 	}
 
+	/**
+	 * Returns the list of commands that have been sent to the server so far in
+	 * this session. The list is a copy and can be modified without affecting
+	 * the session.
+	 *
+	 * @return List of commands.
+	 */
 	public List<Pop3Command> getCommands() {
-		return Collections.unmodifiableList(commands);
+		synchronized (commands) {
+			return new ArrayList<>(commands);
+		}
 	}
 
 	@Override

@@ -20,7 +20,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import net.markwalder.junit.mailserver.utils.Assert;
 import net.markwalder.junit.mailserver.utils.DigestUtils;
 
 public class Mailbox {
@@ -28,12 +28,12 @@ public class Mailbox {
 	private final String username;
 	private final String secret;
 	private final String email;
-	private final List<Message> messages = new CopyOnWriteArrayList<>();
+	private final List<Message> messages = new ArrayList<>();
 
 	public Mailbox(String username, String secret, String email) {
-		if (username == null) throw new IllegalArgumentException("username must not be null");
-		if (secret == null) throw new IllegalArgumentException("secret must not be null");
-		if (email == null) throw new IllegalArgumentException("email must not be null");
+		Assert.isNotEmpty(username, "username");
+		Assert.isNotEmpty(secret, "secret");
+		Assert.isNotEmpty(email, "email");
 
 		this.username = username;
 		this.secret = secret;
@@ -53,15 +53,22 @@ public class Mailbox {
 	}
 
 	public List<Message> getMessages() {
-		return new ArrayList<>(messages);
+		synchronized (messages) {
+			return new ArrayList<>(messages);
+		}
 	}
 
-	public void addMessage(String message) {
-		messages.add(new Message(message));
+	public void addMessage(String content) {
+		Assert.isNotEmpty(content, "content");
+		synchronized (messages) {
+			messages.add(new Message(content));
+		}
 	}
 
 	public void removeDeletedMessages() {
-		messages.removeIf(Message::isDeleted);
+		synchronized (messages) {
+			messages.removeIf(Message::isDeleted);
+		}
 	}
 
 	public static class Message {
@@ -72,7 +79,7 @@ public class Mailbox {
 		private boolean deleted;
 
 		public Message(String content) {
-			if (content == null) throw new IllegalArgumentException("content must not be null");
+			Assert.isNotEmpty(content, "content");
 			this.content = content;
 		}
 

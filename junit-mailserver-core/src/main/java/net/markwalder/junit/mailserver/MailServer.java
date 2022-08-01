@@ -22,11 +22,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.Security;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocket;
@@ -38,6 +37,7 @@ import net.markwalder.junit.mailserver.auth.DigestMd5Authenticator;
 import net.markwalder.junit.mailserver.auth.LoginAuthenticator;
 import net.markwalder.junit.mailserver.auth.PlainAuthenticator;
 import net.markwalder.junit.mailserver.auth.XOauth2Authenticator;
+import net.markwalder.junit.mailserver.utils.Assert;
 
 /**
  * Skeleton for a simulated/virtual SMTP, IMAP, or POP3 server.
@@ -54,8 +54,8 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 		// System.setProperty("mail.socket.debug", "true");
 	}
 
-	protected final Map<String, MailCommand.Parser<T,E>> commands = new HashMap<>();
-	private final Map<String, Boolean> enabledCommands = new HashMap<>();
+	protected final Map<String, MailCommand.Parser<T, E>> commands = new ConcurrentHashMap<>();
+	private final Map<String, Boolean> enabledCommands = new ConcurrentHashMap<>();
 
 	private final String protocol;
 	protected final MailboxStore store;
@@ -69,7 +69,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	/**
 	 * Registered authenticators.
 	 */
-	private final Map<String, Authenticator> authenticators = new HashMap<>();
+	private final Map<String, Authenticator> authenticators = new ConcurrentHashMap<>();
 
 	/**
 	 * List of supported authentication types.
@@ -98,8 +98,8 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	private final StringBuilder log = new StringBuilder();
 
 	protected MailServer(String protocol, MailboxStore store) {
-		if (protocol == null) throw new IllegalArgumentException("protocol must not be null");
-		if (store == null) throw new IllegalArgumentException("store must not be null");
+		Assert.isNotEmpty(protocol, "protocol");
+		Assert.isNotNull(store, "store");
 		this.protocol = protocol;
 		this.store = store;
 
@@ -110,21 +110,21 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 		addAuthenticator(AuthType.XOAUTH2, new XOauth2Authenticator());
 	}
 
-	protected void addCommand(String command, MailCommand.Parser<T,E> factory) {
-		if (command == null) throw new IllegalArgumentException("command must not be null");
-		if (factory == null) throw new IllegalArgumentException("factory must not be null");
+	protected void addCommand(String command, MailCommand.Parser<T, E> factory) {
+		Assert.isNotEmpty(command, "command");
+		Assert.isNotNull(factory, "factory");
 		command = command.toUpperCase();
 		commands.put(command, factory);
 	}
 
 	public boolean isCommandEnabled(String command) {
-		if (command == null) throw new IllegalArgumentException("command must not be null");
+		Assert.isNotEmpty(command, "command");
 		command = command.toUpperCase();
 		return commands.containsKey(command) && enabledCommands.getOrDefault(command, true);
 	}
 
 	public void setCommandEnabled(String command, boolean enabled) {
-		if (command == null) throw new IllegalArgumentException("command must not be null");
+		Assert.isNotEmpty(command, "command");
 		command = command.toUpperCase();
 		if (enabled) {
 			enabledCommands.put(command, true);
@@ -150,7 +150,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	}
 
 	public void setSSLProtocol(String sslProtocol) {
-		if (sslProtocol == null || sslProtocol.isEmpty()) throw new IllegalArgumentException("sslProtocol must not be null or empty");
+		Assert.isNotEmpty(sslProtocol, "sslProtocol");
 		this.sslProtocol = sslProtocol;
 	}
 
@@ -169,6 +169,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	}
 
 	public void setAuthTypes(String... authTypes) {
+		Assert.isNotNull(authTypes, "authTypes");
 		this.authTypes.clear();
 		for (String authType : authTypes) {
 			addAuthType(authType);
@@ -176,6 +177,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	}
 
 	public void addAuthType(String authType) {
+		Assert.isNotEmpty(authType, "authType");
 		if (!authenticators.containsKey(authType)) {
 			throw new IllegalArgumentException("Authenticator not found: " + authType);
 		}
@@ -184,18 +186,23 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	}
 
 	public void removeAuthType(String authType) {
+		Assert.isNotEmpty(authType, "authType");
 		authTypes.remove(authType);
 	}
 
 	public boolean isAuthTypeSupported(String authType) {
+		Assert.isNotEmpty(authType, "authType");
 		return authTypes.contains(authType);
 	}
 
 	public Authenticator getAuthenticator(String authType) {
+		Assert.isNotEmpty(authType, "authType");
 		return authenticators.get(authType);
 	}
 
 	protected void addAuthenticator(String authType, Authenticator authenticator) {
+		Assert.isNotEmpty(authType, "authType");
+		Assert.isNotNull(authenticator, "authenticator");
 		this.authenticators.put(authType, authenticator);
 	}
 
@@ -261,9 +268,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	 * @param port Port to use for the server.
 	 */
 	public void setPort(int port) {
-		if (port < 0 || port > 65535) {
-			throw new IllegalArgumentException("port must be between 0 and 65535");
-		}
+		Assert.isInRange(port, 0, 65535, "port");
 		if (serverSocket != null) {
 			// TODO: close and reopen server socket?
 		}
@@ -336,7 +341,9 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 				session.setSocketData(socket);
 
 				// add session to history
-				sessions.add(session);
+				synchronized (sessions) {
+					sessions.add(session);
+				}
 
 				// greet client
 				handleNewClient();
@@ -409,7 +416,9 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	}
 
 	public List<S> getSessions() {
-		return Collections.unmodifiableList(sessions);
+		synchronized (sessions) {
+			return new ArrayList<>(sessions);
+		}
 	}
 
 	private String getClientInfo(Socket socket) {

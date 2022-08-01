@@ -43,8 +43,8 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client,
 		addCommand("CAPA", CAPA::parse);
 		addCommand("AUTH", AUTH::parse);
 		addCommand("APOP", APOP::parse);
-		addCommand("USER", USER::new);
-		addCommand("PASS", PASS::new);
+		addCommand("USER", USER::parse);
+		addCommand("PASS", PASS::parse);
 		addCommand("STAT", STAT::parse);
 		addCommand("LIST", LIST::parse);
 		addCommand("UIDL", UIDL::parse);

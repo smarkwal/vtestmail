@@ -24,6 +24,8 @@ import javax.crypto.spec.SecretKeySpec;
 public class HmacUtils {
 
 	public static Mac getMac(String algorithm, byte[] key) {
+		Assert.isNotEmpty(algorithm, "algorithm");
+		Assert.isNotNull(key, "key");
 		try {
 			SecretKeySpec keySpec = new SecretKeySpec(key, algorithm);
 			Mac mac = Mac.getInstance(algorithm);

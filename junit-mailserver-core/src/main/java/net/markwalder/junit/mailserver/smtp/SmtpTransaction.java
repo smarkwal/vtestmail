@@ -17,7 +17,6 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class SmtpTransaction {
@@ -28,11 +27,22 @@ public class SmtpTransaction {
 	private String data;
 
 	void addCommand(SmtpCommand command) {
-		commands.add(command);
+		synchronized (commands) {
+			commands.add(command);
+		}
 	}
 
+	/**
+	 * Returns the list of commands that have been sent to the server so far in
+	 * this transaction. The list is a copy and can be modified without
+	 * affecting the transaction.
+	 *
+	 * @return List of commands.
+	 */
 	public List<SmtpCommand> getCommands() {
-		return Collections.unmodifiableList(commands);
+		synchronized (commands) {
+			return new ArrayList<>(commands);
+		}
 	}
 
 	public String getSender() {
@@ -44,11 +54,15 @@ public class SmtpTransaction {
 	}
 
 	public List<String> getRecipients() {
-		return Collections.unmodifiableList(recipients);
+		synchronized (recipients) {
+			return new ArrayList<>(recipients);
+		}
 	}
 
 	void addRecipient(String recipient) {
-		recipients.add(recipient);
+		synchronized (recipients) {
+			recipients.add(recipient);
+		}
 	}
 
 	public String getData() {

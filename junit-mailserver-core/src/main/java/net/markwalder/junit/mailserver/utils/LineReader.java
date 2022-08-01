@@ -45,7 +45,7 @@ public class LineReader {
 	 * @param reader Underlying reader.
 	 */
 	public LineReader(Reader reader) {
-		if (reader == null) throw new IllegalArgumentException("reader must not be null");
+		Assert.isNotNull(reader, "reader");
 		this.reader = reader;
 	}
 

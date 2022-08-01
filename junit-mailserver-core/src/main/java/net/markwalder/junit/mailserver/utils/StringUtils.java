@@ -19,12 +19,8 @@ package net.markwalder.junit.mailserver.utils;
 public class StringUtils {
 
 	public static String substringBefore(String value, String separator) {
-		if (value == null) {
-			throw new IllegalArgumentException("value must not be null");
-		}
-		if (separator == null || separator.isEmpty()) {
-			throw new IllegalArgumentException("separator must not be null or empty");
-		}
+		Assert.isNotNull(value, "value");
+		Assert.isNotEmpty(separator, "separator");
 		int pos = value.indexOf(separator);
 		if (pos < 0) {
 			return value;
@@ -33,12 +29,8 @@ public class StringUtils {
 	}
 
 	public static String substringAfter(String value, String separator) {
-		if (value == null) {
-			throw new IllegalArgumentException("value must not be null");
-		}
-		if (separator == null || separator.isEmpty()) {
-			throw new IllegalArgumentException("separator must not be null or empty");
-		}
+		Assert.isNotNull(value, "value");
+		Assert.isNotEmpty(separator, "separator");
 		int pos = value.indexOf(separator);
 		if (pos < 0) {
 			return null;
@@ -47,15 +39,9 @@ public class StringUtils {
 	}
 
 	public static String substringBetween(String value, String open, String close) {
-		if (value == null) {
-			throw new IllegalArgumentException("value must not be null");
-		}
-		if (open == null || open.isEmpty()) {
-			throw new IllegalArgumentException("open must not be null or empty");
-		}
-		if (close == null || close.isEmpty()) {
-			throw new IllegalArgumentException("close must not be null or empty");
-		}
+		Assert.isNotNull(value, "value");
+		Assert.isNotEmpty(open, "open");
+		Assert.isNotEmpty(close, "close");
 		int start = value.indexOf(open);
 		if (start < 0) {
 			return null;

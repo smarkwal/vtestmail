@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Properties;
 import net.markwalder.junit.mailserver.smtp.SmtpServer;
+import net.markwalder.junit.mailserver.utils.Assert;
 
 public class SmtpClient {
 
@@ -54,7 +55,7 @@ public class SmtpClient {
 		private Authenticator authenticator = null;
 
 		private SmtpClientBuilder(SmtpServer server) {
-			if (server == null) throw new IllegalArgumentException("server must not be null");
+			Assert.isNotNull(server, "server");
 
 			int port = server.getPort();
 
@@ -89,9 +90,9 @@ public class SmtpClient {
 		}
 
 		public SmtpClientBuilder withAuthentication(String authType, String username, String password) {
-			if (authType == null) throw new IllegalArgumentException("authType must not be null");
-			if (username == null) throw new IllegalArgumentException("username must not be null");
-			if (password == null) throw new IllegalArgumentException("password must not be null");
+			Assert.isNotEmpty(authType, "authType");
+			Assert.isNotEmpty(username, "username");
+			Assert.isNotEmpty(password, "password");
 
 			// If true, attempt to authenticate the user using the AUTH command.
 			// Defaults to false.
@@ -112,7 +113,7 @@ public class SmtpClient {
 		}
 
 		public SmtpClientBuilder withEncryption(String protocols) {
-			if (protocols == null || protocols.isEmpty()) throw new IllegalArgumentException("protocols must not be null or empty");
+			Assert.isNotEmpty(protocols, "protocols");
 
 			// use SSL to connect to SMTP server
 			properties.put("mail.smtp.ssl.enable", "true");

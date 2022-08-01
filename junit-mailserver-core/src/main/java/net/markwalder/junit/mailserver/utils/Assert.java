@@ -16,37 +16,23 @@
 
 package net.markwalder.junit.mailserver.utils;
 
-import static org.assertj.core.api.Assertions.assertThat;
+public class Assert {
 
-import org.junit.jupiter.api.Test;
-
-class RandomStringUtilsTest {
-
-	@Test
-	void randomAscii() {
-
-		for (int i = 1; i < 100; i++) {
-
-			// test
-			String result = RandomStringUtils.randomAscii(i);
-
-			// assert
-			assertThat(result).hasSize(i);
-			assertThat(result).matches("^[\\x21-\\x7F]*$");
+	public static void isNotNull(Object argument, String name) {
+		if (argument == null) {
+			throw new IllegalArgumentException(name + " must not be null");
 		}
 	}
 
-	@Test
-	void randomAlphanumeric() {
+	public static void isNotEmpty(String argument, String name) {
+		if (argument == null || argument.isEmpty()) {
+			throw new IllegalArgumentException(name + " must not be null or empty");
+		}
+	}
 
-		for (int i = 1; i < 100; i++) {
-
-			// test
-			String result = RandomStringUtils.randomAlphanumeric(i);
-
-			// assert
-			assertThat(result).hasSize(i);
-			assertThat(result).matches("^[a-zA-Z0-9]*$");
+	public static void isInRange(int value, int min, int max, String name) {
+		if (value < min || value > max) {
+			throw new IllegalArgumentException(name + " must be between " + min + " and " + max);
 		}
 	}
 

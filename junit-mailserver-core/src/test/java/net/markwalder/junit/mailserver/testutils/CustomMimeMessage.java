@@ -19,6 +19,7 @@ package net.markwalder.junit.mailserver.testutils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
+import net.markwalder.junit.mailserver.utils.Assert;
 
 /**
  * Subclass of {@link MimeMessage} that allows to set the {@code Message-ID} header.
@@ -32,7 +33,7 @@ public class CustomMimeMessage extends MimeMessage {
 	}
 
 	public void setMessageId(String messageId) {
-		if (messageId == null || messageId.isEmpty()) throw new IllegalArgumentException("messageId must not be null or empty");
+		Assert.isNotEmpty(messageId, "messageId");
 		this.messageId = messageId;
 	}
 

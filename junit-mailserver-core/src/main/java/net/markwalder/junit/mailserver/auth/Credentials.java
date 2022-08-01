@@ -16,14 +16,16 @@
 
 package net.markwalder.junit.mailserver.auth;
 
+import net.markwalder.junit.mailserver.utils.Assert;
+
 public class Credentials {
 
 	private final String username;
 	private final String secret;
 
 	public Credentials(String username, String secret) {
-		if (username == null) throw new IllegalArgumentException("username must not be null");
-		if (secret == null) throw new IllegalArgumentException("secret must not be null");
+		Assert.isNotEmpty(username, "username");
+		Assert.isNotNull(secret, "secret");
 		this.username = username;
 		this.secret = secret;
 	}

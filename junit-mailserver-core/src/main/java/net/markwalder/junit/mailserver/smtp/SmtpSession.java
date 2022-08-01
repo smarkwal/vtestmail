@@ -37,14 +37,26 @@ public class SmtpSession extends MailSession {
 
 	void addCommand(SmtpCommand command) {
 		if (transaction == null) {
-			commands.add(command);
+			synchronized (commands) {
+				commands.add(command);
+			}
 		} else {
 			transaction.addCommand(command);
 		}
 	}
 
+	/**
+	 * Returns the list of commands that have been sent to the server so far in
+	 * this session. The list does not include commands which were sent in the
+	 * context of a transaction (MAIL, RCPT, or DATA). The list is a copy and
+	 * can be modified without affecting the session.
+	 *
+	 * @return List of commands.
+	 */
 	public List<SmtpCommand> getCommands() {
-		return Collections.unmodifiableList(commands);
+		synchronized (commands) {
+			return new ArrayList<>(commands);
+		}
 	}
 
 	void startTransaction(String sender) {
@@ -69,13 +81,17 @@ public class SmtpSession extends MailSession {
 	void endTransaction(String data) {
 		if (transaction != null) {
 			transaction.setData(data);
-			transactions.add(transaction);
+			synchronized (transactions) {
+				transactions.add(transaction);
+			}
 			transaction = null;
 		}
 	}
 
 	public List<SmtpTransaction> getTransactions() {
-		return Collections.unmodifiableList(transactions);
+		synchronized (transactions) {
+			return new ArrayList<>(transactions);
+		}
 	}
 
 }

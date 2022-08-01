@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Properties;
 import net.markwalder.junit.mailserver.AuthType;
 import net.markwalder.junit.mailserver.pop3.Pop3Server;
+import net.markwalder.junit.mailserver.utils.Assert;
 
 public class Pop3Client {
 
@@ -81,7 +82,7 @@ public class Pop3Client {
 		private Authenticator authenticator = null;
 
 		private Pop3ClientBuilder(Pop3Server server) {
-			if (server == null) throw new IllegalArgumentException("server must not be null");
+			Assert.isNotNull(server, "server");
 
 			int port = server.getPort();
 
@@ -118,9 +119,9 @@ public class Pop3Client {
 		}
 
 		public Pop3ClientBuilder withAuthentication(String authType, String username, String password) {
-			if (authType == null) throw new IllegalArgumentException("authType must not be null");
-			if (username == null) throw new IllegalArgumentException("username must not be null");
-			if (password == null) throw new IllegalArgumentException("password must not be null");
+			Assert.isNotEmpty(authType, "authType");
+			Assert.isNotEmpty(username, "username");
+			Assert.isNotEmpty(password, "password");
 
 			// Jakarta Mail API special behavior:
 			// LOGIN is not supported.
@@ -155,7 +156,7 @@ public class Pop3Client {
 		}
 
 		public Pop3ClientBuilder withEncryption(String protocols) {
-			if (protocols == null || protocols.isEmpty()) throw new IllegalArgumentException("protocols must not be null or empty");
+			Assert.isNotEmpty(protocols, "protocols");
 
 			// use SSL to connect to POP3 server
 			properties.put("mail.pop3.ssl.enable", "true");

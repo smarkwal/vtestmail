@@ -31,10 +31,13 @@ public class DigestUtils {
 	}
 
 	public static byte[] md5(String data, Charset charset) {
+		Assert.isNotNull(data, "data");
+		Assert.isNotNull(charset, "charset");
 		return md5(data.getBytes(charset));
 	}
 
 	public static byte[] md5(byte[] data) {
+		Assert.isNotNull(data, "data");
 		MessageDigest digest = getMd5Digest();
 		return digest.digest(data);
 	}

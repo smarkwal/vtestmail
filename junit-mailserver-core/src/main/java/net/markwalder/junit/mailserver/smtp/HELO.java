@@ -17,7 +17,6 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class HELO extends SmtpCommand {
 

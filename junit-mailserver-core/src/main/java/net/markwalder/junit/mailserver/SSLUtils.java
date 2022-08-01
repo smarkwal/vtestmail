@@ -36,6 +36,7 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509ExtendedKeyManager;
 import javax.net.ssl.X509TrustManager;
+import net.markwalder.junit.mailserver.utils.Assert;
 
 class SSLUtils {
 
@@ -87,9 +88,9 @@ class SSLUtils {
 		private final X509Certificate[] certificateChain;
 
 		public DummyKeyManager(String alias, PrivateKey privateKey, Certificate[] certificateChain) {
-			if (alias == null || alias.isEmpty()) throw new IllegalArgumentException("alias must not be null or empty");
-			if (privateKey == null) throw new IllegalArgumentException("privateKey must not be null");
-			if (certificateChain == null) throw new IllegalArgumentException("certificateChain must not be null");
+			Assert.isNotEmpty(alias, "alias");
+			Assert.isNotNull(privateKey, "privateKey");
+			Assert.isNotNull(certificateChain, "certificateChain");
 			this.alias = alias;
 			this.privateKey = privateKey;
 			this.certificateChain = new X509Certificate[certificateChain.length];
