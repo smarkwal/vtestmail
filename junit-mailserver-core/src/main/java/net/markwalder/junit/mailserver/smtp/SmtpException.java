@@ -16,25 +16,27 @@
 
 package net.markwalder.junit.mailserver.smtp;
 
-public class ProtocolException extends Exception {
+import net.markwalder.junit.mailserver.MailException;
 
-	public static ProtocolException AuthenticationRequired() {
-		return new ProtocolException("530", "5.7.0", "Authentication required");
+public class SmtpException extends MailException {
+
+	public static SmtpException AuthenticationRequired() {
+		return new SmtpException("530", "5.7.0", "Authentication required");
 	}
 
-	public static ProtocolException UnrecognizedAuthenticationType() {
-		return new ProtocolException("504", "5.5.4", "Unrecognized authentication type");
+	public static SmtpException UnrecognizedAuthenticationType() {
+		return new SmtpException("504", "5.5.4", "Unrecognized authentication type");
 	}
 
-	public static ProtocolException AuthenticationFailed() {
-		return new ProtocolException("535", "5.7.8", "Authentication failed");
+	public static SmtpException AuthenticationFailed() {
+		return new SmtpException("535", "5.7.8", "Authentication failed");
 	}
 
-	public static ProtocolException SyntaxError() {
-		return new ProtocolException("501", "5.5.4", "Syntax error in parameters or arguments");
+	public static SmtpException SyntaxError() {
+		return new SmtpException("501", "5.5.4", "Syntax error in parameters or arguments");
 	}
 
-	public ProtocolException(String statusCode, String enhancedStatusCode, String message) {
+	public SmtpException(String statusCode, String enhancedStatusCode, String message) {
 		super(statusCode + " " + enhancedStatusCode + " " + message);
 	}
 

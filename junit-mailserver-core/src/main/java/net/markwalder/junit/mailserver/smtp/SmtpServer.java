@@ -18,7 +18,8 @@ package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.function.Function;
+import net.markwalder.junit.mailserver.MailCommand;
+import net.markwalder.junit.mailserver.MailException;
 import net.markwalder.junit.mailserver.MailServer;
 import net.markwalder.junit.mailserver.MailboxStore;
 import net.markwalder.junit.mailserver.utils.StringUtils;
@@ -36,7 +37,7 @@ import net.markwalder.junit.mailserver.utils.StringUtils;
  *     <li>Messages are either delivered to a local mailbox, or silently discarded.</li>
  * </ul>
  */
-public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient> {
+public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient, SmtpException> {
 
 	public SmtpServer(MailboxStore store) {
 		super("SMTP", store);
@@ -74,12 +75,14 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient>
 
 		// TODO: try to move some of the following code into MailServer
 
+		// TODO: use an "exception handler" with try/catch over all of the following code
+
 		// split line into command name and parameters
 		String name = StringUtils.substringBefore(line, " ").toUpperCase();
 		String parameters = StringUtils.substringAfter(line, " ");
 
 		// try to find command implementation class
-		Function<String, SmtpCommand> commandFactory = commands.get(name);
+		MailCommand.Parser<SmtpCommand, SmtpException> commandFactory = commands.get(name);
 		if (commandFactory == null) {
 			client.writeLine("502 5.5.1 Command not implemented");
 			return;
@@ -91,8 +94,13 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient>
 		}
 
 		// create command instance
-		// TODO: validate parameters in factory
-		SmtpCommand command = commandFactory.apply(parameters);
+		SmtpCommand command;
+		try {
+			command = commandFactory.parse(parameters);
+		} catch (MailException e) {
+			client.writeLine(e.getMessage());
+			return;
+		}
 
 		if (command instanceof DATA) {
 			// add command to history
@@ -103,7 +111,7 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient>
 		// execute command
 		try {
 			command.execute(this, session, client);
-		} catch (ProtocolException e) {
+		} catch (SmtpException e) {
 			client.writeLine(e.getMessage());
 		}
 

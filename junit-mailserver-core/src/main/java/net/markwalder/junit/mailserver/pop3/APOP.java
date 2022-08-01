@@ -30,13 +30,13 @@ public class APOP extends Pop3Command {
 	}
 
 	@Override
-	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception {
 		session.assertState(State.AUTHORIZATION);
 
 		String username = StringUtils.substringBefore(parameters, " ");
 		String digest = StringUtils.substringAfter(parameters, " ");
-		if (username == null || digest == null) {
-			throw new ProtocolException("Invalid APOP command");
+		if (digest == null) {
+			throw Pop3Exception.SyntaxError();
 		}
 
 		// try to authenticate

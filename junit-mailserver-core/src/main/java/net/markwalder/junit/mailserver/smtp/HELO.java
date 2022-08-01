@@ -25,7 +25,7 @@ public class HELO extends SmtpCommand {
 	}
 
 	@Override
-	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
+	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, SmtpException {
 		client.writeLine("250 OK");
 	}
 

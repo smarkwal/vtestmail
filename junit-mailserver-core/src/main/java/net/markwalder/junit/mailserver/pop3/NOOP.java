@@ -29,7 +29,7 @@ public class NOOP extends Pop3Command {
 	}
 
 	@Override
-	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception {
 		session.assertState(State.TRANSACTION);
 		client.writeLine("+OK");
 	}

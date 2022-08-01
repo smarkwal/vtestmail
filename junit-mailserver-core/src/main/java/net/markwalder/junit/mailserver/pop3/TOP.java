@@ -31,7 +31,7 @@ public class TOP extends Pop3Command {
 	}
 
 	@Override
-	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception {
 		session.assertState(State.TRANSACTION);
 
 		// try to find message by number, and get top n lines
@@ -39,7 +39,7 @@ public class TOP extends Pop3Command {
 		String n = StringUtils.substringAfter(parameters, " ");
 		String lines = getMessageLines(session, msg, n);
 		if (lines == null) {
-			throw ProtocolException.MessageNotFound();
+			throw Pop3Exception.MessageNotFound();
 		}
 
 		client.writeLine("+OK");

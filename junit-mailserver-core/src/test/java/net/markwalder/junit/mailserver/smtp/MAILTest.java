@@ -23,7 +23,7 @@ import org.mockito.Mockito;
 class MAILTest extends CommandTest {
 
 	@Test
-	void execute() throws ProtocolException, IOException {
+	void execute() throws SmtpException, IOException {
 
 		// mock
 		Mockito.doReturn(false).when(server).isAuthenticationRequired();

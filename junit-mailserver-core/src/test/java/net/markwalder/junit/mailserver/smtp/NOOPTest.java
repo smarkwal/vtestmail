@@ -23,7 +23,7 @@ import org.mockito.Mockito;
 class NOOPTest extends CommandTest {
 
 	@Test
-	void execute() throws ProtocolException, IOException {
+	void execute() throws SmtpException, IOException {
 
 		// prepare
 		SmtpCommand command = new NOOP();

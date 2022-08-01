@@ -25,7 +25,7 @@ import org.mockito.Mockito;
 class EHLOTest extends CommandTest {
 
 	@Test
-	void execute() throws ProtocolException, IOException {
+	void execute() throws SmtpException, IOException {
 
 		// mock
 		Mockito.doReturn("localhost").when(session).getServerAddress();
@@ -57,7 +57,7 @@ class EHLOTest extends CommandTest {
 	}
 
 	@Test
-	void execute_noAuthTypes() throws ProtocolException, IOException {
+	void execute_noAuthTypes() throws SmtpException, IOException {
 
 		// mock
 		Mockito.doReturn("localhost").when(session).getServerAddress();

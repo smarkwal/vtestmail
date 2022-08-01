@@ -18,7 +18,7 @@ package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.function.Function;
+import net.markwalder.junit.mailserver.MailCommand;
 import net.markwalder.junit.mailserver.MailServer;
 import net.markwalder.junit.mailserver.MailboxStore;
 import net.markwalder.junit.mailserver.utils.StringUtils;
@@ -34,7 +34,7 @@ import net.markwalder.junit.mailserver.utils.StringUtils;
  *     <li>The mailbox is not exclusively locked by the server.</li>
  * </ul>
  */
-public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client> {
+public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client, Pop3Exception> {
 
 	public Pop3Server(MailboxStore store) {
 		super("POP3", store);
@@ -78,11 +78,13 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client>
 
 		// TODO: try to move some of the following code into MailServer
 
+		// TODO: use an "exception handler" with try/catch over all of the following code
+
 		String name = StringUtils.substringBefore(line, " ").toUpperCase();
 		String parameters = StringUtils.substringAfter(line, " ");
 
 		// try to find command implementation class
-		Function<String, Pop3Command> commandFactory = commands.get(name);
+		MailCommand.Parser<Pop3Command, Pop3Exception> commandFactory = commands.get(name);
 		if (commandFactory == null) {
 			client.writeLine("-ERR Unknown command");
 			return;
@@ -94,8 +96,13 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client>
 		}
 
 		// create command instance
-		// TODO: validate parameters in factory
-		Pop3Command command = commandFactory.apply(parameters);
+		Pop3Command command;
+		try {
+			command = commandFactory.parse(parameters);
+		} catch (Pop3Exception e) {
+			client.writeLine("-ERR " + e.getMessage());
+			return;
+		}
 
 		// add command to history
 		session.addCommand(command);
@@ -103,7 +110,7 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client>
 		// execute command
 		try {
 			command.execute(this, session, client);
-		} catch (ProtocolException e) {
+		} catch (Pop3Exception e) {
 			client.writeLine("-ERR " + e.getMessage());
 		}
 	}

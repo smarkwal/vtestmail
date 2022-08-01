@@ -76,9 +76,9 @@ public class Pop3Session extends MailSession {
 	 *
 	 * @param expectedState Expected state.
 	 */
-	void assertState(State expectedState) throws ProtocolException {
+	void assertState(State expectedState) throws Pop3Exception {
 		if (this.state != expectedState) {
-			throw ProtocolException.IllegalState(this.state);
+			throw Pop3Exception.IllegalState(this.state);
 		}
 	}
 

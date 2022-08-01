@@ -29,7 +29,7 @@ public class RSET extends SmtpCommand {
 	}
 
 	@Override
-	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
+	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, SmtpException {
 
 		// clear sender, list of recipients, and message data
 		session.endTransaction(null);

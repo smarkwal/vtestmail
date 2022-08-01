@@ -33,7 +33,7 @@ class AUTHTest extends CommandTest {
 	private final MailboxStore store = Mockito.mock(MailboxStore.class);
 
 	@Test
-	void execute() throws ProtocolException, IOException {
+	void execute() throws SmtpException, IOException {
 
 		// mock
 		Mockito.doReturn(true).when(server).isAuthTypeSupported("LOGIN");
@@ -74,7 +74,7 @@ class AUTHTest extends CommandTest {
 		SmtpCommand command = new AUTH("LOGIN");
 
 		// test
-		Exception exception = assertThrows(ProtocolException.class, () -> command.execute(server, session, client));
+		Exception exception = assertThrows(SmtpException.class, () -> command.execute(server, session, client));
 
 		// assert
 		assertThat(exception).hasMessage("504 5.5.4 Unrecognized authentication type");
@@ -101,7 +101,7 @@ class AUTHTest extends CommandTest {
 		SmtpCommand command = new AUTH("PLAIN");
 
 		// test
-		Exception exception = assertThrows(ProtocolException.class, () -> command.execute(server, session, client));
+		Exception exception = assertThrows(SmtpException.class, () -> command.execute(server, session, client));
 
 		// assert
 		assertThat(exception).hasMessage("535 5.7.8 Authentication failed");

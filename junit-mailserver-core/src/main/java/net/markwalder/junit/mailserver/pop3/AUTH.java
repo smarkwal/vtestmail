@@ -33,7 +33,7 @@ public class AUTH extends Pop3Command {
 	}
 
 	@Override
-	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception {
 		session.assertState(State.AUTHORIZATION);
 
 		// https://datatracker.ietf.org/doc/html/rfc4954
@@ -46,7 +46,7 @@ public class AUTH extends Pop3Command {
 
 		// check if authentication type is supported
 		if (!server.isAuthTypeSupported(authType)) {
-			throw ProtocolException.UnrecognizedAuthenticationType();
+			throw Pop3Exception.UnrecognizedAuthenticationType();
 		}
 
 		// get user credentials from client
@@ -54,7 +54,7 @@ public class AUTH extends Pop3Command {
 		MailboxStore store = server.getStore();
 		Credentials credentials = authenticator.authenticate(parameters, client, store);
 		if (credentials == null) {
-			throw ProtocolException.AuthenticationFailed();
+			throw Pop3Exception.AuthenticationFailed();
 		}
 
 		// try to authenticate user
@@ -63,7 +63,7 @@ public class AUTH extends Pop3Command {
 		session.login(authType, username, secret, store);
 
 		if (!session.isAuthenticated()) {
-			throw ProtocolException.AuthenticationFailed();
+			throw Pop3Exception.AuthenticationFailed();
 		}
 
 		client.writeLine("+OK Authentication successful");

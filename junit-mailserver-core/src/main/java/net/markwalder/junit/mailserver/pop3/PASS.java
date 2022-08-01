@@ -25,13 +25,13 @@ public class PASS extends Pop3Command {
 	}
 
 	@Override
-	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception {
 		session.assertState(State.AUTHORIZATION);
 
 		// get username
 		String user = session.getUser();
 		if (user == null) {
-			throw new ProtocolException("USER command not received");
+			throw Pop3Exception.UserCommandNotReceived();
 		}
 
 		// try to authenticate

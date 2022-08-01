@@ -29,7 +29,7 @@ public class STARTTLS extends SmtpCommand {
 	}
 
 	@Override
-	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
+	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, SmtpException {
 		client.writeLine("220 Ready to start TLS");
 		// TODO: implement STARTTLS
 	}

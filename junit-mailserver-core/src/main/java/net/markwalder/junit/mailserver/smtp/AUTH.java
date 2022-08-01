@@ -33,7 +33,7 @@ public class AUTH extends SmtpCommand {
 	}
 
 	@Override
-	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
+	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, SmtpException {
 
 		// https://datatracker.ietf.org/doc/html/rfc4954
 		// https://www.iana.org/assignments/sasl-mechanisms/sasl-mechanisms.xhtml
@@ -45,7 +45,7 @@ public class AUTH extends SmtpCommand {
 
 		// check if authentication type is supported
 		if (!server.isAuthTypeSupported(authType)) {
-			throw ProtocolException.UnrecognizedAuthenticationType();
+			throw SmtpException.UnrecognizedAuthenticationType();
 		}
 
 		// get user credentials from client
@@ -53,7 +53,7 @@ public class AUTH extends SmtpCommand {
 		MailboxStore store = server.getStore();
 		Credentials credentials = authenticator.authenticate(parameters, client, store);
 		if (credentials == null) {
-			throw ProtocolException.AuthenticationFailed();
+			throw SmtpException.AuthenticationFailed();
 		}
 
 		// try to authenticate user
@@ -62,7 +62,7 @@ public class AUTH extends SmtpCommand {
 		session.login(authType, username, secret, store);
 
 		if (!session.isAuthenticated()) {
-			throw ProtocolException.AuthenticationFailed();
+			throw SmtpException.AuthenticationFailed();
 		}
 
 		client.writeLine("235 2.7.0 Authentication succeeded");

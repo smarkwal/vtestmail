@@ -25,6 +25,6 @@ public abstract class SmtpCommand extends MailCommand {
 		super(parameters);
 	}
 
-	protected abstract void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException;
+	protected abstract void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, SmtpException;
 
 }

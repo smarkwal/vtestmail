@@ -28,7 +28,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Function;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSession;
@@ -44,7 +43,7 @@ import net.markwalder.junit.mailserver.auth.XOauth2Authenticator;
  * Skeleton for a simulated/virtual SMTP, IMAP, or POP3 server.
  */
 @SuppressWarnings("unused")
-public abstract class MailServer<T extends MailCommand, S extends MailSession, C extends MailClient> implements AutoCloseable {
+public abstract class MailServer<T extends MailCommand, S extends MailSession, C extends MailClient, E extends MailException> implements AutoCloseable {
 
 	static {
 
@@ -55,8 +54,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 		// System.setProperty("mail.socket.debug", "true");
 	}
 
-	// TODO: create a dedicated factory interface instead of using Function
-	protected final Map<String, Function<String, T>> commands = new HashMap<>();
+	protected final Map<String, MailCommand.Parser<T,E>> commands = new HashMap<>();
 	private final Map<String, Boolean> enabledCommands = new HashMap<>();
 
 	private final String protocol;
@@ -112,7 +110,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 		addAuthenticator(AuthType.XOAUTH2, new XOauth2Authenticator());
 	}
 
-	protected void addCommand(String command, Function<String, T> factory) {
+	protected void addCommand(String command, MailCommand.Parser<T,E> factory) {
 		if (command == null) throw new IllegalArgumentException("command must not be null");
 		if (factory == null) throw new IllegalArgumentException("factory must not be null");
 		command = command.toUpperCase();

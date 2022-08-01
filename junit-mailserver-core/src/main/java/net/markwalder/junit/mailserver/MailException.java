@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-package net.markwalder.junit.mailserver.smtp;
+package net.markwalder.junit.mailserver;
 
-import java.io.IOException;
+public class MailException extends Exception {
 
-public class NOOP extends SmtpCommand {
-
-	public NOOP() {
-		this(null);
-	}
-
-	NOOP(String parameters) {
-		super(parameters);
-	}
-
-	@Override
-	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, SmtpException {
-		client.writeLine("250 OK");
+	public MailException(String message) {
+		super(message);
 	}
 
 }

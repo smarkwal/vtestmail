@@ -32,7 +32,7 @@ class DATATest extends CommandTest {
 	private final Mailbox mailbox = Mockito.mock(Mailbox.class);
 
 	@Test
-	void execute() throws ProtocolException, IOException {
+	void execute() throws SmtpException, IOException {
 
 		// mock
 		Mockito.doReturn(false).when(server).isAuthenticationRequired();
@@ -77,7 +77,7 @@ class DATATest extends CommandTest {
 		SmtpCommand command = new DATA();
 
 		// test
-		Exception exception = assertThrows(ProtocolException.class, () -> command.execute(server, session, client));
+		Exception exception = assertThrows(SmtpException.class, () -> command.execute(server, session, client));
 
 		// assert
 		assertThat(exception).hasMessage("530 5.7.0 Authentication required");

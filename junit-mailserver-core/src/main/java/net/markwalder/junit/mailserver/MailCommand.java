@@ -58,4 +58,9 @@ public abstract class MailCommand {
 		return Objects.hash(name, parameters);
 	}
 
+	@FunctionalInterface
+	public interface Parser<T extends MailCommand, E extends MailException> {
+		T parse(String command) throws E;
+	}
+
 }

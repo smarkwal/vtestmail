@@ -35,7 +35,7 @@ public class UIDL extends Pop3Command {
 	}
 
 	@Override
-	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception {
 		session.assertState(State.TRANSACTION);
 
 		if (parameters == null) {
@@ -59,7 +59,7 @@ public class UIDL extends Pop3Command {
 			// try to find message by number
 			Mailbox.Message message = session.getMessage(parameters);
 			if (message == null || message.isDeleted()) {
-				throw ProtocolException.MessageNotFound();
+				throw Pop3Exception.MessageNotFound();
 			}
 
 			String uid = message.getUID();

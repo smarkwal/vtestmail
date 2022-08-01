@@ -32,10 +32,10 @@ public class DATA extends SmtpCommand {
 	}
 
 	@Override
-	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
+	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, SmtpException {
 
 		if (server.isAuthenticationRequired()) {
-			throw ProtocolException.AuthenticationRequired();
+			throw SmtpException.AuthenticationRequired();
 		}
 
 		client.writeLine("354 Send message, end with <CRLF>.<CRLF>");

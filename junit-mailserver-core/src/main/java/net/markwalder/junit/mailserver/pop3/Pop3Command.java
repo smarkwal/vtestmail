@@ -25,6 +25,6 @@ public abstract class Pop3Command extends MailCommand {
 		super(parameters);
 	}
 
-	protected abstract void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException;
+	protected abstract void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception;
 
 }

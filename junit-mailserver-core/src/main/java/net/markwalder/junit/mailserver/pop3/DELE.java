@@ -30,13 +30,13 @@ public class DELE extends Pop3Command {
 	}
 
 	@Override
-	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, ProtocolException {
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception {
 		session.assertState(State.TRANSACTION);
 
 		// try to find message by number
 		Mailbox.Message message = session.getMessage(parameters);
 		if (message == null || message.isDeleted()) {
-			throw ProtocolException.MessageNotFound();
+			throw Pop3Exception.MessageNotFound();
 		}
 
 		// mark message as deleted

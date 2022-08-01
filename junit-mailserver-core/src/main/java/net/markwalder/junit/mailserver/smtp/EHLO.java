@@ -27,7 +27,7 @@ public class EHLO extends SmtpCommand {
 	}
 
 	@Override
-	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
+	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, SmtpException {
 
 		// send greeting to client
 		String greeting = session.getServerAddress() + " Hello " + session.getClientAddress();

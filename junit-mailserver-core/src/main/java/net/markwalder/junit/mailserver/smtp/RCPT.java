@@ -26,15 +26,15 @@ public class RCPT extends SmtpCommand {
 	}
 
 	@Override
-	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, ProtocolException {
+	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, SmtpException {
 
 		if (server.isAuthenticationRequired()) {
-			throw ProtocolException.AuthenticationRequired();
+			throw SmtpException.AuthenticationRequired();
 		}
 
 		String email = StringUtils.substringBetween(parameters, "<", ">");
 		if (email == null) {
-			throw ProtocolException.SyntaxError();
+			throw SmtpException.SyntaxError();
 		}
 
 		// remember email address of recipient
