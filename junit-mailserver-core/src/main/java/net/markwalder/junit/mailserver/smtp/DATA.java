@@ -45,6 +45,7 @@ public class DATA extends SmtpCommand {
 
 		client.writeLine("354 Send message, end with <CRLF>.<CRLF>");
 		String message = readMessage(client);
+		// TODO: add Received header
 		deliverMessage(message, server, session);
 
 		// clear sender, list of recipients, and message data

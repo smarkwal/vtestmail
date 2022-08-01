@@ -35,7 +35,7 @@ class Pop3CommonsNetTest {
 	private static final String EMAIL = "alice@localhost";
 
 	@Test
-	void test() throws IOException {
+	void test() throws IOException, InterruptedException {
 
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
@@ -68,7 +68,7 @@ class Pop3CommonsNetTest {
 				Pop3Session session = server.getActiveSession();
 				assertThat(session).isNotNull();
 				assertThat(session.isAuthenticated()).isFalse();
-				assertThat(session.getUser()).isNull();
+				assertThat(session.getUsername()).isNull();
 
 				// CAPA
 				boolean success = client.capa();
@@ -94,7 +94,7 @@ class Pop3CommonsNetTest {
 
 				// assert: session is authenticated
 				assertThat(session.isAuthenticated()).isTrue();
-				assertThat(session.getUser()).isEqualTo(USERNAME);
+				assertThat(session.getUsername()).isEqualTo(USERNAME);
 
 				// STAT
 				POP3MessageInfo status = client.status();
@@ -216,11 +216,12 @@ class Pop3CommonsNetTest {
 				success = client.logout();
 				assertThat(success).isTrue();
 
+				// assert: session has been closed
+				session.waitUntilClosed(5000);
+				assertThat(session.isClosed()).isTrue();
+
 				// assert: message has been deleted
 				assertThat(mailbox.getMessages()).hasSize(1);
-
-				// assert: session has been closed
-				assertThat(session.isClosed()).isTrue();
 
 				// assert: commands have been recorded
 				List<Pop3Command> commands = session.getCommands();

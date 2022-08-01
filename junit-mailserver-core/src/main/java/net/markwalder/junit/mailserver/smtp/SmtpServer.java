@@ -52,6 +52,7 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 		addCommand("NOOP", NOOP::parse);
 		addCommand("RSET", RSET::parse);
 		addCommand("QUIT", QUIT::parse);
+		// TODO: implement VRFY command
 	}
 
 	@Override
