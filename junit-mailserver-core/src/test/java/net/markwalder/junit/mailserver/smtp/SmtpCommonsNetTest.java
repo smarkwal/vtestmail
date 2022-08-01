@@ -82,8 +82,8 @@ public class SmtpCommonsNetTest {
 
 				// VRFY alice@localhost <-- not supported
 				success = client.verify(EMAIL);
-				assertThat(success).isFalse();
-				assertReply(client, "502 5.5.1 Command not implemented");
+				assertThat(success).isTrue();
+				assertReply(client, "250 2.1.0 <" + EMAIL + "> User OK");
 
 				// MAIL FROM:<bob@localhost>
 				replyCode = client.mail("<bob@localhost>");
@@ -139,11 +139,12 @@ public class SmtpCommonsNetTest {
 
 				// assert: commands have been recorded
 				List<SmtpCommand> commands = session.getCommands();
-				assertThat(commands).hasSize(5);
+				assertThat(commands).hasSize(6);
 				assertThat(commands).containsExactly(
 						new HELO("localhost"),
 						new NOOP(),
 						new RSET(),
+						new VRFY(EMAIL),
 						new CustomCommand("CMD1"),
 						new QUIT()
 				);

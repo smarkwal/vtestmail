@@ -33,6 +33,8 @@ class EHLOTest extends CommandTest {
 		Mockito.doReturn(true).when(server).isCommandEnabled("AUTH");
 		List<String> authTypes = List.of("PLAIN", "LOGIN");
 		Mockito.doReturn(authTypes).when(server).getAuthTypes();
+		Mockito.doReturn(true).when(server).isCommandEnabled("VRFY");
+		Mockito.doReturn(false).when(server).isCommandEnabled("EXPN");
 
 		// prepare
 		SmtpCommand command = new EHLO("localhost");
@@ -46,8 +48,11 @@ class EHLOTest extends CommandTest {
 		Mockito.verify(server).isCommandEnabled("STARTTLS");
 		Mockito.verify(server).isCommandEnabled("AUTH");
 		Mockito.verify(server).getAuthTypes();
+		Mockito.verify(server).isCommandEnabled("VRFY");
+		Mockito.verify(server).isCommandEnabled("EXPN");
 		Mockito.verify(client).writeLine("250-STARTTLS");
 		Mockito.verify(client).writeLine("250-AUTH PLAIN LOGIN");
+		Mockito.verify(client).writeLine("250-VRFY");
 		Mockito.verify(client).writeLine("250-ENHANCEDSTATUSCODES");
 		Mockito.verify(client).writeLine("250 OK");
 
@@ -63,6 +68,8 @@ class EHLOTest extends CommandTest {
 		Mockito.doReturn(true).when(server).isCommandEnabled("AUTH");
 		List<Object> authTypes = Collections.emptyList();
 		Mockito.doReturn(authTypes).when(server).getAuthTypes();
+		Mockito.doReturn(true).when(server).isCommandEnabled("VRFY");
+		Mockito.doReturn(false).when(server).isCommandEnabled("EXPN");
 
 		// prepare
 		SmtpCommand command = new EHLO("localhost");
@@ -76,7 +83,10 @@ class EHLOTest extends CommandTest {
 		Mockito.verify(server).isCommandEnabled("STARTTLS");
 		Mockito.verify(server).isCommandEnabled("AUTH");
 		Mockito.verify(server).getAuthTypes();
+		Mockito.verify(server).isCommandEnabled("VRFY");
+		Mockito.verify(server).isCommandEnabled("EXPN");
 		Mockito.verify(client).writeLine("250-STARTTLS");
+		Mockito.verify(client).writeLine("250-VRFY");
 		Mockito.verify(client).writeLine("250-ENHANCEDSTATUSCODES");
 		Mockito.verify(client).writeLine("250 OK");
 

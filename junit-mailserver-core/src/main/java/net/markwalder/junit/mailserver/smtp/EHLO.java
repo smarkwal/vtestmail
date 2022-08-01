@@ -74,6 +74,14 @@ public class EHLO extends SmtpCommand {
 			}
 		}
 
+		if (server.isCommandEnabled("VRFY")) {
+			extensions.add("VRFY");
+		}
+
+		if (server.isCommandEnabled("EXPN")) {
+			extensions.add("EXPN");
+		}
+
 		// support enhanced status codes (ESMPT)
 		extensions.add("ENHANCEDSTATUSCODES");
 

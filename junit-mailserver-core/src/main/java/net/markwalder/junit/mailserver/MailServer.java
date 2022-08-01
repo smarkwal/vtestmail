@@ -385,6 +385,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 					} else if (command.isEmpty()) {
 						// TODO: how should an empty line be handled?
 						//  (sent after failed authentication)
+						continue;
 					}
 
 					// TODO: implement command listener

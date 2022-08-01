@@ -46,13 +46,15 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 		addCommand("EHLO", EHLO::parse);
 		addCommand("STARTTLS", STARTTLS::parse);
 		addCommand("AUTH", AUTH::parse);
+		addCommand("VRFY", VRFY::parse);
 		addCommand("MAIL", MAIL::parse);
 		addCommand("RCPT", RCPT::parse);
 		addCommand("DATA", DATA::parse);
 		addCommand("NOOP", NOOP::parse);
 		addCommand("RSET", RSET::parse);
 		addCommand("QUIT", QUIT::parse);
-		// TODO: implement VRFY command
+		// TODO: implement EXPN command
+		// TODO: implement HELP command
 	}
 
 	@Override
@@ -83,6 +85,10 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 
 		// check if command is supported
 		if (!isCommandEnabled(name)) {
+			// TODO: 502 SHOULD be used when the command is actually recognized
+			//  by the SMTP server, but not implemented. If the command is not
+			//  recognized, code 500 SHOULD be returned.
+			//  See https://datatracker.ietf.org/doc/html/rfc5321#section-4.2.4
 			throw SmtpException.CommandNotImplemented();
 		}
 
@@ -91,6 +97,8 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 		SmtpCommand command = commandFactory.parse(parameters);
 
 		// TODO: check if command is allowed in current session state
+		// see https://datatracker.ietf.org/doc/html/rfc5321#section-4.1.4
+		// 503  Bad sequence of commands
 
 		if (!(command instanceof MAIL)) {
 			// add command to history
