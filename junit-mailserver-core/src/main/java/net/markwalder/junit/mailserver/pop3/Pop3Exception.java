@@ -20,8 +20,12 @@ import net.markwalder.junit.mailserver.MailException;
 
 public class Pop3Exception extends MailException {
 
-	public static Pop3Exception MessageNotFound() {
-		return new Pop3Exception("No such message");
+	public static Pop3Exception CommandNotImplemented() {
+		return new Pop3Exception("Unknown command");
+	}
+
+	public static Pop3Exception SyntaxError() {
+		return new Pop3Exception("Syntax error");
 	}
 
 	public static Pop3Exception IllegalState(State state) {
@@ -36,12 +40,12 @@ public class Pop3Exception extends MailException {
 		return new Pop3Exception("Authentication failed");
 	}
 
-	public static Pop3Exception SyntaxError() {
-		return new Pop3Exception("Syntax error");
-	}
-
 	public static Pop3Exception UserCommandNotReceived() {
 		return new Pop3Exception("USER command not received");
+	}
+
+	public static Pop3Exception MessageNotFound() {
+		return new Pop3Exception("No such message");
 	}
 
 	public Pop3Exception(String message) {

@@ -89,14 +89,17 @@ public abstract class MailClient {
 		writer.flush();
 	}
 
-	// TODO: add a writeError(String message) method
-
 	public void writeContinue(String message) throws IOException {
 		if (message == null || message.isEmpty()) {
 			writeLine(continuation);
 		} else {
 			writeLine(continuation + " " + message);
 		}
+	}
+
+	public void writeError(String message) throws IOException {
+		Assert.isNotEmpty(message, "message");
+		writeLine(message);
 	}
 
 }

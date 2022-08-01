@@ -20,6 +20,14 @@ import net.markwalder.junit.mailserver.MailException;
 
 public class SmtpException extends MailException {
 
+	public static SmtpException CommandNotImplemented() {
+		return new SmtpException("502", "5.5.1", "Command not implemented");
+	}
+
+	public static SmtpException SyntaxError() {
+		return new SmtpException("501", "5.5.4", "Syntax error in parameters or arguments");
+	}
+
 	public static SmtpException AuthenticationRequired() {
 		return new SmtpException("530", "5.7.0", "Authentication required");
 	}
@@ -30,10 +38,6 @@ public class SmtpException extends MailException {
 
 	public static SmtpException AuthenticationFailed() {
 		return new SmtpException("535", "5.7.8", "Authentication failed");
-	}
-
-	public static SmtpException SyntaxError() {
-		return new SmtpException("501", "5.5.4", "Syntax error in parameters or arguments");
 	}
 
 	public SmtpException(String statusCode, String enhancedStatusCode, String message) {

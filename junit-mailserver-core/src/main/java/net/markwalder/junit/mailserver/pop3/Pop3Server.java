@@ -78,7 +78,7 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client,
 	}
 
 	@Override
-	protected void handleCommand(String line) throws IOException {
+	protected void handleCommand(String line) throws Pop3Exception, IOException {
 
 		// TODO: try to move some of the following code into MailServer
 
@@ -87,38 +87,21 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client,
 		String name = StringUtils.substringBefore(line, " ").toUpperCase();
 		String parameters = StringUtils.substringAfter(line, " ");
 
-		// try to find command implementation class
-		MailCommand.Parser<Pop3Command, Pop3Exception> commandFactory = commands.get(name);
-		if (commandFactory == null) {
-			client.writeLine("-ERR Unknown command");
-			return;
-		}
-
+		// check if command is supported
 		if (!isCommandEnabled(name)) {
-			client.writeLine("-ERR Disabled command");
-			return;
+			throw Pop3Exception.CommandNotImplemented();
 		}
 
 		// create command instance
-		Pop3Command command;
-		try {
-			command = commandFactory.parse(parameters);
-		} catch (Pop3Exception e) {
-			client.writeLine("-ERR " + e.getMessage());
-			return;
-		}
+		MailCommand.Parser<Pop3Command, Pop3Exception> commandFactory = commands.get(name);
+		Pop3Command command = commandFactory.parse(parameters);
 
 		// add command to history
 		session.addCommand(command);
 
 		// execute command
-		try {
-			command.execute(this, session, client);
-		} catch (Pop3Exception e) {
-			client.writeLine("-ERR " + e.getMessage());
-		}
-	}
+		command.execute(this, session, client);
 
-	// helper methods --------------------------------------------------
+	}
 
 }

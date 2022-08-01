@@ -19,11 +19,18 @@ package net.markwalder.junit.mailserver.pop3;
 import java.io.IOException;
 import java.net.Socket;
 import net.markwalder.junit.mailserver.MailClient;
+import net.markwalder.junit.mailserver.utils.Assert;
 
 public class Pop3Client extends MailClient {
 
 	protected Pop3Client(Socket socket, StringBuilder log) throws IOException {
 		super(socket, log, "+OK");
+	}
+
+	@Override
+	public void writeError(String message) throws IOException {
+		Assert.isNotEmpty(message, "message");
+		writeLine("-ERR " + message);
 	}
 
 }

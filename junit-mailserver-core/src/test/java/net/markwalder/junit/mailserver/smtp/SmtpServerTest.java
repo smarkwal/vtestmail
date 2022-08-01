@@ -440,6 +440,9 @@ class SmtpServerTest {
 
 	}
 
+	// TODO: add test for unknown command
+	// TODO: add test for disabled command
+
 	private Message createTestMessage(SmtpClient client) throws MessagingException {
 		return client.prepareMessage()
 				.messageId("1234567890@localhost")

@@ -70,7 +70,7 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 	}
 
 	@Override
-	protected void handleCommand(String line) throws IOException {
+	protected void handleCommand(String line) throws SmtpException, IOException {
 
 		// TODO: try to move some of the following code into MailServer
 
@@ -80,43 +80,28 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 		String name = StringUtils.substringBefore(line, " ").toUpperCase();
 		String parameters = StringUtils.substringAfter(line, " ");
 
-		// try to find command implementation class
-		MailCommand.Parser<SmtpCommand, SmtpException> commandFactory = commands.get(name);
-		if (commandFactory == null) {
-			client.writeLine("502 5.5.1 Command not implemented");
-			return;
-		}
-
+		// check if command is supported
 		if (!isCommandEnabled(name)) {
-			client.writeLine("502 5.5.1 Disabled command");
-			return;
+			throw SmtpException.CommandNotImplemented();
 		}
 
 		// create command instance
-		SmtpCommand command;
-		try {
-			command = commandFactory.parse(parameters);
-		} catch (SmtpException e) {
-			client.writeLine(e.getMessage());
-			return;
-		}
+		MailCommand.Parser<SmtpCommand, SmtpException> commandFactory = commands.get(name);
+		SmtpCommand command = commandFactory.parse(parameters);
 
-		// TODO: try to add all commands BEFORE they get executed
-		if (command instanceof DATA) {
+		// TODO: check if command is allowed in current session state
+
+		if (!(command instanceof MAIL)) {
 			// add command to history
-			// (before DATA is closing the current transaction)
 			session.addCommand(command);
 		}
 
 		// execute command
-		try {
-			command.execute(this, session, client);
-		} catch (SmtpException e) {
-			client.writeLine(e.getMessage());
-		}
+		command.execute(this, session, client);
 
-		// TODO: try to add all commands BEFORE they get executed
-		if (!(command instanceof DATA)) {
+		// TODO: add MAIL command to session before it gets executed
+		//  --> requires changes to transaction management
+		if (command instanceof MAIL) {
 			// add command to history
 			session.addCommand(command);
 		}
