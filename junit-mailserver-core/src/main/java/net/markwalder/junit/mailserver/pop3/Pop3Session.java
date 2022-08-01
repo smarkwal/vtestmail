@@ -29,13 +29,18 @@ public class Pop3Session extends MailSession {
 	/**
 	 * Timestamp for APOP authentication
 	 */
-	private final String timestamp = "<" + System.currentTimeMillis() + "@localhost>";
+	private final String timestamp;
 
 	private final List<Pop3Command> commands = new ArrayList<>();
 
 	private State state = State.AUTHORIZATION;
 	private String user = null;
 	private Mailbox mailbox = null;
+
+	Pop3Session(String timestamp) {
+		Assert.isNotEmpty(timestamp, "timestamp");
+		this.timestamp = timestamp;
+	}
 
 	/**
 	 * Add a command to the list of commands executed in this session.

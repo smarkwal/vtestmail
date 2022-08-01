@@ -40,7 +40,7 @@ public class CramMd5Authenticator implements Authenticator {
 		}
 
 		// send random challenge to client
-		String challenge = RandomStringUtils.randomAscii(16);
+		String challenge = RandomStringUtils.randomAscii(16); // TODO: inject random number generator
 		client.writeContinue(AuthUtils.encodeBase64(challenge, CHARSET));
 
 		// read response from client

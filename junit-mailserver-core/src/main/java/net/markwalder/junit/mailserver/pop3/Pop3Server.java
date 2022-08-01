@@ -64,7 +64,11 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client,
 
 	@Override
 	protected Pop3Session createSession() {
-		return new Pop3Session();
+
+		// generate timestamp for APOP authentication
+		String timestamp = "<" + clock.millis() + "@localhost>";
+
+		return new Pop3Session(timestamp);
 	}
 
 	@Override

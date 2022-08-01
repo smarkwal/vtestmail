@@ -46,7 +46,7 @@ public class DigestMd5Authenticator implements Authenticator {
 		// step 1 --------------------------------------------------------------
 
 		String realm = "localhost";
-		String nonce = RandomStringUtils.randomAlphanumeric(16);
+		String nonce = RandomStringUtils.randomAlphanumeric(16); // TODO: inject random number generator
 
 		// send digest challenge to client
 		String digestChallenge = generateDigestChallenge(realm, nonce);

@@ -23,6 +23,9 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
 import java.io.IOException;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -187,6 +190,7 @@ public class Pop3ServerTest {
 		// prepare: POP3 server
 		try (Pop3Server server = new Pop3Server(store)) {
 			server.setAuthenticationRequired(true);
+			server.setClock(Clock.fixed(Instant.parse("2020-01-01T00:00:00Z"), ZoneId.of("UTC")));
 
 			// disable all authentication commands by default
 			server.setCommandEnabled("USER", false);
@@ -247,7 +251,7 @@ public class Pop3ServerTest {
 
 			String log = server.getLog();
 			if (authType.equals("APOP")) {
-				assertThat(log).contains("APOP " + USERNAME + " ");
+				assertThat(log).contains("APOP " + USERNAME + " d4f3cd138fcc499b6053537a8de84de0");
 			} else if (authType.equals("USER")) {
 				assertThat(log).contains("USER " + USERNAME, "PASS " + PASSWORD);
 			} else {

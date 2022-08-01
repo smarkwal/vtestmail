@@ -21,6 +21,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.Security;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -59,6 +60,11 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 
 	private final String protocol;
 	protected final MailboxStore store;
+
+	/**
+	 * Clock used by server to determine current date and time.
+	 */
+	protected Clock clock = Clock.systemUTC();
 
 	private int port = 0; // 0 = select a free port
 	private boolean useSSL = false;
@@ -204,6 +210,15 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 		Assert.isNotEmpty(authType, "authType");
 		Assert.isNotNull(authenticator, "authenticator");
 		this.authenticators.put(authType, authenticator);
+	}
+
+	public Clock getClock() {
+		return clock;
+	}
+
+	public void setClock(Clock clock) {
+		Assert.isNotNull(clock, "clock");
+		this.clock = clock;
 	}
 
 	public void start() throws IOException {
