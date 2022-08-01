@@ -344,9 +344,6 @@ public class Pop3ServerTest {
 
 	}
 
-	// TODO: add test for unknown command
-	// TODO: add test for disabled command
-
 	// TODO: implement POP3 test where messages are deleted from mailbox
 
 }

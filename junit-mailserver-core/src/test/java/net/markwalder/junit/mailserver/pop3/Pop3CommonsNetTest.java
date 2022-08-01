@@ -25,6 +25,7 @@ import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxStore;
 import org.apache.commons.net.pop3.POP3Client;
 import org.apache.commons.net.pop3.POP3MessageInfo;
+import org.apache.commons.net.pop3.POP3Reply;
 import org.junit.jupiter.api.Test;
 
 class Pop3CommonsNetTest {
@@ -46,6 +47,14 @@ class Pop3CommonsNetTest {
 		try (Pop3Server server = new Pop3Server(store)) {
 			server.setAuthenticationRequired(true);
 			server.setCommandEnabled("APOP", false);
+
+			// add custom command CMD1 (enabled)
+			server.addCommand("CMD1", parameters -> new CustomCommand("CMD1"));
+			// add custom command CMD2 (disabled)
+			server.addCommand("CMD2", parameters -> new CustomCommand("CMD2"));
+			server.setCommandEnabled("CMD2", false);
+			// note: CMD3 is an unknown commend
+
 			server.start();
 
 			// prepare: POP3 client
@@ -64,23 +73,20 @@ class Pop3CommonsNetTest {
 				// CAPA
 				boolean success = client.capa();
 				assertThat(success).isTrue();
-				String[] reply = client.getReplyStrings();
-				assertThat(reply).containsExactly(
+				assertReply(client,
 						"+OK Capability list follows",
 						"USER",
 						"TOP",
 						"UIDL",
 						"EXPIRE NEVER",
 						"IMPLEMENTATION junit-mailserver",
-						".");
+						"."
+				);
 
 				// USER and PASS with wrong password
 				success = client.login(USERNAME, "wrong password");
 				assertThat(success).isFalse();
-
-				// assert: error message
-				reply = client.getReplyStrings();
-				assertThat(reply).containsExactly("-ERR Authentication failed");
+				assertReply(client, "-ERR Authentication failed");
 
 				// USER and PASS
 				success = client.login(USERNAME, PASSWORD);
@@ -164,10 +170,7 @@ class Pop3CommonsNetTest {
 				// UIDL 2 <-- try to access deleted message
 				info = client.listUniqueIdentifier(2);
 				assertThat(info).isNull();
-
-				// assert: error message
-				reply = client.getReplyStrings();
-				assertThat(reply).containsExactly("-ERR No such message");
+				assertReply(client, "-ERR No such message");
 
 				// LIST
 				infos = client.listMessages();
@@ -178,34 +181,36 @@ class Pop3CommonsNetTest {
 				// LIST 2 <-- try to access deleted message
 				info = client.listMessage(2);
 				assertThat(info).isNull();
-
-				// assert: error message
-				reply = client.getReplyStrings();
-				assertThat(reply).containsExactly("-ERR No such message");
+				assertReply(client, "-ERR No such message");
 
 				// RETR 2 <-- try to access deleted message
 				reader = client.retrieveMessage(2);
 				assertThat(reader).isNull();
-
-				// assert: error message
-				reply = client.getReplyStrings();
-				assertThat(reply).containsExactly("-ERR No such message");
+				assertReply(client, "-ERR No such message");
 
 				// TOP 2 0 <-- try to access deleted message
 				reader = client.retrieveMessageTop(2, 0);
 				assertThat(reader).isNull();
-
-				// assert: error message
-				reply = client.getReplyStrings();
-				assertThat(reply).containsExactly("-ERR No such message");
+				assertReply(client, "-ERR No such message");
 
 				// DELE 2 <-- try to delete already deleted message
 				success = client.deleteMessage(2);
 				assertThat(success).isFalse();
+				assertReply(client, "-ERR No such message");
 
-				// assert: error message
-				reply = client.getReplyStrings();
-				assertThat(reply).containsExactly("-ERR No such message");
+				// CMD1 <-- custom command
+				int replyCode = client.sendCommand("CMD1");
+				assertThat(replyCode).isEqualTo(POP3Reply.OK);
+
+				// CMD2 <-- disabled custom command
+				replyCode = client.sendCommand("CMD2");
+				assertThat(replyCode).isEqualTo(POP3Reply.ERROR);
+				assertReply(client, "-ERR Unknown command");
+
+				// CMD3 <-- unknown command
+				replyCode = client.sendCommand("CMD3");
+				assertThat(replyCode).isEqualTo(POP3Reply.ERROR);
+				assertReply(client, "-ERR Unknown command");
 
 				// QUIT
 				success = client.logout();
@@ -219,7 +224,7 @@ class Pop3CommonsNetTest {
 
 				// assert: commands have been recorded
 				List<Pop3Command> commands = session.getCommands();
-				assertThat(commands).hasSize(24);
+				assertThat(commands).hasSize(25);
 				assertThat(commands).containsExactly(
 						new CAPA(),
 						new USER(USERNAME),
@@ -244,6 +249,7 @@ class Pop3CommonsNetTest {
 						new RETR(2),
 						new TOP(2, 0),
 						new DELE(2),
+						new CustomCommand("CMD1"),
 						new QUIT()
 				);
 
@@ -257,6 +263,11 @@ class Pop3CommonsNetTest {
 
 	}
 
+	private void assertReply(POP3Client client, String... expectedReply) {
+		String[] reply = client.getReplyStrings();
+		assertThat(reply).containsExactly(expectedReply);
+	}
+
 	private static String readMessage(Reader reader) throws IOException {
 		StringBuilder buffer = new StringBuilder();
 		while (true) {
@@ -265,6 +276,26 @@ class Pop3CommonsNetTest {
 			buffer.append((char) chr);
 		}
 		return buffer.toString();
+	}
+
+	public static class CustomCommand extends Pop3Command {
+
+		private final String name;
+
+		public CustomCommand(String name) {
+			this.name = name;
+		}
+
+		@Override
+		public String toString() {
+			return name;
+		}
+
+		@Override
+		protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception {
+			client.writeLine("+OK");
+		}
+
 	}
 
 }
