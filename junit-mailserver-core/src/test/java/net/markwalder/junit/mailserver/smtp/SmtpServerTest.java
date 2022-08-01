@@ -90,7 +90,7 @@ class SmtpServerTest {
 
 	@Test
 	@DisplayName("Data")
-	void testData() throws IOException, MessagingException {
+	void testData() throws IOException, MessagingException, InterruptedException {
 
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
@@ -110,6 +110,20 @@ class SmtpServerTest {
 			client.send(message);
 
 			// assert
+			List<SmtpSession> sessions = server.getSessions();
+			assertThat(sessions).hasSize(1);
+			SmtpSession session = sessions.get(0);
+			session.waitUntilClosed(5000);
+			assertThat(session.getServerAddress()).isEqualTo("127.0.0.1");
+			assertThat(session.getServerPort()).isEqualTo(server.getPort());
+			assertThat(session.getClientAddress()).isEqualTo("127.0.0.1");
+			assertThat(session.getClientPort()).isBetween(1024, 65535);
+			assertThat(session.getSSLProtocol()).isNull();
+			assertThat(session.getCipherSuite()).isNull();
+			assertThat(session.getAuthType()).isNull();
+			assertThat(session.getUsername()).isNull();
+			assertThat(session.isClosed()).isTrue();
+
 			Mailbox mailbox = store.getMailbox(USERNAME);
 			List<Mailbox.Message> messages = mailbox.getMessages();
 			assertThat(messages).hasSize(1);
@@ -128,19 +142,6 @@ class SmtpServerTest {
 							"\r\n" +
 							"This is a test email."
 			);
-
-			List<SmtpSession> sessions = server.getSessions();
-			assertThat(sessions).hasSize(1);
-			SmtpSession session = sessions.get(0);
-			assertThat(session.getServerAddress()).isEqualTo("127.0.0.1");
-			assertThat(session.getServerPort()).isEqualTo(server.getPort());
-			assertThat(session.getClientAddress()).isEqualTo("127.0.0.1");
-			assertThat(session.getClientPort()).isBetween(1024, 65535);
-			assertThat(session.getSSLProtocol()).isNull();
-			assertThat(session.getCipherSuite()).isNull();
-			assertThat(session.getAuthType()).isNull();
-			assertThat(session.getUsername()).isNull();
-			assertThat(session.isClosed()).isTrue();
 
 			List<SmtpCommand> commands = session.getCommands();
 			assertThat(commands).containsExactly(
@@ -191,7 +192,7 @@ class SmtpServerTest {
 		return tests;
 	}
 
-	private void testEncryption(String sslProtocol, boolean useStarTLS) throws IOException, MessagingException {
+	private void testEncryption(String sslProtocol, boolean useStarTLS) throws IOException, MessagingException, InterruptedException {
 
 		// TODO: support tests with STARTTLS
 		assumeFalse(useStarTLS, "STARTTLS not implemented");
@@ -220,16 +221,17 @@ class SmtpServerTest {
 			client.send(message);
 
 			// assert
-			Mailbox mailbox = store.getMailbox(USERNAME);
-			List<Mailbox.Message> messages = mailbox.getMessages();
-			assertThat(messages).hasSize(1);
-
 			List<SmtpSession> sessions = server.getSessions();
 			assertThat(sessions).hasSize(1);
 			SmtpSession session = sessions.get(0);
+			session.waitUntilClosed(5000);
 			assertThat(session.getSSLProtocol()).isEqualTo(sslProtocol);
 			assertThat(session.getCipherSuite()).isNotEmpty();
 			assertThat(session.isClosed()).isTrue();
+
+			Mailbox mailbox = store.getMailbox(USERNAME);
+			List<Mailbox.Message> messages = mailbox.getMessages();
+			assertThat(messages).hasSize(1);
 		}
 	}
 
@@ -257,7 +259,7 @@ class SmtpServerTest {
 		return tests;
 	}
 
-	private void testAuthentication(String authType, boolean encrypted, boolean wrongPassword) throws IOException, MessagingException {
+	private void testAuthentication(String authType, boolean encrypted, boolean wrongPassword) throws IOException, MessagingException, InterruptedException {
 
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
@@ -307,16 +309,17 @@ class SmtpServerTest {
 			}
 
 			// assert
-			Mailbox mailbox = store.getMailbox(USERNAME);
-			List<Mailbox.Message> messages = mailbox.getMessages();
-			assertThat(messages).hasSize(1);
-
 			List<SmtpSession> sessions = server.getSessions();
 			assertThat(sessions).hasSize(1);
 			SmtpSession session = sessions.get(0);
+			session.waitUntilClosed(5000);
 			assertThat(session.getAuthType()).isEqualTo(authType);
 			assertThat(session.getUsername()).isEqualTo(USERNAME);
 			assertThat(session.isClosed()).isTrue();
+
+			Mailbox mailbox = store.getMailbox(USERNAME);
+			List<Mailbox.Message> messages = mailbox.getMessages();
+			assertThat(messages).hasSize(1);
 		}
 	}
 
@@ -373,7 +376,7 @@ class SmtpServerTest {
 
 	@Test
 	@DisplayName("TO, CC, and BCC recipients")
-	void testRecipients() throws IOException, MessagingException {
+	void testRecipients() throws IOException, MessagingException, InterruptedException {
 
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
@@ -401,6 +404,11 @@ class SmtpServerTest {
 			client.send(message);
 
 			// assert
+			List<SmtpSession> sessions = server.getSessions();
+			assertThat(sessions).hasSize(1);
+			SmtpSession session = sessions.get(0);
+			session.waitUntilClosed(5000);
+
 			String log = server.getLog();
 			assertThat(log).contains(
 					"MAIL FROM:<bob@localhost>",
@@ -421,10 +429,6 @@ class SmtpServerTest {
 			Mailbox.Message email = messages.get(0);
 			String content = email.getContent();
 			assertThat(content).doesNotContain("dan@localhost");
-
-			List<SmtpSession> sessions = server.getSessions();
-			assertThat(sessions).hasSize(1);
-			SmtpSession session = sessions.get(0);
 
 			List<SmtpTransaction> transactions = session.getTransactions();
 			assertThat(transactions).hasSize(1);

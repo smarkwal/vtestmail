@@ -36,4 +36,10 @@ public class Assert {
 		}
 	}
 
+	public static void isInRange(long value, long min, long max, String name) {
+		if (value < min || value > max) {
+			throw new IllegalArgumentException(name + " must be between " + min + " and " + max);
+		}
+	}
+
 }

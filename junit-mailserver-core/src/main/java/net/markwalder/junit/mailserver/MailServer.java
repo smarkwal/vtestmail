@@ -404,9 +404,18 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 
 			} finally {
 
-				// discard client and session
+				// discard session
+				if (session != null) {
+					// make sure that session is closed
+					// (test code may wait for this)
+					if (!session.isClosed()) {
+						session.close();
+					}
+					session = null;
+				}
+
+				// discard client
 				client = null;
-				session = null;
 
 			}
 

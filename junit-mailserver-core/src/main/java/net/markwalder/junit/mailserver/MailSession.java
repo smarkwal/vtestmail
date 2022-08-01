@@ -36,7 +36,7 @@ public class MailSession {
 	private String authType = null;
 	private String username = null;
 
-	private boolean closed = false;
+	private volatile boolean closed = false;
 
 	// TODO: keep session log
 
@@ -165,6 +165,38 @@ public class MailSession {
 	 */
 	public boolean isClosed() {
 		return closed;
+	}
+
+	/**
+	 * Wait until this session has been closed.
+	 * This method is intended to be used in tests before checking any
+	 * assertions which depend on the server-side completion of the session.
+	 *
+	 * @param timeout Maximum time to wait in milliseconds.
+	 * @throws InterruptedException If the current thread has been interrupted
+	 *                              or the timeout has been reached.
+	 */
+	@SuppressWarnings("BusyWait")
+	public void waitUntilClosed(long timeout) throws InterruptedException {
+		Assert.isInRange(timeout, 1, Long.MAX_VALUE, "timeout");
+
+		// quick check if already closed
+		if (closed) return;
+
+		// remember start time
+		long start = System.currentTimeMillis();
+
+		while (!closed) {
+
+			// check if timeout has been reached
+			long time = System.currentTimeMillis();
+			if (time - start >= timeout) {
+				throw new InterruptedException("Timeout");
+			}
+
+			// sleep for a while
+			Thread.sleep(100);
+		}
 	}
 
 }

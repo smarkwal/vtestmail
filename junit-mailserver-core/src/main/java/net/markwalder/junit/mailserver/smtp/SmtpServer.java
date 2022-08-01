@@ -19,7 +19,6 @@ package net.markwalder.junit.mailserver.smtp;
 import java.io.IOException;
 import java.net.Socket;
 import net.markwalder.junit.mailserver.MailCommand;
-import net.markwalder.junit.mailserver.MailException;
 import net.markwalder.junit.mailserver.MailServer;
 import net.markwalder.junit.mailserver.MailboxStore;
 import net.markwalder.junit.mailserver.utils.StringUtils;
@@ -97,11 +96,12 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 		SmtpCommand command;
 		try {
 			command = commandFactory.parse(parameters);
-		} catch (MailException e) {
+		} catch (SmtpException e) {
 			client.writeLine(e.getMessage());
 			return;
 		}
 
+		// TODO: try to add all commands BEFORE they get executed
 		if (command instanceof DATA) {
 			// add command to history
 			// (before DATA is closing the current transaction)
@@ -115,6 +115,7 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 			client.writeLine(e.getMessage());
 		}
 
+		// TODO: try to add all commands BEFORE they get executed
 		if (!(command instanceof DATA)) {
 			// add command to history
 			session.addCommand(command);

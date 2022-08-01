@@ -109,7 +109,7 @@ public class Pop3ServerTest {
 		return tests;
 	}
 
-	private void testEncryption(String sslProtocol, boolean useStarTLS) throws IOException, MessagingException {
+	private void testEncryption(String sslProtocol, boolean useStarTLS) throws IOException, MessagingException, InterruptedException {
 
 		// TODO: support tests with STARTTLS
 		assumeFalse(useStarTLS, "STARTTLS not implemented");
@@ -141,6 +141,7 @@ public class Pop3ServerTest {
 			List<Pop3Session> sessions = server.getSessions();
 			assertThat(sessions).hasSize(1);
 			Pop3Session session = sessions.get(0);
+			session.waitUntilClosed(5000);
 			assertThat(session.getSSLProtocol()).isEqualTo(sslProtocol);
 			assertThat(session.getCipherSuite()).isNotEmpty();
 			assertThat(session.isClosed()).isTrue();
@@ -181,7 +182,7 @@ public class Pop3ServerTest {
 		return tests;
 	}
 
-	private void testAuthentication(String authType, boolean encrypted, boolean wrongPassword) throws IOException {
+	private void testAuthentication(String authType, boolean encrypted, boolean wrongPassword) throws IOException, InterruptedException {
 
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
@@ -262,6 +263,7 @@ public class Pop3ServerTest {
 			List<Pop3Session> sessions = server.getSessions();
 			assertThat(sessions).hasSize(1);
 			Pop3Session session = sessions.get(0);
+			session.waitUntilClosed(5000);
 			assertThat(session.getAuthType()).isEqualTo(authType);
 			assertThat(session.getUsername()).isEqualTo(USERNAME);
 			assertThat(session.isClosed()).isTrue();
@@ -287,7 +289,7 @@ public class Pop3ServerTest {
 	}
 
 	@Test
-	void testGetMessages() throws IOException, MessagingException {
+	void testGetMessages() throws IOException, MessagingException, InterruptedException {
 
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
@@ -318,6 +320,7 @@ public class Pop3ServerTest {
 			List<Pop3Session> sessions = server.getSessions();
 			assertThat(sessions).hasSize(1);
 			Pop3Session session = sessions.get(0);
+			session.waitUntilClosed(5000);
 			assertThat(session.getAuthType()).isEqualTo("USER");
 			assertThat(session.getUsername()).isEqualTo(USERNAME);
 			assertThat(session.isClosed()).isTrue();
