@@ -21,8 +21,27 @@ import net.markwalder.junit.mailserver.utils.StringUtils;
 
 public class MAIL extends SmtpCommand {
 
-	public MAIL(String parameters) {
-		super(parameters);
+	private final String email;
+
+	public MAIL(String email) {
+		this.email = email;
+	}
+
+	public static MAIL parse(String parameters) throws SmtpException {
+		if (parameters == null || parameters.isEmpty()) {
+			throw SmtpException.SyntaxError();
+		}
+		String email = StringUtils.substringBetween(parameters, "<", ">");
+		if (email == null) {
+			throw SmtpException.SyntaxError();
+		}
+		// TODO: validate email address
+		return new MAIL(email);
+	}
+
+	@Override
+	public String toString() {
+		return "MAIL FROM:<" + email + ">";
 	}
 
 	@Override
@@ -32,12 +51,6 @@ public class MAIL extends SmtpCommand {
 			throw SmtpException.AuthenticationRequired();
 		}
 
-		String email = StringUtils.substringBetween(parameters, "<", ">");
-		if (email == null) {
-			throw SmtpException.SyntaxError();
-		}
-
-		// note: email address is not validated
 		session.startTransaction(email);
 
 		client.writeLine("250 2.1.0 OK");

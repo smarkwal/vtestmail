@@ -144,10 +144,10 @@ public class Pop3ServerTest {
 
 			List<Pop3Command> commands = session.getCommands();
 			assertThat(commands).containsExactly(
-					new CAPA(null),
-					new AUTH("PLAIN w6RsacOnw6kAw6RsacOnw6kAcMOkc3N3w7ZyZCExMjM="),
-					new STAT(null),
-					new QUIT(null)
+					new CAPA(),
+					new AUTH("PLAIN", "w6RsacOnw6kAw6RsacOnw6kAcMOkc3N3w7ZyZCExMjM="),
+					new STAT(),
+					new QUIT()
 			);
 		}
 	}
@@ -264,9 +264,9 @@ public class Pop3ServerTest {
 
 			List<Pop3Command> commands = session.getCommands();
 			assertThat(commands).contains(
-					new CAPA(null),
-					new STAT(null),
-					new QUIT(null)
+					new CAPA(),
+					new STAT(),
+					new QUIT()
 			);
 
 			if (authType.equals("APOP")) {
@@ -320,15 +320,15 @@ public class Pop3ServerTest {
 
 			List<Pop3Command> commands = session.getCommands();
 			assertThat(commands).contains(
-					new CAPA(null),
+					new CAPA(),
 					new USER(USERNAME),
 					new PASS(PASSWORD),
-					new STAT(null),
-					new TOP("1 0"),
-					new RETR("1"),
-					new TOP("2 0"),
-					new RETR("2"),
-					new QUIT(null)
+					new STAT(),
+					new TOP(1, 0),
+					new RETR(1),
+					new TOP(2, 0),
+					new RETR(2),
+					new QUIT()
 			);
 
 			// assert: messages have not been deleted

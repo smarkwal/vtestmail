@@ -29,7 +29,6 @@ class EHLOTest extends CommandTest {
 
 		// mock
 		Mockito.doReturn("localhost").when(session).getServerAddress();
-		Mockito.doReturn("localhost").when(session).getClientAddress();
 		Mockito.doReturn(true).when(server).isCommandEnabled("STARTTLS");
 		Mockito.doReturn(true).when(server).isCommandEnabled("AUTH");
 		List<String> authTypes = List.of("PLAIN", "LOGIN");
@@ -43,7 +42,6 @@ class EHLOTest extends CommandTest {
 
 		// verify
 		Mockito.verify(session).getServerAddress();
-		Mockito.verify(session).getClientAddress();
 		Mockito.verify(client).writeLine("250-localhost Hello localhost");
 		Mockito.verify(server).isCommandEnabled("STARTTLS");
 		Mockito.verify(server).isCommandEnabled("AUTH");
@@ -61,7 +59,6 @@ class EHLOTest extends CommandTest {
 
 		// mock
 		Mockito.doReturn("localhost").when(session).getServerAddress();
-		Mockito.doReturn("localhost").when(session).getClientAddress();
 		Mockito.doReturn(true).when(server).isCommandEnabled("STARTTLS");
 		Mockito.doReturn(true).when(server).isCommandEnabled("AUTH");
 		List<Object> authTypes = Collections.emptyList();
@@ -75,7 +72,6 @@ class EHLOTest extends CommandTest {
 
 		// verify
 		Mockito.verify(session).getServerAddress();
-		Mockito.verify(session).getClientAddress();
 		Mockito.verify(client).writeLine("250-localhost Hello localhost");
 		Mockito.verify(server).isCommandEnabled("STARTTLS");
 		Mockito.verify(server).isCommandEnabled("AUTH");

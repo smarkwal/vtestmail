@@ -157,8 +157,8 @@ class SmtpServerTest {
 
 			commands = transaction.getCommands();
 			assertThat(commands).containsExactly(
-					new MAIL("FROM:<bob@localhost>"),
-					new RCPT("TO:<alice@localhost>"),
+					new MAIL("bob@localhost"),
+					new RCPT("alice@localhost"),
 					new DATA()
 			);
 

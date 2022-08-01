@@ -21,11 +21,18 @@ import java.io.IOException;
 public class NOOP extends SmtpCommand {
 
 	public NOOP() {
-		this(null);
 	}
 
-	NOOP(String parameters) {
-		super(parameters);
+	public static NOOP parse(String parameters) throws SmtpException {
+		if (parameters != null) {
+			throw SmtpException.SyntaxError();
+		}
+		return new NOOP();
+	}
+
+	@Override
+	public String toString() {
+		return "NOOP";
 	}
 
 	@Override

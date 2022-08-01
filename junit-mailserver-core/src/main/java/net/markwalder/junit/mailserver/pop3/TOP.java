@@ -22,12 +22,28 @@ import net.markwalder.junit.mailserver.utils.StringUtils;
 
 public class TOP extends Pop3Command {
 
-	public TOP(int msg, int n) {
-		this(msg + " " + n);
+	private final int messageNumber;
+	private final int lines;
+
+	public TOP(int messageNumber, int lines) {
+		this.messageNumber = messageNumber;
+		this.lines = lines;
 	}
 
-	TOP(String parameters) {
-		super(parameters);
+	public static TOP parse(String parameters) throws Pop3Exception {
+		if (parameters == null || parameters.isEmpty()) {
+			throw Pop3Exception.SyntaxError();
+		}
+		String msg = StringUtils.substringBefore(parameters, " ");
+		String n = StringUtils.substringAfter(parameters, " ");
+		int messageNumber = parseMessageNumber(msg);
+		int lines = parseNumber(n, 0);
+		return new TOP(messageNumber, lines);
+	}
+
+	@Override
+	public String toString() {
+		return "TOP " + messageNumber + " " + lines;
 	}
 
 	@Override
@@ -35,35 +51,15 @@ public class TOP extends Pop3Command {
 		session.assertState(State.TRANSACTION);
 
 		// try to find message by number, and get top n lines
-		String msg = StringUtils.substringBefore(parameters, " ");
-		String n = StringUtils.substringAfter(parameters, " ");
-		String lines = getMessageLines(session, msg, n);
-		if (lines == null) {
+		Mailbox.Message message = session.getMessage(messageNumber);
+		if (message == null || message.isDeleted()) {
 			throw Pop3Exception.MessageNotFound();
 		}
+		String reply = message.getTop(lines);
 
 		client.writeLine("+OK");
-		client.writeLine(lines);
+		client.writeLine(reply);
 		client.writeLine(".");
-	}
-
-	private String getMessageLines(Pop3Session session, String msg, String n) {
-
-		Mailbox.Message message = session.getMessage(msg);
-		if (message == null || message.isDeleted()) {
-			return null;
-		}
-
-		// try to parse parameter "n"
-		int lines;
-		try {
-			lines = Integer.parseInt(n);
-		} catch (NumberFormatException e) {
-			// not a number -> message not found
-			return null;
-		}
-
-		return message.getTop(lines);
 	}
 
 }

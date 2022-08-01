@@ -24,11 +24,18 @@ import net.markwalder.junit.mailserver.MailboxStore;
 public class DATA extends SmtpCommand {
 
 	public DATA() {
-		this(null);
 	}
 
-	DATA(String parameters) {
-		super(parameters);
+	public static DATA parse(String parameters) throws SmtpException {
+		if (parameters != null) {
+			throw SmtpException.SyntaxError();
+		}
+		return new DATA();
+	}
+
+	@Override
+	public String toString() {
+		return "DATA";
 	}
 
 	@Override

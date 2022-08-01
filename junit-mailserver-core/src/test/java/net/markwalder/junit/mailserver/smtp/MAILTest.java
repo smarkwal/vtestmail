@@ -29,7 +29,7 @@ class MAILTest extends CommandTest {
 		Mockito.doReturn(false).when(server).isAuthenticationRequired();
 
 		// prepare
-		SmtpCommand command = new MAIL("FROM:<alice@localhost>");
+		SmtpCommand command = new MAIL("alice@localhost");
 
 		// test
 		command.execute(server, session, client);

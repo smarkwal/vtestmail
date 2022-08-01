@@ -22,23 +22,39 @@ import net.markwalder.junit.mailserver.Mailbox;
 
 public class UIDL extends Pop3Command {
 
+	private final int messageNumber;
+
 	public UIDL() {
-		this(null);
+		this(-1);
 	}
 
-	public UIDL(int msg) {
-		this(String.valueOf(msg));
+	public UIDL(int messageNumber) {
+		this.messageNumber = messageNumber;
 	}
 
-	UIDL(String parameters) {
-		super(parameters);
+	public static UIDL parse(String parameters) throws Pop3Exception {
+		if (parameters == null) {
+			return new UIDL();
+		} else {
+			int messageNumber = parseMessageNumber(parameters);
+			return new UIDL(messageNumber);
+		}
+	}
+
+	@Override
+	public String toString() {
+		if (messageNumber < 0) {
+			return "UIDL";
+		} else {
+			return "UIDL " + messageNumber;
+		}
 	}
 
 	@Override
 	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception {
 		session.assertState(State.TRANSACTION);
 
-		if (parameters == null) {
+		if (messageNumber < 0) {
 
 			client.writeLine("+OK");
 			List<Mailbox.Message> messages = session.getMessages();
@@ -57,13 +73,13 @@ public class UIDL extends Pop3Command {
 		} else {
 
 			// try to find message by number
-			Mailbox.Message message = session.getMessage(parameters);
+			Mailbox.Message message = session.getMessage(messageNumber);
 			if (message == null || message.isDeleted()) {
 				throw Pop3Exception.MessageNotFound();
 			}
 
 			String uid = message.getUID();
-			client.writeLine("+OK " + parameters + " " + uid);
+			client.writeLine("+OK " + messageNumber + " " + uid);
 
 		}
 

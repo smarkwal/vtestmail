@@ -21,11 +21,18 @@ import java.io.IOException;
 public class STAT extends Pop3Command {
 
 	public STAT() {
-		super(null);
 	}
 
-	STAT(String parameters) {
-		super(parameters);
+	public static STAT parse(String parameters) throws Pop3Exception {
+		if (parameters != null) {
+			throw Pop3Exception.SyntaxError();
+		}
+		return new STAT();
+	}
+
+	@Override
+	public String toString() {
+		return "STAT";
 	}
 
 	@Override

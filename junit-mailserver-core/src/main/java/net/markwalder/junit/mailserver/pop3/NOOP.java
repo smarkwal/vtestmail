@@ -21,11 +21,18 @@ import java.io.IOException;
 public class NOOP extends Pop3Command {
 
 	public NOOP() {
-		this(null);
 	}
 
-	NOOP(String parameters) {
-		super(parameters);
+	@Override
+	public String toString() {
+		return "NOOP";
+	}
+
+	public static NOOP parse(String parameters) throws Pop3Exception {
+		if (parameters != null) {
+			throw Pop3Exception.SyntaxError();
+		}
+		return new NOOP();
 	}
 
 	@Override

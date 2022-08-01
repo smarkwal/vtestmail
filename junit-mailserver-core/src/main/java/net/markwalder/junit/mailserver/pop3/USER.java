@@ -20,8 +20,22 @@ import java.io.IOException;
 
 public class USER extends Pop3Command {
 
+	private final String username;
+
 	public USER(String username) {
-		super(username);
+		this.username = username;
+	}
+
+	public static USER parse(String parameters) throws Pop3Exception {
+		if (parameters == null || parameters.isEmpty()) {
+			throw Pop3Exception.SyntaxError();
+		}
+		return new USER(parameters);
+	}
+
+	@Override
+	public String toString() {
+		return "USER " + username;
 	}
 
 	@Override
@@ -29,7 +43,7 @@ public class USER extends Pop3Command {
 		session.assertState(State.AUTHORIZATION);
 
 		// remember user
-		session.setUser(parameters);
+		session.setUser(username);
 
 		client.writeLine("+OK User accepted");
 	}

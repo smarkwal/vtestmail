@@ -24,12 +24,34 @@ import net.markwalder.junit.mailserver.utils.StringUtils;
 
 public class AUTH extends SmtpCommand {
 
-	public AUTH(String authType, String parameters) {
-		this(authType + (parameters == null ? "" : " " + parameters));
+	private final String authType;
+	private final String initialResponse;
+
+	public AUTH(String authType) {
+		this(authType, null);
 	}
 
-	AUTH(String parameters) {
-		super(parameters);
+	public AUTH(String authType, String initialResponse) {
+		this.authType = authType;
+		this.initialResponse = initialResponse;
+	}
+
+	public static AUTH parse(String parameters) throws SmtpException {
+		if (parameters == null || parameters.isEmpty()) {
+			throw SmtpException.SyntaxError();
+		}
+		String authType = StringUtils.substringBefore(parameters, " ");
+		String initialResponse = StringUtils.substringAfter(parameters, " ");
+		return new AUTH(authType, initialResponse);
+	}
+
+	@Override
+	public String toString() {
+		if (initialResponse == null) {
+			return "AUTH " + authType;
+		} else {
+			return "AUTH " + authType + " " + initialResponse;
+		}
 	}
 
 	@Override
@@ -39,10 +61,6 @@ public class AUTH extends SmtpCommand {
 		// https://www.iana.org/assignments/sasl-mechanisms/sasl-mechanisms.xhtml
 		// https://datatracker.ietf.org/doc/html/rfc5248
 
-		// split command into auth type and optional parameters
-		String authType = StringUtils.substringBefore(this.parameters, " ");
-		String parameters = StringUtils.substringAfter(this.parameters, " ");
-
 		// check if authentication type is supported
 		if (!server.isAuthTypeSupported(authType)) {
 			throw SmtpException.UnrecognizedAuthenticationType();
@@ -51,7 +69,7 @@ public class AUTH extends SmtpCommand {
 		// get user credentials from client
 		Authenticator authenticator = server.getAuthenticator(authType);
 		MailboxStore store = server.getStore();
-		Credentials credentials = authenticator.authenticate(parameters, client, store);
+		Credentials credentials = authenticator.authenticate(initialResponse, client, store);
 		if (credentials == null) {
 			throw SmtpException.AuthenticationFailed();
 		}

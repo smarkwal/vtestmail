@@ -21,11 +21,18 @@ import java.io.IOException;
 public class QUIT extends SmtpCommand {
 
 	public QUIT() {
-		this(null);
 	}
 
-	QUIT(String parameters) {
-		super(parameters);
+	public static QUIT parse(String parameters) throws SmtpException {
+		if (parameters != null) {
+			throw SmtpException.SyntaxError();
+		}
+		return new QUIT();
+	}
+
+	@Override
+	public String toString() {
+		return "QUIT";
 	}
 
 	@Override

@@ -21,10 +21,26 @@ import net.markwalder.junit.mailserver.MailCommand;
 
 public abstract class Pop3Command extends MailCommand {
 
-	public Pop3Command(String parameters) {
-		super(parameters);
+	protected abstract void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception;
+
+	protected static int parseMessageNumber(String text) throws Pop3Exception {
+		return parseNumber(text, 1);
 	}
 
-	protected abstract void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception;
+	protected static int parseNumber(String text, int minValue) throws Pop3Exception {
+		if (text == null || text.isEmpty()) {
+			throw Pop3Exception.SyntaxError();
+		}
+		try {
+			// TODO: do not accept values starting with "+"
+			int number = Integer.parseInt(text);
+			if (number < minValue) {
+				throw Pop3Exception.SyntaxError();
+			}
+			return number;
+		} catch (NumberFormatException e) {
+			throw Pop3Exception.SyntaxError();
+		}
+	}
 
 }

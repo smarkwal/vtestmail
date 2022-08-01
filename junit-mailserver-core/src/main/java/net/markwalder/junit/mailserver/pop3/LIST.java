@@ -22,23 +22,39 @@ import net.markwalder.junit.mailserver.Mailbox;
 
 public class LIST extends Pop3Command {
 
+	private final int messageNumber;
+
 	public LIST() {
-		this(null);
+		this(-1);
 	}
 
-	public LIST(int msg) {
-		this(String.valueOf(msg));
+	public LIST(int messageNumber) {
+		this.messageNumber = messageNumber;
 	}
 
-	LIST(String parameters) {
-		super(parameters);
+	public static LIST parse(String parameters) throws Pop3Exception {
+		if (parameters == null) {
+			return new LIST();
+		} else {
+			int messageNumber = parseMessageNumber(parameters);
+			return new LIST(messageNumber);
+		}
+	}
+
+	@Override
+	public String toString() {
+		if (messageNumber < 0) {
+			return "LIST";
+		} else {
+			return "LIST " + messageNumber;
+		}
 	}
 
 	@Override
 	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception {
 		session.assertState(State.TRANSACTION);
 
-		if (parameters == null) {
+		if (messageNumber < 0) {
 
 			int count = session.getMessageCount();
 			int totalSize = session.getTotalSize();
@@ -60,13 +76,13 @@ public class LIST extends Pop3Command {
 		} else {
 
 			// try to find message by number
-			Mailbox.Message message = session.getMessage(parameters);
+			Mailbox.Message message = session.getMessage(messageNumber);
 			if (message == null || message.isDeleted()) {
 				throw Pop3Exception.MessageNotFound();
 			}
 
 			int size = message.getSize();
-			client.writeLine("+OK " + parameters + " " + size);
+			client.writeLine("+OK " + messageNumber + " " + size);
 		}
 
 	}

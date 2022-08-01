@@ -29,7 +29,7 @@ class RCPTTest extends CommandTest {
 		Mockito.doReturn(false).when(server).isAuthenticationRequired();
 
 		// prepare
-		SmtpCommand command = new RCPT("TO: <alice@localhost>");
+		SmtpCommand command = new RCPT("alice@localhost");
 
 		// test
 		command.execute(server, session, client);

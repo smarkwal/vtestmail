@@ -20,42 +20,20 @@ import java.util.Objects;
 
 public abstract class MailCommand {
 
-	protected final String name;
-	protected final String parameters;
-
-	public MailCommand(String parameters) {
-		this.name = this.getClass().getSimpleName();
-		this.parameters = parameters;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getParameters() {
-		return parameters;
-	}
-
 	@Override
-	public String toString() {
-		if (parameters == null) {
-			return name;
-		} else {
-			return name + " " + parameters;
-		}
-	}
+	public abstract String toString();
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
 		if (obj == null || getClass() != obj.getClass()) return false;
 		MailCommand command = (MailCommand) obj;
-		return name.equals(command.name) && Objects.equals(parameters, command.parameters);
+		return Objects.equals(this.toString(), command.toString());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(name, parameters);
+		return Objects.hash(toString());
 	}
 
 	@FunctionalInterface

@@ -22,11 +22,18 @@ import java.util.List;
 public class CAPA extends Pop3Command {
 
 	public CAPA() {
-		this(null);
 	}
 
-	CAPA(String parameters) {
-		super(parameters);
+	public static CAPA parse(String parameters) throws Pop3Exception {
+		if (parameters != null) {
+			throw Pop3Exception.SyntaxError();
+		}
+		return new CAPA();
+	}
+
+	@Override
+	public String toString() {
+		return "CAPA";
 	}
 
 	@Override

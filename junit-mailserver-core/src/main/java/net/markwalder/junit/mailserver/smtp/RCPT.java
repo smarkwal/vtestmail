@@ -21,8 +21,27 @@ import net.markwalder.junit.mailserver.utils.StringUtils;
 
 public class RCPT extends SmtpCommand {
 
-	public RCPT(String parameters) {
-		super(parameters);
+	private final String email;
+
+	public RCPT(String email) {
+		this.email = email;
+	}
+
+	public static RCPT parse(String parameters) throws SmtpException {
+		if (parameters == null || parameters.isEmpty()) {
+			throw SmtpException.SyntaxError();
+		}
+		String email = StringUtils.substringBetween(parameters, "<", ">");
+		if (email == null) {
+			throw SmtpException.SyntaxError();
+		}
+		// TODO: validate email address
+		return new RCPT(email);
+	}
+
+	@Override
+	public String toString() {
+		return "RCPT TO:<" + email + ">";
 	}
 
 	@Override
@@ -32,13 +51,7 @@ public class RCPT extends SmtpCommand {
 			throw SmtpException.AuthenticationRequired();
 		}
 
-		String email = StringUtils.substringBetween(parameters, "<", ">");
-		if (email == null) {
-			throw SmtpException.SyntaxError();
-		}
-
 		// remember email address of recipient
-		// note: email address is not validated
 		session.addRecipient(email);
 
 		client.writeLine("250 2.1.5 OK");

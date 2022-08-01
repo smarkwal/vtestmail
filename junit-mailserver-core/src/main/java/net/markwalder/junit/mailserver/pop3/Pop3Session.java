@@ -112,24 +112,15 @@ public class Pop3Session extends MailSession {
 		return mailbox.getMessages();
 	}
 
-	Mailbox.Message getMessage(String msg) {
-
-		// try to parse parameter "msg"
-		int idx;
-		try {
-			idx = Integer.parseInt(msg) - 1;
-		} catch (NumberFormatException e) {
-			// not a number -> message not found
-			return null;
-		}
+	Mailbox.Message getMessage(int msg) {
 
 		List<Mailbox.Message> messages = getMessages();
-		if (idx < 0 || idx >= messages.size()) {
+		if (msg < 1 || msg > messages.size()) {
 			// index out of range -> message not found
 			return null;
 		}
 
-		return messages.get(idx);
+		return messages.get(msg - 1);
 
 	}
 

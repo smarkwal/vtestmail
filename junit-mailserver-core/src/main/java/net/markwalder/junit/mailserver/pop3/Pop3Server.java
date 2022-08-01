@@ -40,20 +40,20 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client,
 		super("POP3", store);
 
 		// register available POP3 commands
-		addCommand("CAPA", CAPA::new);
-		addCommand("AUTH", AUTH::new);
-		addCommand("APOP", APOP::new);
+		addCommand("CAPA", CAPA::parse);
+		addCommand("AUTH", AUTH::parse);
+		addCommand("APOP", APOP::parse);
 		addCommand("USER", USER::new);
 		addCommand("PASS", PASS::new);
-		addCommand("STAT", STAT::new);
-		addCommand("LIST", LIST::new);
-		addCommand("UIDL", UIDL::new);
-		addCommand("RETR", RETR::new);
-		addCommand("DELE", DELE::new);
-		addCommand("TOP", TOP::new);
-		addCommand("NOOP", NOOP::new);
-		addCommand("RSET", RSET::new);
-		addCommand("QUIT", QUIT::new);
+		addCommand("STAT", STAT::parse);
+		addCommand("LIST", LIST::parse);
+		addCommand("UIDL", UIDL::parse);
+		addCommand("RETR", RETR::parse);
+		addCommand("DELE", DELE::parse);
+		addCommand("TOP", TOP::parse);
+		addCommand("NOOP", NOOP::parse);
+		addCommand("RSET", RSET::parse);
+		addCommand("QUIT", QUIT::parse);
 		// TODO: implement RFC 6856: UTF8 and LANG (https://www.rfc-editor.org/rfc/rfc6856)
 	}
 

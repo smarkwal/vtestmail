@@ -22,15 +22,31 @@ import java.util.List;
 
 public class EHLO extends SmtpCommand {
 
-	public EHLO(String parameters) {
-		super(parameters);
+	private final String domain;
+
+	public EHLO(String domain) {
+		this.domain = domain;
+	}
+
+	public static EHLO parse(String parameters) throws SmtpException {
+		if (parameters == null || parameters.isEmpty()) {
+			throw SmtpException.SyntaxError();
+		}
+		String domain = parameters;
+		// TODO: validate domain
+		return new EHLO(domain);
+	}
+
+	@Override
+	public String toString() {
+		return "EHLO " + domain;
 	}
 
 	@Override
 	protected void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, SmtpException {
 
 		// send greeting to client
-		String greeting = session.getServerAddress() + " Hello " + session.getClientAddress();
+		String greeting = session.getServerAddress() + " Hello " + domain;
 		client.writeLine("250-" + greeting);
 
 		// send supported extensions to client

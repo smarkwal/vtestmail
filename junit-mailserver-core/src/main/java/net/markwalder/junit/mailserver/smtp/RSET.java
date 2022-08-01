@@ -21,11 +21,18 @@ import java.io.IOException;
 public class RSET extends SmtpCommand {
 
 	public RSET() {
-		this(null);
 	}
 
-	RSET(String parameters) {
-		super(parameters);
+	public static RSET parse(String parameters) throws SmtpException {
+		if (parameters != null) {
+			throw SmtpException.SyntaxError();
+		}
+		return new RSET();
+	}
+
+	@Override
+	public String toString() {
+		return "RSET";
 	}
 
 	@Override

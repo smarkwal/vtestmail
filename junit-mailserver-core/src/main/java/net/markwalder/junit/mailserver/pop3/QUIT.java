@@ -22,11 +22,18 @@ import net.markwalder.junit.mailserver.Mailbox;
 public class QUIT extends Pop3Command {
 
 	public QUIT() {
-		this(null);
 	}
 
-	QUIT(String parameters) {
-		super(parameters);
+	public static QUIT parse(String parameters) throws Pop3Exception {
+		if (parameters != null) {
+			throw Pop3Exception.SyntaxError();
+		}
+		return new QUIT();
+	}
+
+	@Override
+	public String toString() {
+		return "QUIT";
 	}
 
 	@Override

@@ -23,11 +23,18 @@ import net.markwalder.junit.mailserver.Mailbox;
 public class RSET extends Pop3Command {
 
 	public RSET() {
-		super(null);
 	}
 
-	RSET(String parameters) {
-		super(parameters);
+	public static RSET parse(String parameters) throws Pop3Exception {
+		if (parameters != null) {
+			throw Pop3Exception.SyntaxError();
+		}
+		return new RSET();
+	}
+
+	@Override
+	public String toString() {
+		return "RSET";
 	}
 
 	@Override

@@ -21,12 +21,23 @@ import net.markwalder.junit.mailserver.Mailbox;
 
 public class DELE extends Pop3Command {
 
-	public DELE(int msg) {
-		this(String.valueOf(msg));
+	private final int messageNumber;
+
+	public DELE(int messageNumber) {
+		this.messageNumber = messageNumber;
 	}
 
-	DELE(String parameters) {
-		super(parameters);
+	public static DELE parse(String parameters) throws Pop3Exception {
+		if (parameters == null || parameters.isEmpty()) {
+			throw Pop3Exception.SyntaxError();
+		}
+		int messageNumber = parseMessageNumber(parameters);
+		return new DELE(messageNumber);
+	}
+
+	@Override
+	public String toString() {
+		return "DELE " + messageNumber;
 	}
 
 	@Override
@@ -34,7 +45,7 @@ public class DELE extends Pop3Command {
 		session.assertState(State.TRANSACTION);
 
 		// try to find message by number
-		Mailbox.Message message = session.getMessage(parameters);
+		Mailbox.Message message = session.getMessage(messageNumber);
 		if (message == null || message.isDeleted()) {
 			throw Pop3Exception.MessageNotFound();
 		}

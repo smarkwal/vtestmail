@@ -21,11 +21,18 @@ import java.io.IOException;
 public class STARTTLS extends SmtpCommand {
 
 	public STARTTLS() {
-		this(null);
 	}
 
-	STARTTLS(String parameters) {
-		super(parameters);
+	public static STARTTLS parse(String parameters) throws SmtpException {
+		if (parameters != null) {
+			throw SmtpException.SyntaxError();
+		}
+		return new STARTTLS();
+	}
+
+	@Override
+	public String toString() {
+		return "STARTTLS";
 	}
 
 	@Override

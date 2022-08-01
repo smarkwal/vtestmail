@@ -21,12 +21,23 @@ import net.markwalder.junit.mailserver.Mailbox;
 
 public class RETR extends Pop3Command {
 
-	public RETR(int msg) {
-		this(String.valueOf(msg));
+	private final int messageNumber;
+
+	public RETR(int messageNumber) {
+		this.messageNumber = messageNumber;
 	}
 
-	RETR(String parameters) {
-		super(parameters);
+	public static RETR parse(String parameters) throws Pop3Exception {
+		if (parameters == null || parameters.isEmpty()) {
+			throw Pop3Exception.SyntaxError();
+		}
+		int messageNumber = parseMessageNumber(parameters);
+		return new RETR(messageNumber);
+	}
+
+	@Override
+	public String toString() {
+		return "RETR " + messageNumber;
 	}
 
 	@Override
@@ -34,7 +45,7 @@ public class RETR extends Pop3Command {
 		session.assertState(State.TRANSACTION);
 
 		// try to find message by number
-		Mailbox.Message message = session.getMessage(parameters);
+		Mailbox.Message message = session.getMessage(messageNumber);
 		if (message == null || message.isDeleted()) {
 			throw Pop3Exception.MessageNotFound();
 		}

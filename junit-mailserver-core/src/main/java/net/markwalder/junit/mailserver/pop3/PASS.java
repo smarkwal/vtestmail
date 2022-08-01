@@ -20,8 +20,22 @@ import java.io.IOException;
 
 public class PASS extends Pop3Command {
 
+	private final String password;
+
 	public PASS(String password) {
-		super(password);
+		this.password = password;
+	}
+
+	public static PASS parse(String parameters) throws Pop3Exception {
+		if (parameters == null || parameters.isEmpty()) {
+			throw Pop3Exception.SyntaxError();
+		}
+		return new PASS(parameters);
+	}
+
+	@Override
+	public String toString() {
+		return "PASS " + password;
 	}
 
 	@Override
@@ -35,7 +49,7 @@ public class PASS extends Pop3Command {
 		}
 
 		// try to authenticate
-		session.login("USER", user, parameters, server.getStore());
+		session.login("USER", user, password, server.getStore());
 
 		if (!session.isAuthenticated()) {
 			client.writeLine("-ERR Authentication failed");

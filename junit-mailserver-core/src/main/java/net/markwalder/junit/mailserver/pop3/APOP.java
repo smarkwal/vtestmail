@@ -21,23 +21,34 @@ import net.markwalder.junit.mailserver.utils.StringUtils;
 
 public class APOP extends Pop3Command {
 
+	private final String username;
+	private final String digest;
+
 	public APOP(String username, String digest) {
-		this(username + " " + digest);
+		this.username = username;
+		this.digest = digest;
 	}
 
-	APOP(String parameters) {
-		super(parameters);
-	}
-
-	@Override
-	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception {
-		session.assertState(State.AUTHORIZATION);
-
+	public static APOP parse(String parameters) throws Pop3Exception {
+		if (parameters == null || parameters.isEmpty()) {
+			throw Pop3Exception.SyntaxError();
+		}
 		String username = StringUtils.substringBefore(parameters, " ");
 		String digest = StringUtils.substringAfter(parameters, " ");
 		if (digest == null) {
 			throw Pop3Exception.SyntaxError();
 		}
+		return new APOP(username, digest);
+	}
+
+	@Override
+	public String toString() {
+		return "APOP " + username + " " + digest;
+	}
+
+	@Override
+	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception {
+		session.assertState(State.AUTHORIZATION);
 
 		// try to authenticate
 		String timestamp = session.getTimestamp();

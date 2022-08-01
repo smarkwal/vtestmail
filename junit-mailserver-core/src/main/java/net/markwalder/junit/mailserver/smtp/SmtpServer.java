@@ -43,16 +43,16 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 		super("SMTP", store);
 
 		// register available SMTP commands
-		addCommand("HELO", HELO::new);
-		addCommand("EHLO", EHLO::new);
-		addCommand("STARTTLS", STARTTLS::new);
-		addCommand("AUTH", AUTH::new);
-		addCommand("MAIL", MAIL::new);
-		addCommand("RCPT", RCPT::new);
-		addCommand("DATA", DATA::new);
-		addCommand("NOOP", NOOP::new);
-		addCommand("RSET", RSET::new);
-		addCommand("QUIT", QUIT::new);
+		addCommand("HELO", HELO::parse);
+		addCommand("EHLO", EHLO::parse);
+		addCommand("STARTTLS", STARTTLS::parse);
+		addCommand("AUTH", AUTH::parse);
+		addCommand("MAIL", MAIL::parse);
+		addCommand("RCPT", RCPT::parse);
+		addCommand("DATA", DATA::parse);
+		addCommand("NOOP", NOOP::parse);
+		addCommand("RSET", RSET::parse);
+		addCommand("QUIT", QUIT::parse);
 	}
 
 	@Override

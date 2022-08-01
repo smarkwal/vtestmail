@@ -21,10 +21,6 @@ import net.markwalder.junit.mailserver.MailCommand;
 
 public abstract class SmtpCommand extends MailCommand {
 
-	public SmtpCommand(String parameters) {
-		super(parameters);
-	}
-
 	protected abstract void execute(SmtpServer server, SmtpSession session, SmtpClient client) throws IOException, SmtpException;
 
 }
