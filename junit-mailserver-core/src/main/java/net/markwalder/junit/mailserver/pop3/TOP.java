@@ -59,8 +59,7 @@ public class TOP extends Pop3Command {
 		String reply = message.getTop(lines);
 
 		client.writeLine("+OK");
-		client.writeLine(reply);
-		client.writeLine(".");
+		client.writeMultiLines(reply);
 	}
 
 }

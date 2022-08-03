@@ -30,7 +30,9 @@ public abstract class Pop3Command extends MailCommand {
 	protected static int parseNumber(String text, int minValue) throws Pop3Exception {
 		isNotEmpty(text);
 		try {
-			// TODO: do not accept values starting with "+"
+			if (!text.matches("^[0-9]*$")) {
+				throw Pop3Exception.SyntaxError();
+			}
 			int number = Integer.parseInt(text);
 			if (number < minValue) {
 				throw Pop3Exception.SyntaxError();

@@ -53,8 +53,7 @@ public class RETR extends Pop3Command {
 		int size = message.getSize();
 		String content = message.getContent();
 		client.writeLine("+OK " + size + " octets");
-		client.writeLine(content);
-		client.writeLine(".");
+		client.writeMultiLines(content);
 	}
 
 }

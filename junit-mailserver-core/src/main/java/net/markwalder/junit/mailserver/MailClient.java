@@ -33,10 +33,10 @@ import net.markwalder.junit.mailserver.utils.LineReader;
  */
 public abstract class MailClient {
 
-	private static final Charset CHARSET = StandardCharsets.ISO_8859_1;
+	protected static final Charset CHARSET = StandardCharsets.ISO_8859_1;
 
-	private static final String CRLF = "\r\n";
-	private static final String LF = "\n";
+	protected static final String CRLF = "\r\n";
+	protected static final String LF = "\n";
 
 	private final LineReader reader;
 	private final BufferedWriter writer;

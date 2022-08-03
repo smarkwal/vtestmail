@@ -27,6 +27,26 @@ public class Pop3Client extends MailClient {
 		super(socket, log, "+OK");
 	}
 
+	public void writeMultiLines(String message) throws IOException {
+
+		// split message into lines
+		String[] lines = message.split(CRLF, -1);
+
+		// send every line separately
+		for (String line : lines) {
+
+			// see "byte-stuffed" in https://www.ietf.org/rfc/rfc1939.html#section-3
+			if (line.startsWith(".")) {
+				line = "." + line;
+			}
+
+			writeLine(line);
+		}
+
+		// send termination octet on last line (CRLF.CRLF)
+		writeLine(".");
+	}
+
 	@Override
 	public void writeError(String message) throws IOException {
 		Assert.isNotEmpty(message, "message");
