@@ -18,6 +18,8 @@ package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import net.markwalder.junit.mailserver.MailCommand;
 import net.markwalder.junit.mailserver.MailServer;
 import net.markwalder.junit.mailserver.MailboxStore;
@@ -79,22 +81,7 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 
 		// TODO: use an "exception handler" with try/catch over all of the following code
 
-		// split line into command name and parameters
-		String name = StringUtils.substringBefore(line, " ").toUpperCase();
-		String parameters = StringUtils.substringAfter(line, " ");
-
-		// check if command is supported
-		if (!isCommandEnabled(name)) {
-			// TODO: 502 SHOULD be used when the command is actually recognized
-			//  by the SMTP server, but not implemented. If the command is not
-			//  recognized, code 500 SHOULD be returned.
-			//  See https://datatracker.ietf.org/doc/html/rfc5321#section-4.2.4
-			throw SmtpException.CommandNotImplemented();
-		}
-
-		// create command instance
-		MailCommand.Parser<SmtpCommand, SmtpException> commandFactory = commands.get(name);
-		SmtpCommand command = commandFactory.parse(parameters);
+		SmtpCommand command = createCommand(line);
 
 		// TODO: check if command is allowed in current session state
 		// see https://datatracker.ietf.org/doc/html/rfc5321#section-4.1.4
@@ -114,6 +101,63 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 			// add command to history
 			session.addCommand(command);
 		}
+	}
+
+	protected SmtpCommand createCommand(String line) throws SmtpException {
+
+		// split line into command name and parameters
+		String name = StringUtils.substringBefore(line, " ").toUpperCase();
+		String parameters = StringUtils.substringAfter(line, " ");
+
+		// check if command is supported
+		if (!isCommandEnabled(name)) {
+			// TODO: 502 SHOULD be used when the command is actually recognized
+			//  by the SMTP server, but not implemented. If the command is not
+			//  recognized, code 500 SHOULD be returned.
+			//  See https://datatracker.ietf.org/doc/html/rfc5321#section-4.2.4
+			throw SmtpException.CommandNotImplemented();
+		}
+
+		// create command instance
+		MailCommand.Parser<SmtpCommand, SmtpException> commandFactory = commands.get(name);
+		return commandFactory.parse(parameters);
+	}
+
+	/**
+	 * Get list of SMTP extensions supported by this server. This list will be
+	 * returned when the EHLO command is sent to the server.
+	 *
+	 * @return List of SMTP extensions.
+	 */
+	protected List<String> getSupportedExtensions() {
+
+		List<String> extensions = new ArrayList<>();
+
+		// support STARTTLS
+		if (isCommandEnabled("STARTTLS")) {
+			extensions.add("STARTTLS");
+		}
+
+		// supported authentication types
+		if (isCommandEnabled("AUTH")) {
+			List<String> authTypes = getAuthTypes();
+			if (authTypes.size() > 0) {
+				extensions.add("AUTH " + String.join(" ", authTypes));
+			}
+		}
+
+		if (isCommandEnabled("VRFY")) {
+			extensions.add("VRFY");
+		}
+
+		if (isCommandEnabled("EXPN")) {
+			extensions.add("EXPN");
+		}
+
+		// support enhanced status codes (ESMPT)
+		extensions.add("ENHANCEDSTATUSCODES");
+
+		return extensions;
 	}
 
 }

@@ -17,7 +17,6 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import net.markwalder.junit.mailserver.utils.Assert;
 
@@ -48,7 +47,7 @@ public class EHLO extends SmtpCommand {
 		client.writeLine("250-" + greeting);
 
 		// send supported extensions to client
-		List<String> extensions = getSupportedExtensions(server);
+		List<String> extensions = server.getSupportedExtensions();
 		for (String extension : extensions) {
 			client.writeLine("250-" + extension);
 		}
@@ -56,36 +55,5 @@ public class EHLO extends SmtpCommand {
 		client.writeLine("250 OK");
 	}
 
-	// TODO: move this method into SmtpServer?
-	private List<String> getSupportedExtensions(SmtpServer server) {
-
-		List<String> extensions = new ArrayList<>();
-
-		// support STARTTLS
-		if (server.isCommandEnabled("STARTTLS")) {
-			extensions.add("STARTTLS");
-		}
-
-		// supported authentication types
-		if (server.isCommandEnabled("AUTH")) {
-			List<String> authTypes = server.getAuthTypes();
-			if (authTypes.size() > 0) {
-				extensions.add("AUTH " + String.join(" ", authTypes));
-			}
-		}
-
-		if (server.isCommandEnabled("VRFY")) {
-			extensions.add("VRFY");
-		}
-
-		if (server.isCommandEnabled("EXPN")) {
-			extensions.add("EXPN");
-		}
-
-		// support enhanced status codes (ESMPT)
-		extensions.add("ENHANCEDSTATUSCODES");
-
-		return extensions;
-	}
 
 }

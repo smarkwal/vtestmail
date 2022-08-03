@@ -17,7 +17,6 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -29,12 +28,7 @@ class EHLOTest extends CommandTest {
 
 		// mock
 		Mockito.doReturn("localhost").when(session).getServerAddress();
-		Mockito.doReturn(true).when(server).isCommandEnabled("STARTTLS");
-		Mockito.doReturn(true).when(server).isCommandEnabled("AUTH");
-		List<String> authTypes = List.of("PLAIN", "LOGIN");
-		Mockito.doReturn(authTypes).when(server).getAuthTypes();
-		Mockito.doReturn(true).when(server).isCommandEnabled("VRFY");
-		Mockito.doReturn(false).when(server).isCommandEnabled("EXPN");
+		Mockito.doReturn(List.of("STARTTLS", "AUTH PLAIN")).when(server).getSupportedExtensions();
 
 		// prepare
 		SmtpCommand command = new EHLO("localhost");
@@ -45,49 +39,9 @@ class EHLOTest extends CommandTest {
 		// verify
 		Mockito.verify(session).getServerAddress();
 		Mockito.verify(client).writeLine("250-localhost Hello localhost");
-		Mockito.verify(server).isCommandEnabled("STARTTLS");
-		Mockito.verify(server).isCommandEnabled("AUTH");
-		Mockito.verify(server).getAuthTypes();
-		Mockito.verify(server).isCommandEnabled("VRFY");
-		Mockito.verify(server).isCommandEnabled("EXPN");
+		Mockito.verify(server).getSupportedExtensions();
 		Mockito.verify(client).writeLine("250-STARTTLS");
-		Mockito.verify(client).writeLine("250-AUTH PLAIN LOGIN");
-		Mockito.verify(client).writeLine("250-VRFY");
-		Mockito.verify(client).writeLine("250-ENHANCEDSTATUSCODES");
-		Mockito.verify(client).writeLine("250 OK");
-
-		Mockito.verifyNoMoreInteractions(server, session, client);
-	}
-
-	@Test
-	void execute_noAuthTypes() throws SmtpException, IOException {
-
-		// mock
-		Mockito.doReturn("localhost").when(session).getServerAddress();
-		Mockito.doReturn(true).when(server).isCommandEnabled("STARTTLS");
-		Mockito.doReturn(true).when(server).isCommandEnabled("AUTH");
-		List<Object> authTypes = Collections.emptyList();
-		Mockito.doReturn(authTypes).when(server).getAuthTypes();
-		Mockito.doReturn(true).when(server).isCommandEnabled("VRFY");
-		Mockito.doReturn(false).when(server).isCommandEnabled("EXPN");
-
-		// prepare
-		SmtpCommand command = new EHLO("localhost");
-
-		// test
-		command.execute(server, session, client);
-
-		// verify
-		Mockito.verify(session).getServerAddress();
-		Mockito.verify(client).writeLine("250-localhost Hello localhost");
-		Mockito.verify(server).isCommandEnabled("STARTTLS");
-		Mockito.verify(server).isCommandEnabled("AUTH");
-		Mockito.verify(server).getAuthTypes();
-		Mockito.verify(server).isCommandEnabled("VRFY");
-		Mockito.verify(server).isCommandEnabled("EXPN");
-		Mockito.verify(client).writeLine("250-STARTTLS");
-		Mockito.verify(client).writeLine("250-VRFY");
-		Mockito.verify(client).writeLine("250-ENHANCEDSTATUSCODES");
+		Mockito.verify(client).writeLine("250-AUTH PLAIN");
 		Mockito.verify(client).writeLine("250 OK");
 
 		Mockito.verifyNoMoreInteractions(server, session, client);

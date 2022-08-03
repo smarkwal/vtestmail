@@ -84,6 +84,19 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client,
 
 		// TODO: use an "exception handler" with try/catch over all of the following code
 
+		Pop3Command command = createCommand(line);
+
+		// add command to history
+		session.addCommand(command);
+
+		// execute command
+		command.execute(this, session, client);
+
+	}
+
+	protected Pop3Command createCommand(String line) throws Pop3Exception {
+
+		// split line into command name and parameters
 		String name = StringUtils.substringBefore(line, " ").toUpperCase();
 		String parameters = StringUtils.substringAfter(line, " ");
 
@@ -94,14 +107,7 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client,
 
 		// create command instance
 		MailCommand.Parser<Pop3Command, Pop3Exception> commandFactory = commands.get(name);
-		Pop3Command command = commandFactory.parse(parameters);
-
-		// add command to history
-		session.addCommand(command);
-
-		// execute command
-		command.execute(this, session, client);
-
+		return commandFactory.parse(parameters);
 	}
 
 }
