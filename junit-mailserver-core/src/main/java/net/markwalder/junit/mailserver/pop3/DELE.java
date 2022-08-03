@@ -51,6 +51,8 @@ public class DELE extends Pop3Command {
 		}
 
 		// mark message as deleted
+		// TODO: save deleted state in session so that messages do not remain
+		//  marked as deleted if the session is closed without a QUIT command.
 		message.setDeleted(true);
 		client.writeLine("+OK");
 	}
