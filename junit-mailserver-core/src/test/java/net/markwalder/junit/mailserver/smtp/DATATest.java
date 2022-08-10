@@ -20,9 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Collections;
 import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.testutils.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -43,6 +47,9 @@ class DATATest extends CommandTest {
 				"..",
 				"."
 		).when(client).readLine();
+		Mockito.doReturn("client").when(session).getClientAddress();
+		Mockito.doReturn("server").when(session).getServerAddress();
+		Mockito.doReturn(TestUtils.createTestClock()).when(server).getClock();
 		Mockito.doReturn(store).when(server).getStore();
 		Mockito.doReturn(Collections.singletonList("alice@localhost")).when(session).getRecipients();
 		Mockito.doReturn(mailbox).when(store).findMailbox("alice@localhost");
@@ -57,11 +64,14 @@ class DATATest extends CommandTest {
 		Mockito.verify(server).isAuthenticationRequired();
 		Mockito.verify(client).writeLine("354 Send message, end with <CRLF>.<CRLF>");
 		Mockito.verify(client, Mockito.times(5)).readLine();
+		Mockito.verify(session).getClientAddress();
+		Mockito.verify(session).getServerAddress();
+		Mockito.verify(server).getClock();
 		Mockito.verify(server).getStore();
 		Mockito.verify(session).getRecipients();
 		Mockito.verify(store).findMailbox("alice@localhost");
-		Mockito.verify(mailbox).addMessage("Subject: Test\r\n\r\nHello World!\r\n.");
-		Mockito.verify(session).endTransaction("Subject: Test\r\n\r\nHello World!\r\n.");
+		Mockito.verify(mailbox).addMessage("Received: from client by server; Wed, 1 Jan 2020 00:00:00 +0000\r\nSubject: Test\r\n\r\nHello World!\r\n.");
+		Mockito.verify(session).endTransaction("Received: from client by server; Wed, 1 Jan 2020 00:00:00 +0000\r\nSubject: Test\r\n\r\nHello World!\r\n.");
 		Mockito.verify(client).writeLine("250 2.6.0 Message accepted");
 
 		Mockito.verifyNoMoreInteractions(server, session, client, store, mailbox);
@@ -86,6 +96,26 @@ class DATATest extends CommandTest {
 		Mockito.verify(server).isAuthenticationRequired();
 
 		Mockito.verifyNoMoreInteractions(server, session, client, store, mailbox);
+	}
+
+	@Test
+	void formatDateTime() {
+
+		Clock clock = TestUtils.createTestClock();
+		String result = DATA.formatDateTime(clock);
+		assertThat(result).isEqualTo("Wed, 1 Jan 2020 00:00:00 +0000");
+
+		clock = TestUtils.createTestClock(1977, 2, 24, 13, 17, 34);
+		result = DATA.formatDateTime(clock);
+		assertThat(result).isEqualTo("Thu, 24 Feb 1977 13:17:34 +0000");
+
+		clock = Clock.fixed(Instant.EPOCH, ZoneId.of("UTC"));
+		result = DATA.formatDateTime(clock);
+		assertThat(result).isEqualTo("Thu, 1 Jan 1970 00:00:00 +0000");
+
+		clock = Clock.fixed(Instant.ofEpochMilli(1234567890123L), ZoneId.of("CET"));
+		result = DATA.formatDateTime(clock);
+		assertThat(result).isEqualTo("Sat, 14 Feb 2009 00:31:30 +0100");
 	}
 
 }

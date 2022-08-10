@@ -23,9 +23,6 @@ import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
 import java.io.IOException;
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +31,7 @@ import net.markwalder.junit.mailserver.AuthType;
 import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxStore;
 import net.markwalder.junit.mailserver.testutils.Pop3Client;
+import net.markwalder.junit.mailserver.testutils.TestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -191,7 +189,7 @@ public class Pop3ServerTest {
 		// prepare: POP3 server
 		try (Pop3Server server = new Pop3Server(store)) {
 			server.setAuthenticationRequired(true);
-			server.setClock(Clock.fixed(Instant.parse("2020-01-01T00:00:00Z"), ZoneId.of("UTC")));
+			server.setClock(TestUtils.createTestClock());
 
 			// disable all authentication commands by default
 			server.setCommandEnabled("USER", false);

@@ -17,11 +17,18 @@
 package net.markwalder.junit.mailserver.smtp;
 
 import java.io.IOException;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import net.markwalder.junit.mailserver.MailClient;
 import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxStore;
 
 public class DATA extends SmtpCommand {
+
+	private static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ofPattern("E, d MMM uuuu HH:mm:ss Z").withLocale(Locale.US);
 
 	public DATA() {
 	}
@@ -43,9 +50,16 @@ public class DATA extends SmtpCommand {
 			throw SmtpException.AuthenticationRequired();
 		}
 
+		// ask client to send message data
 		client.writeLine("354 Send message, end with <CRLF>.<CRLF>");
+
+		// read message data from client
 		String message = readMessage(client);
-		// TODO: add Received header
+
+		// add a "Received" header at the top of the message
+		message = addReceivedHeader(session, server, message);
+
+		// deliver message to local recipients
 		deliverMessage(message, server, session);
 
 		// clear sender, list of recipients, and message data
@@ -82,6 +96,35 @@ public class DATA extends SmtpCommand {
 		}
 
 		return message.toString();
+	}
+
+	/**
+	 * Add a "Received" header to the start of the given message.
+	 * See <a href="https://datatracker.ietf.org/doc/html/rfc5322#section-3.6.7">RFC 5322, section 3.6.7</a>.
+	 *
+	 * @param session SMTP session.
+	 * @param server  SMTP server.
+	 * @param message Message.
+	 * @return Message with "Received" header.
+	 */
+	private String addReceivedHeader(SmtpSession session, SmtpServer server, String message) {
+		String dateTime = formatDateTime(server.getClock());
+		String stamp = String.format("from %s by %s; %s", session.getClientAddress(), session.getServerAddress(), dateTime);
+		return String.format("Received: %s\r\n%s", stamp, message);
+	}
+
+	/**
+	 * Format current date and time of given clock.
+	 * See <a href="https://datatracker.ietf.org/doc/html/rfc5322#section-3.3">RFC 5322, section 3.3</a>.
+	 *
+	 * @param clock Clock to use.
+	 * @return Formatted date and time.
+	 */
+	static String formatDateTime(Clock clock) {
+		ZoneId zone = clock.getZone();
+		DateTimeFormatter formatter = DATETIME_FORMAT.withZone(zone);
+		Instant instant = clock.instant();
+		return formatter.format(instant);
 	}
 
 	/**

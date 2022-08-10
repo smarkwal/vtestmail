@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.testutils.TestUtils;
 import org.apache.commons.net.smtp.SMTPClient;
 import org.junit.jupiter.api.Test;
 
@@ -40,6 +41,7 @@ public class SmtpCommonsNetTest {
 
 		// prepare: SMTP server
 		try (SmtpServer server = new SmtpServer(store)) {
+			server.setClock(TestUtils.createTestClock());
 
 			// add custom command CMD1 (enabled)
 			server.addCommand("CMD1", parameters -> new CustomCommand("CMD1"));
@@ -175,10 +177,10 @@ public class SmtpCommonsNetTest {
 				assertThat(messages).hasSize(2);
 
 				Mailbox.Message message = messages.get(0);
-				assertThat(message.getContent()).isEqualTo("Subject: Test 1\r\n\r\nTest message 1");
+				assertThat(message.getContent()).isEqualTo("Received: from 127.0.0.1 by 127.0.0.1; Wed, 1 Jan 2020 00:00:00 +0000\r\nSubject: Test 1\r\n\r\nTest message 1");
 
 				message = messages.get(1);
-				assertThat(message.getContent()).isEqualTo("Subject: Test 2\r\n\r\nTest message 2");
+				assertThat(message.getContent()).isEqualTo("Received: from 127.0.0.1 by 127.0.0.1; Wed, 1 Jan 2020 00:00:00 +0000\r\nSubject: Test 2\r\n\r\nTest message 2");
 
 			} finally {
 

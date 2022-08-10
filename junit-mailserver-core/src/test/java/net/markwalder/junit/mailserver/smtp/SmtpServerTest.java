@@ -36,6 +36,7 @@ import net.markwalder.junit.mailserver.AuthType;
 import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxStore;
 import net.markwalder.junit.mailserver.testutils.SmtpClient;
+import net.markwalder.junit.mailserver.testutils.TestUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -98,6 +99,7 @@ class SmtpServerTest {
 
 		// prepare: SMTP server
 		try (SmtpServer server = new SmtpServer(store)) {
+			server.setClock(TestUtils.createTestClock());
 			server.start();
 
 			// prepare: SMTP client
@@ -131,7 +133,8 @@ class SmtpServerTest {
 			Mailbox.Message mail = messages.get(0);
 			String content = mail.getContent();
 			assertThat(content).isEqualTo(
-					"Date: Wed, 1 Jan 2020 00:00:00 +0000\r\n" +
+					"Received: from 127.0.0.1 by 127.0.0.1; Wed, 1 Jan 2020 00:00:00 +0000\r\n" +
+							"Date: Wed, 1 Jan 2020 00:00:00 +0000\r\n" +
 							"From: bob@localhost\r\n" +
 							"To: alice@localhost\r\n" +
 							"Message-ID: <1234567890@localhost>\r\n" +
