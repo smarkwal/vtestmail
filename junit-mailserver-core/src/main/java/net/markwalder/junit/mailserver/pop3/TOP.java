@@ -53,7 +53,7 @@ public class TOP extends Pop3Command {
 
 		// try to find message by number, and get top n lines
 		Mailbox.Message message = session.getMessage(messageNumber);
-		if (message == null || message.isDeleted()) {
+		if (message == null || message.isDeleted() || session.isDeleted(messageNumber)) {
 			throw Pop3Exception.MessageNotFound();
 		}
 		String reply = message.getTop(lines);

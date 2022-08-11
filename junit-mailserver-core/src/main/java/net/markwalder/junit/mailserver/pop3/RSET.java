@@ -17,8 +17,6 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
-import java.util.List;
-import net.markwalder.junit.mailserver.Mailbox;
 
 public class RSET extends Pop3Command {
 
@@ -40,12 +38,7 @@ public class RSET extends Pop3Command {
 		session.assertState(State.TRANSACTION);
 
 		// unmark all messages marked as deleted
-		List<Mailbox.Message> messages = session.getMessages();
-		for (Mailbox.Message message : messages) {
-			if (message.isDeleted()) {
-				message.setDeleted(false);
-			}
-		}
+		session.clearDeleted();
 
 		client.writeLine("+OK");
 	}

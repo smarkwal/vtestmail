@@ -18,7 +18,9 @@ package net.markwalder.junit.mailserver.pop3;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import net.markwalder.junit.mailserver.MailSession;
 import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxProvider;
@@ -36,6 +38,11 @@ public class Pop3Session extends MailSession {
 	private State state = State.AUTHORIZATION;
 	private String user = null;
 	private Mailbox mailbox = null;
+
+	/**
+	 * Numbers of messages marked as deleted.
+	 */
+	private final Set<Integer> deleted = new HashSet<>();
 
 	Pop3Session(String timestamp) {
 		Assert.isNotEmpty(timestamp, "timestamp");
@@ -125,6 +132,29 @@ public class Pop3Session extends MailSession {
 		return mailbox;
 	}
 
+	/**
+	 * Get numbers of messages marked as deleted.
+	 *
+	 * @return Numbers of messages marked as deleted in ascending order.
+	 */
+	public int[] getDeleted() {
+		return deleted.stream().mapToInt(Integer::intValue).sorted().toArray();
+	}
+
+	public boolean isDeleted(int messageNumber) {
+		Assert.isInRange(messageNumber, 1, Integer.MAX_VALUE, "messageNumber");
+		return deleted.contains(messageNumber);
+	}
+
+	void setDeleted(int messageNumber) {
+		Assert.isInRange(messageNumber, 1, Integer.MAX_VALUE, "messageNumber");
+		deleted.add(messageNumber);
+	}
+
+	void clearDeleted() {
+		deleted.clear();
+	}
+
 	// helper methods ----------------------------------------------------------
 
 	List<Mailbox.Message> getMessages() {
@@ -154,11 +184,16 @@ public class Pop3Session extends MailSession {
 	 * @return Number of messages in the mailbox.
 	 */
 	int getMessageCount() {
+		int count = 0;
 		List<Mailbox.Message> messages = getMessages();
-		long count = messages.stream()
-				.filter(m -> !m.isDeleted()) // ignore deleted messages
-				.count();
-		return (int) count;
+		for (int i = 0; i < messages.size(); i++) {
+			Mailbox.Message message = messages.get(i);
+			if (message.isDeleted() || isDeleted(i + 1)) {
+				continue; // ignore deleted messages
+			}
+			count++;
+		}
+		return count;
 	}
 
 	/**
@@ -168,11 +203,16 @@ public class Pop3Session extends MailSession {
 	 * @return Size to all messages in the mailbox.
 	 */
 	int getTotalSize() {
+		int size = 0;
 		List<Mailbox.Message> messages = getMessages();
-		return messages.stream()
-				.filter(m -> !m.isDeleted()) // ignore deleted messages
-				.mapToInt(Mailbox.Message::getSize)
-				.sum();
+		for (int i = 0; i < messages.size(); i++) {
+			Mailbox.Message message = messages.get(i);
+			if (message.isDeleted() || isDeleted(i + 1)) {
+				continue; // ignore deleted messages
+			}
+			size += message.getSize();
+		}
+		return size;
 	}
 
 }

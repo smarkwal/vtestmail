@@ -46,7 +46,7 @@ public class RETR extends Pop3Command {
 
 		// try to find message by number
 		Mailbox.Message message = session.getMessage(messageNumber);
-		if (message == null || message.isDeleted()) {
+		if (message == null || message.isDeleted() || session.isDeleted(messageNumber)) {
 			throw Pop3Exception.MessageNotFound();
 		}
 

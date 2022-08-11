@@ -65,6 +65,13 @@ public class Mailbox {
 		}
 	}
 
+	public void removeMessage(int messageNumber) {
+		synchronized (messages) {
+			Assert.isInRange(messageNumber, 1, messages.size(), "messageNumber");
+			messages.remove(messageNumber - 1);
+		}
+	}
+
 	public void removeDeletedMessages() {
 		synchronized (messages) {
 			messages.removeIf(Message::isDeleted);

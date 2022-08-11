@@ -87,6 +87,35 @@ class MailboxTest {
 	}
 
 	@Test
+	void removeMessages() {
+
+		// prepare
+		mailbox.addMessage("This is test message 1.");
+		mailbox.addMessage("This is test message 2.");
+
+		// assume
+		List<Mailbox.Message> messages = mailbox.getMessages();
+		assumeThat(messages).hasSize(2);
+
+		// test
+		mailbox.removeMessage(2);
+
+		// assert: only message 1 is left in mailbox
+		messages = mailbox.getMessages();
+		assertThat(messages).hasSize(1);
+		Mailbox.Message message = messages.get(0);
+		assertThat(message.getContent()).isEqualTo("This is test message 1.");
+
+		// test
+		mailbox.removeMessage(1);
+
+		// assert: mailbox is empty
+		messages = mailbox.getMessages();
+		assertThat(messages).isEmpty();
+
+	}
+
+	@Test
 	void removeDeletedMessages() {
 
 		// prepare

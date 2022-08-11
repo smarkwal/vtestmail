@@ -46,14 +46,12 @@ public class DELE extends Pop3Command {
 
 		// try to find message by number
 		Mailbox.Message message = session.getMessage(messageNumber);
-		if (message == null || message.isDeleted()) {
+		if (message == null || message.isDeleted() || session.isDeleted(messageNumber)) {
 			throw Pop3Exception.MessageNotFound();
 		}
 
 		// mark message as deleted
-		// TODO: save deleted state in session so that messages do not remain
-		//  marked as deleted if the session is closed without a QUIT command.
-		message.setDeleted(true);
+		session.setDeleted(messageNumber);
 		client.writeLine("+OK");
 	}
 

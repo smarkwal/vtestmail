@@ -148,14 +148,14 @@ class Pop3CommonsNetTest {
 				assertThat(success).isTrue();
 
 				// assert: message is marked as deleted
-				assertThat(mailbox.getMessages().get(0).isDeleted()).isTrue();
+				assertThat(session.isDeleted(1)).isTrue();
 
 				// RSET
 				success = client.reset();
 				assertThat(success).isTrue();
 
 				// assert: message is NOT marked as deleted
-				assertThat(mailbox.getMessages().get(0).isDeleted()).isFalse();
+				assertThat(session.isDeleted(1)).isFalse();
 
 				// DELE 2
 				success = client.deleteMessage(2);
@@ -259,6 +259,52 @@ class Pop3CommonsNetTest {
 				// close connection
 				client.disconnect();
 			}
+
+		}
+
+	}
+
+	@Test
+	void test_DELE_without_QUIT() throws IOException {
+
+		// prepare: mailbox
+		MailboxStore store = new MailboxStore();
+		Mailbox mailbox = store.createMailbox(USERNAME, PASSWORD, EMAIL);
+		mailbox.addMessage("Subject: Test\r\n\r\nTest message");
+
+		// prepare: POP3 server
+		try (Pop3Server server = new Pop3Server(store)) {
+			server.setAuthenticationRequired(true);
+			server.start();
+
+			// prepare: POP3 client
+			POP3Client client = new POP3Client();
+			try {
+
+				// connect to server
+				client.connect("localhost", server.getPort());
+
+				// USER and PASS
+				boolean success = client.login(USERNAME, PASSWORD);
+				assertThat(success).isTrue();
+
+				// DELE 1
+				success = client.deleteMessage(1);
+				assertThat(success).isTrue();
+
+			} finally {
+
+				// disconnect without QUIT command
+				client.disconnect();
+			}
+
+			// assert: message has not been deleted
+			List<Mailbox.Message> messages = mailbox.getMessages();
+			assertThat(messages).hasSize(1);
+
+			// assert: message is not marked as deleted
+			Mailbox.Message message = messages.get(0);
+			assertThat(message.isDeleted()).isFalse();
 
 		}
 

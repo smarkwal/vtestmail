@@ -98,6 +98,7 @@ public class RETRTest extends CommandTest {
 		// mock
 		Mockito.doReturn(message).when(session).getMessage(1);
 		Mockito.doReturn(false).when(message).isDeleted();
+		Mockito.doReturn(false).when(session).isDeleted(1);
 		Mockito.doReturn(20).when(message).getSize();
 		Mockito.doReturn("Subject: Test\r\n\r\nThis is a test message.").when(message).getContent();
 
@@ -111,6 +112,7 @@ public class RETRTest extends CommandTest {
 		Mockito.verify(session).assertState(State.TRANSACTION);
 		Mockito.verify(session).getMessage(1);
 		Mockito.verify(message).isDeleted();
+		Mockito.verify(session).isDeleted(1);
 		Mockito.verify(message).getSize();
 		Mockito.verify(message).getContent();
 		Mockito.verify(client).writeLine("+OK 20 octets");
@@ -140,11 +142,36 @@ public class RETRTest extends CommandTest {
 	}
 
 	@Test
-	void execute_throwsException_ifMessageIsDeleted() throws Pop3Exception {
+	void execute_throwsException_ifMessageIsDeleted_inSession() throws Pop3Exception {
+
+		// mock
+		Mockito.doReturn(message).when(session).getMessage(3);
+		Mockito.doReturn(false).when(message).isDeleted();
+		Mockito.doReturn(true).when(session).isDeleted(3);
+
+		// prepare
+		Pop3Command command = new RETR(3);
+
+		// test and assert
+		Exception exception = assertThrows(Pop3Exception.class, () -> command.execute(server, session, client));
+		assertThat(exception).hasMessage("No such message");
+
+		// verify
+		Mockito.verify(session).assertState(State.TRANSACTION);
+		Mockito.verify(session).getMessage(3);
+		Mockito.verify(message).isDeleted();
+		Mockito.verify(session).isDeleted(3);
+
+		Mockito.verifyNoMoreInteractions(server, session, client, message);
+	}
+
+	@Test
+	void execute_throwsException_ifMessageIsDeleted_inMailbox() throws Pop3Exception {
 
 		// mock
 		Mockito.doReturn(message).when(session).getMessage(3);
 		Mockito.doReturn(true).when(message).isDeleted();
+		Mockito.doReturn(false).when(session).isDeleted(3);
 
 		// prepare
 		Pop3Command command = new RETR(3);

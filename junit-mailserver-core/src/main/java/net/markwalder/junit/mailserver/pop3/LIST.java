@@ -65,7 +65,7 @@ public class LIST extends Pop3Command {
 			List<Mailbox.Message> messages = session.getMessages();
 			for (int i = 0; i < messages.size(); i++) {
 				Mailbox.Message message = messages.get(i);
-				if (message.isDeleted()) {
+				if (message.isDeleted() || session.isDeleted(i + 1)) {
 					continue; // ignore deleted messages
 				}
 
@@ -79,7 +79,7 @@ public class LIST extends Pop3Command {
 
 			// try to find message by number
 			Mailbox.Message message = session.getMessage(messageNumber);
-			if (message == null || message.isDeleted()) {
+			if (message == null || message.isDeleted() || session.isDeleted(messageNumber)) {
 				throw Pop3Exception.MessageNotFound();
 			}
 
