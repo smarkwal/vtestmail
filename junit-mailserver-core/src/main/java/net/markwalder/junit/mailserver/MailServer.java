@@ -97,12 +97,6 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	 */
 	private final AtomicBoolean stop = new AtomicBoolean(false);
 
-	/**
-	 * Communication log with all incoming and outgoing messages.
-	 * TODO: move log into session
-	 */
-	private final StringBuilder log = new StringBuilder();
-
 	protected MailServer(String protocol, MailboxStore store) {
 		Assert.isNotEmpty(protocol, "protocol");
 		Assert.isNotNull(store, "store");
@@ -352,11 +346,8 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 
 				System.out.println(protocol + " connection from " + getClientInfo(socket));
 
-				// clear log (if there has been a previous connection)
-				log.setLength(0);
-
-				client = createClient(socket, log);
 				session = createSession();
+				client = createClient(socket, session.log); // client writes to session log
 
 				// collect information about server and client
 				session.setSocketData(socket);
@@ -443,10 +434,6 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	protected abstract void handleNewClient() throws IOException;
 
 	protected abstract void handleCommand(String command) throws E, IOException;
-
-	public String getLog() {
-		return log.toString();
-	}
 
 	public S getActiveSession() {
 		return session;

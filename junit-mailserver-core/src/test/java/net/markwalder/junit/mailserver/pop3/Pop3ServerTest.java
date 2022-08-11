@@ -248,16 +248,6 @@ public class Pop3ServerTest {
 			// assert
 			assertThat(messages).isEmpty();
 
-			String log = server.getLog();
-			if (authType.equals("APOP")) {
-				assertThat(log).contains("APOP " + USERNAME + " d4f3cd138fcc499b6053537a8de84de0");
-			} else if (authType.equals("USER")) {
-				assertThat(log).contains("USER " + USERNAME, "PASS " + PASSWORD);
-			} else {
-				assertThat(log).contains("SASL " + authType);
-				assertThat(log).contains("AUTH " + authType + " ");
-			}
-
 			List<Pop3Session> sessions = server.getSessions();
 			assertThat(sessions).hasSize(1);
 			Pop3Session session = sessions.get(0);
@@ -283,6 +273,16 @@ public class Pop3ServerTest {
 			}
 
 			assertThat(commands).hasSize(authType.equals("USER") ? 5 : 4);
+
+			String log = session.getLog();
+			if (authType.equals("APOP")) {
+				assertThat(log).contains("APOP " + USERNAME + " d4f3cd138fcc499b6053537a8de84de0");
+			} else if (authType.equals("USER")) {
+				assertThat(log).contains("USER " + USERNAME, "PASS " + PASSWORD);
+			} else {
+				assertThat(log).contains("SASL " + authType);
+				assertThat(log).contains("AUTH " + authType + " ");
+			}
 		}
 	}
 

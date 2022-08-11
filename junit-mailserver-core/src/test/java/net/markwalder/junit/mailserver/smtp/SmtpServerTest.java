@@ -166,8 +166,30 @@ class SmtpServerTest {
 					new DATA()
 			);
 
-			// TODO: add more assertions
-			// TODO: session.getLog();
+			String log = session.getLog();
+			assertThat(log).contains("220 localhost Service ready\n" +
+					"HELO localhost\n" +
+					"250 OK\n" +
+					"MAIL FROM:<bob@localhost>\n" +
+					"250 2.1.0 OK\n" +
+					"RCPT TO:<alice@localhost>\n" +
+					"250 2.1.5 OK\n" +
+					"DATA\n" +
+					"354 Send message, end with <CRLF>.<CRLF>\n" +
+					"Date: Wed, 1 Jan 2020 00:00:00 +0000\n" +
+					"From: bob@localhost\n" +
+					"To: alice@localhost\n" +
+					"Message-ID: <1234567890@localhost>\n" +
+					"Subject: Test email\n" +
+					"MIME-Version: 1.0\n" +
+					"Content-Type: text/plain; charset=utf-8\n" +
+					"Content-Transfer-Encoding: 7bit\n" +
+					"\n" +
+					"This is a test email.\n" +
+					".\n" +
+					"250 2.6.0 Message accepted\n" +
+					"QUIT\n" +
+					"221 2.0.0 Goodbye\n");
 		}
 	}
 
@@ -412,7 +434,7 @@ class SmtpServerTest {
 			SmtpSession session = sessions.get(0);
 			session.waitUntilClosed(5000);
 
-			String log = server.getLog();
+			String log = session.getLog();
 			assertThat(log).contains(
 					"MAIL FROM:<bob@localhost>",
 					"RCPT TO:<alice@localhost>",

@@ -38,7 +38,10 @@ public class MailSession {
 
 	private volatile boolean closed = false;
 
-	// TODO: keep session log
+	/**
+	 * Session log with all messages exchanged between client and server.
+	 */
+	protected final StringBuilder log = new StringBuilder();
 
 	void setSocketData(Socket socket) {
 		Assert.isNotNull(socket, "socket");
@@ -197,6 +200,15 @@ public class MailSession {
 			// sleep for a while
 			Thread.sleep(100);
 		}
+	}
+
+	/**
+	 * Get session log.
+	 *
+	 * @return Session log.
+	 */
+	public String getLog() {
+		return log.toString();
 	}
 
 }
