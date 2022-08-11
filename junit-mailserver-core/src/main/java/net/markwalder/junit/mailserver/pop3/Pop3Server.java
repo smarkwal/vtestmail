@@ -80,10 +80,7 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client,
 	@Override
 	protected void handleCommand(String line) throws Pop3Exception, IOException {
 
-		// TODO: try to move some of the following code into MailServer
-
-		// TODO: use an "exception handler" with try/catch over all of the following code
-
+		// parse command line
 		Pop3Command command = createCommand(line);
 
 		// add command to history

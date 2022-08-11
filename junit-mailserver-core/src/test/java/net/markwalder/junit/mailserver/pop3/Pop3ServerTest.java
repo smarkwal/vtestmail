@@ -107,10 +107,10 @@ public class Pop3ServerTest {
 		return tests;
 	}
 
-	private void testEncryption(String sslProtocol, boolean useStarTLS) throws IOException, MessagingException, InterruptedException {
+	private void testEncryption(String sslProtocol, boolean useStartTLS) throws IOException, MessagingException, InterruptedException {
 
 		// TODO: support tests with STARTTLS
-		assumeFalse(useStarTLS, "STARTTLS not implemented");
+		assumeFalse(useStartTLS, "STARTTLS not implemented");
 
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
@@ -311,8 +311,8 @@ public class Pop3ServerTest {
 			// assert
 			assertThat(messages).hasSize(2);
 			assertThat(messages).containsExactly(
-					"Subject: Test 1\r\n\r\nTest message 1\r\n", // TODO: why is there a CRLF at the end?
-					"Subject: Test 2\r\n\r\nTest message 2\r\n" // TODO: why is there a CRLF at the end?
+					"Subject: Test 1\r\n\r\nTest message 1\r\n",
+					"Subject: Test 2\r\n\r\nTest message 2\r\n"
 			);
 
 			List<Pop3Session> sessions = server.getSessions();

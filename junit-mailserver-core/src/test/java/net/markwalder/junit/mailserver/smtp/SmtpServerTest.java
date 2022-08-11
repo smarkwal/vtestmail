@@ -195,10 +195,10 @@ class SmtpServerTest {
 		return tests;
 	}
 
-	private void testEncryption(String sslProtocol, boolean useStarTLS) throws IOException, MessagingException, InterruptedException {
+	private void testEncryption(String sslProtocol, boolean useStartTLS) throws IOException, MessagingException, InterruptedException {
 
 		// TODO: support tests with STARTTLS
-		assumeFalse(useStarTLS, "STARTTLS not implemented");
+		assumeFalse(useStartTLS, "STARTTLS not implemented");
 
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
@@ -208,7 +208,7 @@ class SmtpServerTest {
 		try (SmtpServer server = new SmtpServer(store)) {
 			server.setUseSSL(true);
 			server.setSSLProtocol(sslProtocol);
-			server.setCommandEnabled("STARTTLS", useStarTLS);
+			server.setCommandEnabled("STARTTLS", useStartTLS);
 			// TODO: require encryption
 			server.start();
 

@@ -79,7 +79,6 @@ public class DATA extends SmtpCommand {
 			String line = client.readLine();
 			if (line.equals(".")) {
 				// end of message detected
-				// TODO: remove trailing CRLF from message
 				break;
 			}
 

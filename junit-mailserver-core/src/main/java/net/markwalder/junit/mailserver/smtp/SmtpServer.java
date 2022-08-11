@@ -77,10 +77,7 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 	@Override
 	protected void handleCommand(String line) throws SmtpException, IOException {
 
-		// TODO: try to move some of the following code into MailServer
-
-		// TODO: use an "exception handler" with try/catch over all of the following code
-
+		// parse command line
 		SmtpCommand command = createCommand(line);
 
 		// TODO: check if command is allowed in current session state
