@@ -118,17 +118,12 @@ public class SmtpClient {
 			// use SSL to connect to SMTP server
 			properties.put("mail.smtp.ssl.enable", "true");
 
-			// SSL protocols (whitespace separated list)
-			properties.put("mail.smtp.ssl.protocols", protocols);
-
-			// SSL cipher suites (whitespace separated list)
-			// TODO: support this?
-			// properties.put("mail.smtp.ssl.ciphersuites", "");
+			setProtocols(protocols);
 
 			return this;
 		}
 
-		public SmtpClientBuilder withStartTLS() {
+		public SmtpClientBuilder withStartTLS(String protocols) {
 
 			// enable the use of the STARTTLS command
 			properties.put("mail.smtp.starttls.enable", "true");
@@ -136,7 +131,19 @@ public class SmtpClient {
 			// require the use of the STARTTLS command
 			properties.put("mail.smtp.starttls.required", "true");
 
+			setProtocols(protocols);
+
 			return this;
+		}
+
+		private void setProtocols(String protocols) {
+
+			// SSL protocols (whitespace separated list)
+			properties.put("mail.smtp.ssl.protocols", protocols);
+
+			// SSL cipher suites (whitespace separated list)
+			// TODO: support this?
+			// properties.put("mail.smtp.ssl.ciphersuites", "");
 		}
 
 		public SmtpClientBuilder withEHLO(boolean enabled) {

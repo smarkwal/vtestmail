@@ -29,10 +29,11 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import javax.net.ServerSocketFactory;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509ExtendedKeyManager;
 import javax.net.ssl.X509TrustManager;
@@ -44,7 +45,18 @@ class SSLUtils {
 	private static final String ALIAS = "localhost";
 	private static final String PASSWORD = "changeit";
 
-	static ServerSocketFactory createFactoryWithSelfSignedCertificate(String protocol) throws IOException {
+	static SSLSocketFactory createSSLSocketFactory(String protocol) throws IOException {
+		SSLContext context = createSSLContext(protocol);
+		return context.getSocketFactory();
+	}
+
+	static SSLServerSocketFactory createSSLServerSocketFactory(String protocol) throws IOException {
+		SSLContext context = createSSLContext(protocol);
+		return context.getServerSocketFactory();
+	}
+
+	static SSLContext createSSLContext(String protocol) throws IOException {
+		Assert.isNotEmpty(protocol, "protocol");
 
 		// TODO: support loading custom keystore and certificate
 
@@ -70,7 +82,7 @@ class SSLUtils {
 
 			SSLContext context = SSLContext.getInstance(protocol);
 			context.init(keyManagers, trustManagers, null);
-			return context.getServerSocketFactory();
+			return context;
 
 		} catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | UnrecoverableKeyException | KeyManagementException e) {
 			throw new IOException("SSL initialization error", e);

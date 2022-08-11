@@ -19,7 +19,6 @@ package net.markwalder.junit.mailserver.smtp;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import com.sun.mail.smtp.SMTPSendFailedException;
 import jakarta.mail.AuthenticationFailedException;
@@ -219,25 +218,29 @@ class SmtpServerTest {
 
 	private void testEncryption(String sslProtocol, boolean useStartTLS) throws IOException, MessagingException, InterruptedException {
 
-		// TODO: support tests with STARTTLS
-		assumeFalse(useStartTLS, "STARTTLS not implemented");
-
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
 		store.createMailbox(USERNAME, PASSWORD, TO);
 
 		// prepare: SMTP server
 		try (SmtpServer server = new SmtpServer(store)) {
-			server.setUseSSL(true);
+			server.setUseSSL(!useStartTLS);
 			server.setSSLProtocol(sslProtocol);
 			server.setCommandEnabled("STARTTLS", useStartTLS);
 			// TODO: require encryption
 			server.start();
 
 			// prepare: SMTP client
-			SmtpClient client = SmtpClient.forServer(server)
-					.withEncryption(sslProtocol)
-					.build();
+			SmtpClient client;
+			if (useStartTLS) {
+				client = SmtpClient.forServer(server)
+						.withStartTLS(sslProtocol)
+						.build();
+			} else {
+				client = SmtpClient.forServer(server)
+						.withEncryption(sslProtocol)
+						.build();
+			}
 
 			// prepare: email
 			Message message = createTestMessage(client);

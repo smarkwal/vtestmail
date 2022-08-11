@@ -31,9 +31,7 @@ import net.markwalder.junit.mailserver.utils.StringUtils;
  * Limitations:
  * <ul>
  *     <li>Only one client can connect to the server at a time.</li>
- *     <li>Support for STARTTLS command is not implemented.</li>
  *     <li>The format of email addresses and messages is not validated.</li>
- *     <li>Server does not add a "Received" header to messages.</li>
  *     <li>Messages are not queued or relayed to another SMTP server.</li>
  *     <li>Messages are either delivered to a local mailbox, or silently discarded.</li>
  * </ul>
@@ -83,6 +81,17 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 		// TODO: check if command is allowed in current session state
 		// see https://datatracker.ietf.org/doc/html/rfc5321#section-4.1.4
 		// 503  Bad sequence of commands
+
+		// TODO: 530 Must issue a STARTTLS command first
+		// A SMTP server that is not publicly referenced may choose to require
+		// that the client perform a TLS negotiation before accepting any
+		// commands.  In this case, the server SHOULD return the reply code:
+		//
+		//   530 Must issue a STARTTLS command first
+		//
+		// to every command other than NOOP, EHLO, STARTTLS, or QUIT.  If the
+		// client and server are using the ENHANCEDSTATUSCODES ESMTP extension
+		// [RFC2034], the status code to be returned SHOULD be 5.7.0.
 
 		if (!(command instanceof MAIL)) {
 			// add command to history

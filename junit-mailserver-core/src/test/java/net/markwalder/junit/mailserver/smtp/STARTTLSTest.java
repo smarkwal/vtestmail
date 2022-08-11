@@ -25,6 +25,9 @@ class STARTTLSTest extends CommandTest {
 	@Test
 	void execute() throws SmtpException, IOException {
 
+		// mock
+		Mockito.doReturn("TLSv1.2").when(server).getSSLProtocol();
+
 		// prepare
 		SmtpCommand command = new STARTTLS();
 
@@ -33,6 +36,8 @@ class STARTTLSTest extends CommandTest {
 
 		// verify
 		Mockito.verify(client).writeLine("220 Ready to start TLS");
+		Mockito.verify(server).getSSLProtocol();
+		Mockito.verify(client).startTLS("TLSv1.2", session);
 
 		Mockito.verifyNoMoreInteractions(server, session, client);
 	}

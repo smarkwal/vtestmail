@@ -227,7 +227,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 		// open a server socket on a free port
 		ServerSocketFactory factory;
 		if (useSSL) {
-			factory = SSLUtils.createFactoryWithSelfSignedCertificate(sslProtocol);
+			factory = SSLUtils.createSSLServerSocketFactory(sslProtocol);
 		} else {
 			factory = ServerSocketFactory.getDefault();
 		}

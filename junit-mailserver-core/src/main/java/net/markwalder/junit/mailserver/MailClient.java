@@ -25,6 +25,8 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import net.markwalder.junit.mailserver.utils.Assert;
 import net.markwalder.junit.mailserver.utils.LineReader;
 
@@ -38,8 +40,10 @@ public abstract class MailClient {
 	protected static final String CRLF = "\r\n";
 	protected static final String LF = "\n";
 
-	private final LineReader reader;
-	private final BufferedWriter writer;
+	private Socket socket;
+	private LineReader reader;
+	private BufferedWriter writer;
+
 	private final StringBuilder log;
 	private final String continuation;
 
@@ -48,15 +52,54 @@ public abstract class MailClient {
 		Assert.isNotNull(log, "log");
 		Assert.isNotEmpty(continuation, "continuation");
 
-		this.continuation = continuation;
+		// open reader and writer
+		useSocket(socket);
 
+		this.continuation = continuation;
+		this.log = log;
+	}
+
+	public void startTLS(String protocol, MailSession session) throws IOException {
+		Assert.isNotEmpty(protocol, "protocol");
+		Assert.isNotNull(session, "session");
+
+		if (socket instanceof SSLSocket) {
+			throw new IOException("TLS already started");
+		}
+
+		// get server address and port
+		String address = socket.getInetAddress().getHostAddress();
+		int port = socket.getPort();
+
+		// create a new SSL socket wrapping the existing socket
+		SSLSocketFactory sslSocketFactory = SSLUtils.createSSLSocketFactory(protocol);
+		SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(socket, address, port, true);
+
+		// initiate handshake
+		System.out.println("[SSL/TLS handshake]");
+		sslSocket.setUseClientMode(false);
+		sslSocket.startHandshake();
+
+		// continue using SSL socket
+		useSocket(sslSocket);
+
+		// update socket data in session
+		session.setSocketData(sslSocket);
+	}
+
+	private void useSocket(Socket socket) throws IOException {
+
+		// remember socket
+		this.socket = socket;
+
+		// create reader to read commands from client
 		InputStream inputStream = socket.getInputStream();
 		this.reader = new LineReader(new InputStreamReader(inputStream, CHARSET));
 
+		// create writer to write responses to client
 		OutputStream outputStream = socket.getOutputStream();
 		this.writer = new BufferedWriter(new OutputStreamWriter(outputStream, CHARSET));
 
-		this.log = log;
 	}
 
 	/**
