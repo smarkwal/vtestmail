@@ -18,6 +18,8 @@ package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import net.markwalder.junit.mailserver.MailCommand;
 import net.markwalder.junit.mailserver.MailServer;
 import net.markwalder.junit.mailserver.MailboxStore;
@@ -29,7 +31,6 @@ import net.markwalder.junit.mailserver.utils.StringUtils;
  * Limitations:
  * <ul>
  *     <li>Only one client can connect to the server at a time.</li>
- *     <li>Support for STARTTLS command is not implemented.</li>
  *     <li>The format of messages is not validated.</li>
  *     <li>The mailbox is not exclusively locked by the server.</li>
  * </ul>
@@ -106,6 +107,43 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client,
 		// create command instance
 		MailCommand.Parser<Pop3Command, Pop3Exception> commandFactory = commands.get(name);
 		return commandFactory.parse(parameters);
+	}
+
+	public List<String> getCapabilities() {
+		List<String> capabilities = new ArrayList<>();
+
+		if (isCommandEnabled("STLS")) {
+			capabilities.add("STLS");
+		}
+
+		if (isCommandEnabled("USER")) {
+			capabilities.add("USER");
+		}
+
+		if (isCommandEnabled("APOP")) {
+			capabilities.add("APOP");
+		}
+
+		List<String> authTypes = getAuthTypes();
+		if (authTypes.size() > 0) {
+			capabilities.add("SASL " + String.join(" ", authTypes));
+		}
+
+		if (isCommandEnabled("TOP")) {
+			capabilities.add("TOP");
+		}
+
+		if (isCommandEnabled("UIDL")) {
+			capabilities.add("UIDL");
+		}
+
+		capabilities.add("EXPIRE NEVER");
+
+		// TODO: capabilities.add("RESP-CODES");
+
+		capabilities.add("IMPLEMENTATION junit-mailserver");
+
+		return capabilities;
 	}
 
 }

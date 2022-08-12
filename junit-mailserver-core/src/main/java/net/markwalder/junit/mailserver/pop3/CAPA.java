@@ -38,28 +38,11 @@ public class CAPA extends Pop3Command {
 	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception {
 
 		client.writeLine("+OK Capability list follows");
-		if (server.isCommandEnabled("STLS")) {
-			client.writeLine("STLS");
+
+		List<String> capabilities = server.getCapabilities();
+		for (String capability : capabilities) {
+			client.writeLine(capability);
 		}
-		if (server.isCommandEnabled("USER")) {
-			client.writeLine("USER");
-		}
-		if (server.isCommandEnabled("APOP")) {
-			client.writeLine("APOP");
-		}
-		List<String> authTypes = server.getAuthTypes();
-		if (authTypes.size() > 0) {
-			client.writeLine("SASL " + String.join(" ", authTypes));
-		}
-		if (server.isCommandEnabled("TOP")) {
-			client.writeLine("TOP");
-		}
-		if (server.isCommandEnabled("UIDL")) {
-			client.writeLine("UIDL");
-		}
-		client.writeLine("EXPIRE NEVER");
-		// TODO: client.writeLine("RESP-CODES");
-		client.writeLine("IMPLEMENTATION junit-mailserver");
 		client.writeLine(".");
 
 	}
