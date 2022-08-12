@@ -28,7 +28,7 @@ class EHLOTest extends CommandTest {
 
 		// mock
 		Mockito.doReturn("localhost").when(session).getServerAddress();
-		Mockito.doReturn(List.of("STARTTLS", "AUTH PLAIN")).when(server).getSupportedExtensions();
+		Mockito.doReturn(List.of("STARTTLS", "AUTH PLAIN")).when(server).getSupportedExtensions(session);
 
 		// prepare
 		SmtpCommand command = new EHLO("localhost");
@@ -39,7 +39,7 @@ class EHLOTest extends CommandTest {
 		// verify
 		Mockito.verify(session).getServerAddress();
 		Mockito.verify(client).writeLine("250-localhost Hello localhost");
-		Mockito.verify(server).getSupportedExtensions();
+		Mockito.verify(server).getSupportedExtensions(session);
 		Mockito.verify(client).writeLine("250-STARTTLS");
 		Mockito.verify(client).writeLine("250-AUTH PLAIN");
 		Mockito.verify(client).writeLine("250 OK");

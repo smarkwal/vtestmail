@@ -39,7 +39,7 @@ public class CAPA extends Pop3Command {
 
 		client.writeLine("+OK Capability list follows");
 
-		List<String> capabilities = server.getCapabilities();
+		List<String> capabilities = server.getCapabilities(session);
 		for (String capability : capabilities) {
 			client.writeLine(capability);
 		}

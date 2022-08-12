@@ -109,11 +109,20 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client,
 		return commandFactory.parse(parameters);
 	}
 
-	public List<String> getCapabilities() {
+	/**
+	 * Get list of POP3 capabilities supported by this server. This list will be
+	 * returned when the CAPA command is sent to the server.
+	 *
+	 * @param session POP3 session.
+	 * @return List of POP3 capabilities.
+	 */
+	protected List<String> getCapabilities(Pop3Session session) {
 		List<String> capabilities = new ArrayList<>();
 
-		if (isCommandEnabled("STLS")) {
-			capabilities.add("STLS");
+		if (!session.isEncrypted()) {
+			if (isCommandEnabled("STLS")) {
+				capabilities.add("STLS");
+			}
 		}
 
 		if (isCommandEnabled("USER")) {

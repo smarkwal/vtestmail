@@ -121,6 +121,7 @@ class SmtpServerTest {
 			assertThat(session.getClientPort()).isBetween(1024, 65535);
 			assertThat(session.getSSLProtocol()).isNull();
 			assertThat(session.getCipherSuite()).isNull();
+			assertThat(session.isEncrypted()).isFalse();
 			assertThat(session.getAuthType()).isNull();
 			assertThat(session.getUsername()).isNull();
 			assertThat(session.isClosed()).isTrue();
@@ -255,11 +256,57 @@ class SmtpServerTest {
 			session.waitUntilClosed(5000);
 			assertThat(session.getSSLProtocol()).isEqualTo(sslProtocol);
 			assertThat(session.getCipherSuite()).isNotEmpty();
+			assertThat(session.isEncrypted()).isTrue();
 			assertThat(session.isClosed()).isTrue();
 
 			Mailbox mailbox = store.getMailbox(USERNAME);
 			List<Mailbox.Message> messages = mailbox.getMessages();
 			assertThat(messages).hasSize(1);
+
+			String log = session.getLog();
+			if (useStartTLS) {
+				assertThat(log).startsWith("220 localhost Service ready\n" +
+						"EHLO localhost\n" +
+						"250-127.0.0.1 Hello localhost\n" +
+						"250-STARTTLS\n" +
+						"250-VRFY\n" +
+						"250-ENHANCEDSTATUSCODES\n" +
+						"250 OK\n" +
+						"STARTTLS\n" +
+						"220 Ready to start TLS\n" +
+						"EHLO localhost\n" +
+						"250-127.0.0.1 Hello localhost\n" +
+						"250-VRFY\n" +
+						"250-ENHANCEDSTATUSCODES\n" +
+						"250 OK\n");
+			} else {
+				assertThat(log).startsWith("220 localhost Service ready\n" +
+						"EHLO localhost\n" +
+						"250-127.0.0.1 Hello localhost\n" +
+						"250-VRFY\n" +
+						"250-ENHANCEDSTATUSCODES\n" +
+						"250 OK\n");
+			}
+			assertThat(log).endsWith("MAIL FROM:<bob@localhost>\n" +
+					"250 2.1.0 OK\n" +
+					"RCPT TO:<alice@localhost>\n" +
+					"250 2.1.5 OK\n" +
+					"DATA\n" +
+					"354 Send message, end with <CRLF>.<CRLF>\n" +
+					"Date: Wed, 1 Jan 2020 00:00:00 +0000\n" +
+					"From: bob@localhost\n" +
+					"To: alice@localhost\n" +
+					"Message-ID: <1234567890@localhost>\n" +
+					"Subject: Test email\n" +
+					"MIME-Version: 1.0\n" +
+					"Content-Type: text/plain; charset=utf-8\n" +
+					"Content-Transfer-Encoding: 7bit\n" +
+					"\n" +
+					"This is a test email.\n" +
+					".\n" +
+					"250 2.6.0 Message accepted\n" +
+					"QUIT\n" +
+					"221 2.0.0 Goodbye\n");
 		}
 	}
 

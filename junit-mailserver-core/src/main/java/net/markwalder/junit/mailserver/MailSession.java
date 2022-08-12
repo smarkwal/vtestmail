@@ -85,6 +85,10 @@ public class MailSession {
 		return cipherSuite;
 	}
 
+	public boolean isEncrypted() {
+		return sslProtocol != null;
+	}
+
 	public String getAuthType() {
 		return authType;
 	}

@@ -47,7 +47,7 @@ public class EHLO extends SmtpCommand {
 		client.writeLine("250-" + greeting);
 
 		// send supported extensions to client
-		List<String> extensions = server.getSupportedExtensions();
+		List<String> extensions = server.getSupportedExtensions(session);
 		for (String extension : extensions) {
 			client.writeLine("250-" + extension);
 		}

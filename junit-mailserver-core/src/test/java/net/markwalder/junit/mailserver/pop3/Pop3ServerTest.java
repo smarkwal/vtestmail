@@ -114,6 +114,7 @@ public class Pop3ServerTest {
 
 		// prepare: POP3 server
 		try (Pop3Server server = new Pop3Server(store)) {
+			server.setClock(TestUtils.createTestClock());
 			server.setAuthTypes(AuthType.PLAIN);
 			server.setUseSSL(!useStartTLS);
 			server.setSSLProtocol(sslProtocol);
@@ -147,6 +148,7 @@ public class Pop3ServerTest {
 			session.waitUntilClosed(5000);
 			assertThat(session.getSSLProtocol()).isEqualTo(sslProtocol);
 			assertThat(session.getCipherSuite()).isNotEmpty();
+			assertThat(session.isEncrypted()).isTrue();
 			assertThat(session.isClosed()).isTrue();
 
 			List<Pop3Command> commands = session.getCommands();
@@ -167,6 +169,53 @@ public class Pop3ServerTest {
 						new QUIT()
 				);
 			}
+
+			String log = session.getLog();
+			if (useStartTLS) {
+				assertThat(log).startsWith("+OK POP3 server ready <1577836800000@localhost>\n" +
+						"CAPA\n" +
+						"+OK Capability list follows\n" +
+						"STLS\n" +
+						"USER\n" +
+						"APOP\n" +
+						"SASL PLAIN\n" +
+						"TOP\n" +
+						"UIDL\n" +
+						"EXPIRE NEVER\n" +
+						"IMPLEMENTATION junit-mailserver\n" +
+						".\n" +
+						"STLS\n" +
+						"+OK\n" +
+						"CAPA\n" +
+						"+OK Capability list follows\n" +
+						"USER\n" +
+						"APOP\n" +
+						"SASL PLAIN\n" +
+						"TOP\n" +
+						"UIDL\n" +
+						"EXPIRE NEVER\n" +
+						"IMPLEMENTATION junit-mailserver\n" +
+						".\n");
+			} else {
+				assertThat(log).startsWith("+OK POP3 server ready <1577836800000@localhost>\n" +
+						"CAPA\n" +
+						"+OK Capability list follows\n" +
+						"USER\n" +
+						"APOP\n" +
+						"SASL PLAIN\n" +
+						"TOP\n" +
+						"UIDL\n" +
+						"EXPIRE NEVER\n" +
+						"IMPLEMENTATION junit-mailserver\n" +
+						".\n"
+				);
+			}
+			assertThat(log).endsWith("AUTH PLAIN w6RsacOnw6kAw6RsacOnw6kAcMOkc3N3w7ZyZCExMjM=\n" +
+					"+OK Authentication successful\n" +
+					"STAT\n" +
+					"+OK 0 0\n" +
+					"QUIT\n" +
+					"+OK Goodbye\n");
 		}
 	}
 

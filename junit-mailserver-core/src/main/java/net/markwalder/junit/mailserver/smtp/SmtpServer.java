@@ -133,15 +133,18 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 	 * Get list of SMTP extensions supported by this server. This list will be
 	 * returned when the EHLO command is sent to the server.
 	 *
+	 * @param session SMTP session.
 	 * @return List of SMTP extensions.
 	 */
-	protected List<String> getSupportedExtensions() {
+	protected List<String> getSupportedExtensions(SmtpSession session) {
 
 		List<String> extensions = new ArrayList<>();
 
-		// support STARTTLS
-		if (isCommandEnabled("STARTTLS")) {
-			extensions.add("STARTTLS");
+		if (!session.isEncrypted()) {
+			// support STARTTLS
+			if (isCommandEnabled("STARTTLS")) {
+				extensions.add("STARTTLS");
+			}
 		}
 
 		// supported authentication types
