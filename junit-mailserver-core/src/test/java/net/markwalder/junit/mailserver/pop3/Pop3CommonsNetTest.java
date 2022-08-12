@@ -75,6 +75,7 @@ class Pop3CommonsNetTest {
 				assertThat(success).isTrue();
 				assertReply(client,
 						"+OK Capability list follows",
+						"STLS",
 						"USER",
 						"TOP",
 						"UIDL",

@@ -18,7 +18,6 @@ package net.markwalder.junit.mailserver.pop3;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import jakarta.mail.AuthenticationFailedException;
 import jakarta.mail.MessagingException;
@@ -109,9 +108,6 @@ public class Pop3ServerTest {
 
 	private void testEncryption(String sslProtocol, boolean useStartTLS) throws IOException, MessagingException, InterruptedException {
 
-		// TODO: support tests with STARTTLS
-		assumeFalse(useStartTLS, "STARTTLS not implemented");
-
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
 		store.createMailbox(USERNAME, PASSWORD, EMAIL);
@@ -119,16 +115,25 @@ public class Pop3ServerTest {
 		// prepare: POP3 server
 		try (Pop3Server server = new Pop3Server(store)) {
 			server.setAuthTypes(AuthType.PLAIN);
-			server.setUseSSL(true);
+			server.setUseSSL(!useStartTLS);
 			server.setSSLProtocol(sslProtocol);
+			server.setCommandEnabled("STLS", useStartTLS);
 			// TODO: require encryption
 			server.start();
 
 			// prepare: POP3 client
-			Pop3Client client = Pop3Client.forServer(server)
-					.withAuthentication(AuthType.PLAIN, USERNAME, PASSWORD)
-					.withEncryption(sslProtocol)
-					.build();
+			Pop3Client client;
+			if (useStartTLS) {
+				client = Pop3Client.forServer(server)
+						.withAuthentication(AuthType.PLAIN, USERNAME, PASSWORD)
+						.withStartTLS(sslProtocol)
+						.build();
+			} else {
+				client = Pop3Client.forServer(server)
+						.withAuthentication(AuthType.PLAIN, USERNAME, PASSWORD)
+						.withEncryption(sslProtocol)
+						.build();
+			}
 
 			// test
 			List<String> messages = client.getMessages();
@@ -145,12 +150,23 @@ public class Pop3ServerTest {
 			assertThat(session.isClosed()).isTrue();
 
 			List<Pop3Command> commands = session.getCommands();
-			assertThat(commands).containsExactly(
-					new CAPA(),
-					new AUTH("PLAIN", "w6RsacOnw6kAw6RsacOnw6kAcMOkc3N3w7ZyZCExMjM="),
-					new STAT(),
-					new QUIT()
-			);
+			if (useStartTLS) {
+				assertThat(commands).containsExactly(
+						new CAPA(),
+						new STLS(),
+						new CAPA(),
+						new AUTH("PLAIN", "w6RsacOnw6kAw6RsacOnw6kAcMOkc3N3w7ZyZCExMjM="),
+						new STAT(),
+						new QUIT()
+				);
+			} else {
+				assertThat(commands).containsExactly(
+						new CAPA(),
+						new AUTH("PLAIN", "w6RsacOnw6kAw6RsacOnw6kAcMOkc3N3w7ZyZCExMjM="),
+						new STAT(),
+						new QUIT()
+				);
+			}
 		}
 	}
 

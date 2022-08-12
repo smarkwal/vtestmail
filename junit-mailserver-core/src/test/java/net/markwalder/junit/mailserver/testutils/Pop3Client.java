@@ -161,17 +161,12 @@ public class Pop3Client {
 			// use SSL to connect to POP3 server
 			properties.put("mail.pop3.ssl.enable", "true");
 
-			// SSL protocols (whitespace separated list)
-			properties.put("mail.pop3.ssl.protocols", protocols);
-
-			// SSL cipher suites (whitespace separated list)
-			// TODO: support this?
-			// properties.put("mail.pop3.ssl.ciphersuites", "");
+			setProtocols(protocols);
 
 			return this;
 		}
 
-		public Pop3ClientBuilder withStartTLS() {
+		public Pop3ClientBuilder withStartTLS(String protocols) {
 
 			// enable the use of the STARTTLS command
 			properties.put("mail.pop3.starttls.enable", "true");
@@ -179,7 +174,19 @@ public class Pop3Client {
 			// require the use of the STARTTLS command
 			properties.put("mail.pop3.starttls.required", "true");
 
+			setProtocols(protocols);
+
 			return this;
+		}
+
+		private void setProtocols(String protocols) {
+
+			// SSL protocols (whitespace separated list)
+			properties.put("mail.pop3.ssl.protocols", protocols);
+
+			// SSL cipher suites (whitespace separated list)
+			// TODO: support this?
+			// properties.put("mail.smtp.ssl.ciphersuites", "");
 		}
 
 		public Pop3Client build() {

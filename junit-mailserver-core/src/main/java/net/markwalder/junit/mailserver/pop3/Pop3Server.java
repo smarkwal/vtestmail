@@ -54,6 +54,7 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client,
 		addCommand("NOOP", NOOP::parse);
 		addCommand("RSET", RSET::parse);
 		addCommand("QUIT", QUIT::parse);
+		addCommand("STLS", STLS::parse);
 		// TODO: implement RFC 6856: UTF8 and LANG (https://www.rfc-editor.org/rfc/rfc6856)
 	}
 

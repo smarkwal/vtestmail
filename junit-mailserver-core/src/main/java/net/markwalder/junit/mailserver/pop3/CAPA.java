@@ -38,6 +38,9 @@ public class CAPA extends Pop3Command {
 	protected void execute(Pop3Server server, Pop3Session session, Pop3Client client) throws IOException, Pop3Exception {
 
 		client.writeLine("+OK Capability list follows");
+		if (server.isCommandEnabled("STLS")) {
+			client.writeLine("STLS");
+		}
 		if (server.isCommandEnabled("USER")) {
 			client.writeLine("USER");
 		}
