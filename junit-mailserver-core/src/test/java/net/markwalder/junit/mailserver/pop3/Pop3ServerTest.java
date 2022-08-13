@@ -110,7 +110,8 @@ public class Pop3ServerTest {
 
 	private void testEncryption(String sslProtocol, boolean useStartTLS) throws IOException, MessagingException, InterruptedException {
 
-		// TODO: STARTTLS not supported for SSLv3 in Java 14+
+		// STARTTLS not supported for SSLv3 in Java 14+
+		// see https://bugs.java.com/bugdatabase/view_bug.do?bug_id=JDK-8190492
 		assumeFalse(sslProtocol.equals("SSLv3") && useStartTLS && JavaUtils.getJavaVersion() >= 14, "STARTTLS not supported for SSLv3 in Java 14+");
 
 		// prepare: mailbox
