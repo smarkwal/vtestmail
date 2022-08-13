@@ -19,6 +19,7 @@ package net.markwalder.junit.mailserver.smtp;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import com.sun.mail.smtp.SMTPSendFailedException;
 import jakarta.mail.AuthenticationFailedException;
@@ -34,6 +35,7 @@ import java.util.List;
 import net.markwalder.junit.mailserver.AuthType;
 import net.markwalder.junit.mailserver.Mailbox;
 import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.testutils.JavaUtils;
 import net.markwalder.junit.mailserver.testutils.SmtpClient;
 import net.markwalder.junit.mailserver.testutils.TestUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -218,6 +220,9 @@ class SmtpServerTest {
 	}
 
 	private void testEncryption(String sslProtocol, boolean useStartTLS) throws IOException, MessagingException, InterruptedException {
+
+		// TODO: STARTTLS not supported for SSLv3 in Java 14+
+		assumeFalse(sslProtocol.equals("SSLv3") && useStartTLS && JavaUtils.getJavaVersion() >= 14, "STARTTLS not supported for SSLv3 in Java 14+");
 
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();

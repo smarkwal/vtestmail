@@ -54,12 +54,14 @@ tasks.withType<JavaCompile> {
     options.encoding = "ASCII"
 }
 
-tasks.register<Test>("testOnJava17") {
-    group = "verification"
-    description = "Runs the test suite on Java 17."
-    javaLauncher.set(javaToolchains.launcherFor {
-        languageVersion.set(JavaLanguageVersion.of(17))
-    })
+for (version in listOf(12, 13, 14, 15, 16, 17, 18, 19, 20, 21)) {
+    tasks.register<Test>("testOnJava$version") {
+        group = "verification"
+        description = "Runs the test suite on Java $version."
+        javaLauncher.set(javaToolchains.launcherFor {
+            languageVersion.set(JavaLanguageVersion.of(version))
+        })
+    }
 }
 
 tasks.withType<Test> {
