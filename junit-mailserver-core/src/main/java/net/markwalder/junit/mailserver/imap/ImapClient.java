@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package net.markwalder.junit.mailserver.smtp;
+package net.markwalder.junit.mailserver.imap;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import net.markwalder.junit.mailserver.MailClient;
 
-public class SmtpClient extends MailClient {
+public class ImapClient extends MailClient {
 
-	protected SmtpClient(Socket socket, StringBuilder log) throws IOException {
-		super(socket, StandardCharsets.ISO_8859_1, "334", log);
+	protected ImapClient(Socket socket, StringBuilder log) throws IOException {
+		// TODO: why is the charset not UTF-8 as mentioned in IMAP RFC 9051?
+		super(socket, StandardCharsets.ISO_8859_1, "+", log);
 	}
 
 }

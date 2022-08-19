@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
-package net.markwalder.junit.mailserver.smtp;
+package net.markwalder.junit.mailserver.imap;
 
 import java.io.IOException;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import net.markwalder.junit.mailserver.MailClient;
+import net.markwalder.junit.mailserver.MailCommand;
 
-public class SmtpClient extends MailClient {
+public abstract class ImapCommand extends MailCommand {
 
-	protected SmtpClient(Socket socket, StringBuilder log) throws IOException {
-		super(socket, StandardCharsets.ISO_8859_1, "334", log);
+	protected abstract void execute(ImapServer server, ImapSession session, ImapClient client, String tag) throws IOException, ImapException;
+
+	protected static void isNull(String value) throws ImapException {
+		if (value != null) {
+			throw ImapException.SyntaxError();
+		}
+	}
+
+	protected static void isNotEmpty(String value) throws ImapException {
+		if (value == null || value.isEmpty()) {
+			throw ImapException.SyntaxError();
+		}
 	}
 
 }

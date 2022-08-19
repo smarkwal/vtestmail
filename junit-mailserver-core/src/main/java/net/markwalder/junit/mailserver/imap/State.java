@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package net.markwalder.junit.mailserver.smtp;
+package net.markwalder.junit.mailserver.imap;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import net.markwalder.junit.mailserver.MailClient;
-
-public class SmtpClient extends MailClient {
-
-	protected SmtpClient(Socket socket, StringBuilder log) throws IOException {
-		super(socket, StandardCharsets.ISO_8859_1, "334", log);
-	}
-
+// see https://datatracker.ietf.org/doc/html/rfc9051#section-3
+enum State {
+	NotAuthenticated,
+	Authenticated,
+	Selected,
+	Logout
 }

@@ -106,15 +106,15 @@ class Pop3CommonsNetTest {
 				POP3MessageInfo[] infos = client.listUniqueIdentifiers();
 				assertThat(infos).hasSize(2);
 				assertThat(infos[0].number).isEqualTo(1);
-				assertThat(infos[0].identifier).isEqualTo("c3dcab48ecb4f0e74f1df41cf73684e2");
+				assertThat(infos[0].identifier).isEqualTo("1000000001");
 				assertThat(infos[1].number).isEqualTo(2);
-				assertThat(infos[1].identifier).isEqualTo("73b4cb2c1e979bfc24eddfe33fc220ac");
+				assertThat(infos[1].identifier).isEqualTo("1000000002");
 
 				// UIDL 1
 				POP3MessageInfo info = client.listUniqueIdentifier(1);
 				assertThat(info).isNotNull();
 				assertThat(info.number).isEqualTo(1);
-				assertThat(info.identifier).isEqualTo("c3dcab48ecb4f0e74f1df41cf73684e2");
+				assertThat(info.identifier).isEqualTo("1000000001");
 
 				// LIST
 				infos = client.listMessages();
@@ -166,7 +166,7 @@ class Pop3CommonsNetTest {
 				infos = client.listUniqueIdentifiers();
 				assertThat(infos).hasSize(1);
 				assertThat(infos[0].number).isEqualTo(1);
-				assertThat(infos[0].identifier).isEqualTo("c3dcab48ecb4f0e74f1df41cf73684e2");
+				assertThat(infos[0].identifier).isEqualTo("1000000001");
 
 				// UIDL 2 <-- try to access deleted message
 				info = client.listUniqueIdentifier(2);

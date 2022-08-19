@@ -24,7 +24,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import net.markwalder.junit.mailserver.utils.Assert;
@@ -35,28 +34,29 @@ import net.markwalder.junit.mailserver.utils.LineReader;
  */
 public abstract class MailClient {
 
-	protected static final Charset CHARSET = StandardCharsets.ISO_8859_1;
-
 	protected static final String CRLF = "\r\n";
 	protected static final String LF = "\n";
+
+	private final Charset charset;
+	private final String continuation;
+	private final StringBuilder log;
 
 	private Socket socket;
 	private LineReader reader;
 	private BufferedWriter writer;
 
-	private final StringBuilder log;
-	private final String continuation;
-
-	protected MailClient(Socket socket, StringBuilder log, String continuation) throws IOException {
+	protected MailClient(Socket socket, Charset charset, String continuation, StringBuilder log) throws IOException {
 		Assert.isNotNull(socket, "socket");
-		Assert.isNotNull(log, "log");
+		Assert.isNotNull(charset, "charset");
 		Assert.isNotEmpty(continuation, "continuation");
+		Assert.isNotNull(log, "log");
+
+		this.charset = charset;
+		this.continuation = continuation;
+		this.log = log;
 
 		// open reader and writer
 		useSocket(socket);
-
-		this.continuation = continuation;
-		this.log = log;
 	}
 
 	public void startTLS(String protocol, MailSession session) throws IOException {
@@ -94,11 +94,11 @@ public abstract class MailClient {
 
 		// create reader to read commands from client
 		InputStream inputStream = socket.getInputStream();
-		this.reader = new LineReader(new InputStreamReader(inputStream, CHARSET));
+		this.reader = new LineReader(new InputStreamReader(inputStream, charset));
 
 		// create writer to write responses to client
 		OutputStream outputStream = socket.getOutputStream();
-		this.writer = new BufferedWriter(new OutputStreamWriter(outputStream, CHARSET));
+		this.writer = new BufferedWriter(new OutputStreamWriter(outputStream, charset));
 
 	}
 

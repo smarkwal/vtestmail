@@ -29,10 +29,10 @@ class MailboxMessageTest {
 		Mailbox.Message message = new Mailbox.Message("This is a test message.");
 
 		// test
-		String uid = message.getUID();
+		int uid = message.getUID();
 
 		// assert
-		assertThat(uid).isEqualTo("f8900247f0d5874f453318549411c6fa");
+		assertThat(uid).isEqualTo(1611570434);
 	}
 
 	@Test

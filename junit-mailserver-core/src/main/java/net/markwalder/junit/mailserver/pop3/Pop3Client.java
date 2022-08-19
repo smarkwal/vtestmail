@@ -18,13 +18,14 @@ package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import net.markwalder.junit.mailserver.MailClient;
 import net.markwalder.junit.mailserver.utils.Assert;
 
 public class Pop3Client extends MailClient {
 
 	protected Pop3Client(Socket socket, StringBuilder log) throws IOException {
-		super(socket, log, "+OK");
+		super(socket, StandardCharsets.ISO_8859_1, "+OK", log);
 	}
 
 	public void writeMultiLines(String message) throws IOException {

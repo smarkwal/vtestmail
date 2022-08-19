@@ -14,17 +14,29 @@
  * limitations under the License.
  */
 
-package net.markwalder.junit.mailserver.smtp;
+package net.markwalder.junit.mailserver.imap;
 
 import java.io.IOException;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
-import net.markwalder.junit.mailserver.MailClient;
 
-public class SmtpClient extends MailClient {
+public class NOOP extends ImapCommand {
 
-	protected SmtpClient(Socket socket, StringBuilder log) throws IOException {
-		super(socket, StandardCharsets.ISO_8859_1, "334", log);
+	public NOOP() {
+	}
+
+	public static NOOP parse(String parameters) throws ImapException {
+		isNull(parameters);
+		return new NOOP();
+	}
+
+	@Override
+	public String toString() {
+		return "NOOP";
+	}
+
+	@Override
+	protected void execute(ImapServer server, ImapSession session, ImapClient client, String tag) throws IOException, ImapException {
+		// TODO: return status update as untagged response?
+		client.writeLine(tag + " OK NOOP completed");
 	}
 
 }

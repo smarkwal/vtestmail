@@ -385,7 +385,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 					try {
 						handleCommand(command);
 					} catch (MailException e) {
-						client.writeError(e.getMessage());
+						handleException(command, e);
 					}
 
 					// check if the session has been closed (with a QUIT command)
@@ -433,7 +433,11 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 
 	protected abstract void handleNewClient() throws IOException;
 
-	protected abstract void handleCommand(String command) throws E, IOException;
+	protected abstract void handleCommand(String line) throws E, IOException;
+
+	protected void handleException(String line, MailException e) throws IOException {
+		client.writeError(e.getMessage());
+	}
 
 	public S getActiveSession() {
 		return session;

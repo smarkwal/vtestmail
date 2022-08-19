@@ -67,7 +67,7 @@ public class UIDL extends Pop3Command {
 				}
 
 				String msg = String.valueOf(i + 1);
-				String uid = message.getUID();
+				int uid = message.getUID();
 				client.writeLine(msg + " " + uid);
 			}
 			client.writeLine(".");
@@ -80,7 +80,7 @@ public class UIDL extends Pop3Command {
 				throw Pop3Exception.MessageNotFound();
 			}
 
-			String uid = message.getUID();
+			int uid = message.getUID();
 			client.writeLine("+OK " + messageNumber + " " + uid);
 
 		}
