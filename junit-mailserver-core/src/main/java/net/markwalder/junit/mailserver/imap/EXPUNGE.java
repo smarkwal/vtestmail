@@ -46,8 +46,8 @@ public class EXPUNGE extends ImapCommand {
 		// The EXPUNGE command permanently removes all messages that have the \Deleted flag set from the currently selected mailbox.
 		// Before returning an OK to the client, an untagged EXPUNGE response is sent for each message that is removed.
 
-		Mailbox mailbox = session.getMailbox();
-		List<Mailbox.Message> messages = mailbox.getMessages();
+		Mailbox.Folder folder = session.getFolder();
+		List<Mailbox.Message> messages = folder.getMessages();
 		if (messages.size() > 0) {
 
 			// send untagged EXPUNGE for each message that is marked as deleted
@@ -63,7 +63,7 @@ public class EXPUNGE extends ImapCommand {
 
 			if (deleted > 0) {
 				// remove all messages marked as deleted
-				mailbox.removeDeletedMessages();
+				folder.removeDeletedMessages();
 			}
 
 		}

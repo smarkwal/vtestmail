@@ -39,8 +39,9 @@ class ImapCommonsNetTest {
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
 		Mailbox mailbox = store.createMailbox(USERNAME, PASSWORD, EMAIL);
-		mailbox.addMessage("Subject: Test 1\r\n\r\nTest message 1");
-		mailbox.addMessage("Subject: Test 2\r\n\r\nTest message 2");
+		Mailbox.Folder folder = mailbox.getFolder("INBOX");
+		folder.addMessage("Subject: Test 1\r\n\r\nTest message 1");
+		folder.addMessage("Subject: Test 2\r\n\r\nTest message 2");
 
 		// prepare: IMAP server
 		try (ImapServer server = new ImapServer(store)) {
@@ -139,7 +140,7 @@ class ImapCommonsNetTest {
 				assertThat(session.isReadOnly()).isFalse();
 
 				// mark message 2 as deleted
-				mailbox.getMessages().get(1).setDeleted(true);
+				folder.getMessages().get(1).setDeleted(true);
 
 				// CLOSE
 				success = client.close();
@@ -166,7 +167,7 @@ class ImapCommonsNetTest {
 				assertThat(session.getState()).isEqualTo(State.Selected);
 
 				// mark message 1 as deleted
-				mailbox.getMessages().get(0).setDeleted(true);
+				folder.getMessages().get(0).setDeleted(true);
 
 				// EXPUNGE
 				success = client.expunge();

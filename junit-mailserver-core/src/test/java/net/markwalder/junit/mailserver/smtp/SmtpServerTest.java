@@ -129,7 +129,8 @@ class SmtpServerTest {
 			assertThat(session.isClosed()).isTrue();
 
 			Mailbox mailbox = store.getMailbox(USERNAME);
-			List<Mailbox.Message> messages = mailbox.getMessages();
+			Mailbox.Folder folder = mailbox.getInbox();
+			List<Mailbox.Message> messages = folder.getMessages();
 			assertThat(messages).hasSize(1);
 
 			Mailbox.Message mail = messages.get(0);
@@ -266,7 +267,8 @@ class SmtpServerTest {
 			assertThat(session.isClosed()).isTrue();
 
 			Mailbox mailbox = store.getMailbox(USERNAME);
-			List<Mailbox.Message> messages = mailbox.getMessages();
+			Mailbox.Folder folder = mailbox.getInbox();
+			List<Mailbox.Message> messages = folder.getMessages();
 			assertThat(messages).hasSize(1);
 
 			String log = session.getLog();
@@ -399,7 +401,8 @@ class SmtpServerTest {
 			assertThat(session.isClosed()).isTrue();
 
 			Mailbox mailbox = store.getMailbox(USERNAME);
-			List<Mailbox.Message> messages = mailbox.getMessages();
+			Mailbox.Folder folder = mailbox.getInbox();
+			List<Mailbox.Message> messages = folder.getMessages();
 			assertThat(messages).hasSize(1);
 		}
 	}
@@ -503,7 +506,8 @@ class SmtpServerTest {
 
 			// assert: email has been delivered to mailbox
 			Mailbox mailbox = store.getMailbox(USERNAME);
-			List<Mailbox.Message> messages = mailbox.getMessages();
+			Mailbox.Folder folder = mailbox.getInbox();
+			List<Mailbox.Message> messages = folder.getMessages();
 			assertThat(messages).hasSize(1);
 
 			// assert: BCC recipient is not included in message

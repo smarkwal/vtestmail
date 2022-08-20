@@ -38,8 +38,7 @@ public class LOGOUT extends ImapCommand {
 
 		// TODO: are there any cleanup actions to be done?
 
-		// see https://datatracker.ietf.org/doc/html/rfc9051#section-3.4
-		session.setState(State.Logout);
+		session.logout();
 
 		// set "closed" flag in session
 		session.close();

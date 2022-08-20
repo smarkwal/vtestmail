@@ -162,7 +162,8 @@ public class Pop3Session extends MailSession {
 			// mailbox not found -> return empty list
 			return Collections.emptyList();
 		}
-		return mailbox.getMessages();
+		Mailbox.Folder folder = mailbox.getInbox();
+		return folder.getMessages();
 	}
 
 	Mailbox.Message getMessage(int msg) {

@@ -34,6 +34,7 @@ class DATATest extends CommandTest {
 
 	private final MailboxStore store = Mockito.mock(MailboxStore.class);
 	private final Mailbox mailbox = Mockito.mock(Mailbox.class);
+	private final Mailbox.Folder folder = Mockito.mock(Mailbox.Folder.class);
 
 	@Test
 	void execute() throws SmtpException, IOException {
@@ -53,6 +54,7 @@ class DATATest extends CommandTest {
 		Mockito.doReturn(store).when(server).getStore();
 		Mockito.doReturn(Collections.singletonList("alice@localhost")).when(session).getRecipients();
 		Mockito.doReturn(mailbox).when(store).findMailbox("alice@localhost");
+		Mockito.doReturn(folder).when(mailbox).getInbox();
 
 		// prepare
 		SmtpCommand command = new DATA();
@@ -70,7 +72,8 @@ class DATATest extends CommandTest {
 		Mockito.verify(server).getStore();
 		Mockito.verify(session).getRecipients();
 		Mockito.verify(store).findMailbox("alice@localhost");
-		Mockito.verify(mailbox).addMessage("Received: from client by server; Wed, 1 Jan 2020 00:00:00 +0000\r\nSubject: Test\r\n\r\nHello World!\r\n.");
+		Mockito.verify(mailbox).getInbox();
+		Mockito.verify(folder).addMessage("Received: from client by server; Wed, 1 Jan 2020 00:00:00 +0000\r\nSubject: Test\r\n\r\nHello World!\r\n.");
 		Mockito.verify(session).endTransaction("Received: from client by server; Wed, 1 Jan 2020 00:00:00 +0000\r\nSubject: Test\r\n\r\nHello World!\r\n.");
 		Mockito.verify(client).writeLine("250 2.6.0 Message accepted");
 

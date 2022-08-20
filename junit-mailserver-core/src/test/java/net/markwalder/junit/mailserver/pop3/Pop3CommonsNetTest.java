@@ -40,8 +40,9 @@ class Pop3CommonsNetTest {
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
 		Mailbox mailbox = store.createMailbox(USERNAME, PASSWORD, EMAIL);
-		mailbox.addMessage("Subject: Test 1\r\n\r\nTest message 1");
-		mailbox.addMessage("Subject: Test 2\r\n\r\nTest message 2");
+		Mailbox.Folder folder = mailbox.getInbox();
+		folder.addMessage("Subject: Test 1\r\n\r\nTest message 1");
+		folder.addMessage("Subject: Test 2\r\n\r\nTest message 2");
 
 		// prepare: POP3 server
 		try (Pop3Server server = new Pop3Server(store)) {
@@ -222,7 +223,7 @@ class Pop3CommonsNetTest {
 				assertThat(session.isClosed()).isTrue();
 
 				// assert: message has been deleted
-				assertThat(mailbox.getMessages()).hasSize(1);
+				assertThat(folder.getMessages()).hasSize(1);
 
 				// assert: commands have been recorded
 				List<Pop3Command> commands = session.getCommands();
@@ -272,7 +273,8 @@ class Pop3CommonsNetTest {
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
 		Mailbox mailbox = store.createMailbox(USERNAME, PASSWORD, EMAIL);
-		mailbox.addMessage("Subject: Test\r\n\r\nTest message");
+		Mailbox.Folder folder = mailbox.getInbox();
+		folder.addMessage("Subject: Test\r\n\r\nTest message");
 
 		// prepare: POP3 server
 		try (Pop3Server server = new Pop3Server(store)) {
@@ -301,7 +303,7 @@ class Pop3CommonsNetTest {
 			}
 
 			// assert: message has not been deleted
-			List<Mailbox.Message> messages = mailbox.getMessages();
+			List<Mailbox.Message> messages = folder.getMessages();
 			assertThat(messages).hasSize(1);
 
 			// assert: message is not marked as deleted

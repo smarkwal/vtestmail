@@ -49,12 +49,12 @@ public class CLOSE extends ImapCommand {
 			// \Deleted flag set from the currently selected mailbox, and it returns
 			// to the authenticated state from the selected state. No untagged
 			// EXPUNGE responses are sent.
-			Mailbox mailbox = session.getMailbox();
-			mailbox.removeDeletedMessages();
+			Mailbox.Folder folder = session.getFolder();
+			folder.removeDeletedMessages();
 
 		}
 
-		session.setState(State.Authenticated);
+		session.unselectFolder();
 
 		client.writeLine(tag + " OK CLOSE completed");
 	}

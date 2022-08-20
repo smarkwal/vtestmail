@@ -29,6 +29,7 @@ public class ImapSession extends MailSession {
 	private State state = State.NotAuthenticated;
 
 	private Mailbox mailbox = null;
+	private Mailbox.Folder folder = null;
 	private boolean readOnly = false;
 
 	private final List<ImapCommand> commands = new ArrayList<>();
@@ -51,12 +52,37 @@ public class ImapSession extends MailSession {
 		return state;
 	}
 
-	void setState(State state) {
+	private void setState(State state) {
 		this.state = state;
 	}
 
 	public Mailbox getMailbox() {
 		return mailbox;
+	}
+
+	public Mailbox.Folder getFolder() throws ImapException {
+		return folder;
+	}
+
+	Mailbox.Folder selectFolder(String name) throws ImapException {
+		Assert.isNotEmpty(name, "name");
+		assertState(State.Authenticated);
+		if (name.equalsIgnoreCase("INBOX")) {
+			folder = mailbox.getInbox();
+		} else {
+			if (!mailbox.hasFolder(name)) {
+				throw ImapException.MailboxNotFound();
+			}
+			folder = mailbox.getFolder(name);
+		}
+		setState(State.Selected);
+		return folder;
+	}
+
+	void unselectFolder() throws ImapException {
+		assertState(State.Selected);
+		folder = null;
+		setState(State.Authenticated);
 	}
 
 	/**
@@ -108,6 +134,15 @@ public class ImapSession extends MailSession {
 		setState(State.Authenticated);
 
 		mailbox = store.getMailbox(username);
+	}
+
+	public void logout() {
+
+		mailbox = null;
+		folder = null;
+
+		// see https://datatracker.ietf.org/doc/html/rfc9051#section-3.4
+		setState(State.Logout);
 	}
 
 	public boolean isReadOnly() {

@@ -18,7 +18,9 @@ package net.markwalder.junit.mailserver;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import net.markwalder.junit.mailserver.utils.Assert;
 
@@ -27,11 +29,9 @@ public class Mailbox {
 	private final String username;
 	private final String secret;
 	private final String email;
-	private final List<Message> messages = new ArrayList<>();
 
-	// see https://datatracker.ietf.org/doc/html/rfc9051#section-2.3.1.1
-	private int uidNext = 1000000001;
-	private int uidValidity = 1000000000;
+	public static final String INBOX = "INBOX";
+	private final Map<String, Folder> folders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
 	public Mailbox(String username, String secret, String email) {
 		Assert.isNotEmpty(username, "username");
@@ -41,6 +41,9 @@ public class Mailbox {
 		this.username = username;
 		this.secret = secret;
 		this.email = email;
+
+		// create default INBOX folder
+		createFolder(INBOX);
 	}
 
 	public String getUsername() {
@@ -55,56 +58,119 @@ public class Mailbox {
 		return email;
 	}
 
-	public List<Message> getMessages() {
-		synchronized (messages) {
-			return new ArrayList<>(messages);
+	public List<String> getFolderNames() {
+		synchronized (folders) {
+			return new ArrayList<>(folders.keySet());
 		}
 	}
 
-	public void addMessage(String content) {
-		Assert.isNotEmpty(content, "content");
-		synchronized (messages) {
-			Message message = new Message(content);
+	public Folder getInbox() {
+		return getFolder(INBOX);
+	}
 
-			// auto-generate UID
-			int uid = generateNextUID();
-			message.setUID(uid);
-
-			messages.add(message);
+	public Folder getFolder(String name) {
+		Assert.isNotEmpty(name, "name");
+		synchronized (folders) {
+			return folders.get(name);
 		}
 	}
 
-	public void removeMessage(int messageNumber) {
-		synchronized (messages) {
-			Assert.isInRange(messageNumber, 1, messages.size(), "messageNumber");
-			messages.remove(messageNumber - 1);
+	public boolean hasFolder(String name) {
+		Assert.isNotEmpty(name, "name");
+		synchronized (folders) {
+			return folders.containsKey(name);
 		}
 	}
 
-	public void removeDeletedMessages() {
-		synchronized (messages) {
-			messages.removeIf(Message::isDeleted);
+	public Folder createFolder(String name) {
+		Assert.isNotEmpty(name, "name");
+		synchronized (folders) {
+			Assert.isFalse(folders.containsKey(name), "Folder already exists: " + name);
+			Folder folder = new Folder(name);
+			folders.put(name, folder);
+			return folder;
 		}
 	}
 
-	public int getUIDNext() {
-		return uidNext;
+	public void deleteFolder(String name) {
+		Assert.isNotEmpty(name, "name");
+		synchronized (folders) {
+			Assert.isTrue(folders.containsKey(name), "Folder not found: " + name);
+			folders.remove(name);
+		}
 	}
 
-	public void setUIDNext(int uidNext) {
-		this.uidNext = uidNext;
-	}
+	public static class Folder {
 
-	private int generateNextUID() {
-		return uidNext++;
-	}
+		private final String name;
 
-	public int getUIDValidity() {
-		return uidValidity;
-	}
+		private final List<Message> messages = new ArrayList<>();
 
-	public void setUIDValidity(int uidValidity) {
-		this.uidValidity = uidValidity;
+		// see https://datatracker.ietf.org/doc/html/rfc9051#section-2.3.1.1
+		private int uidNext = 1000000001;
+		private int uidValidity = 1000000000;
+
+		public Folder(String name) {
+			Assert.isNotEmpty(name, "name");
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public List<Message> getMessages() {
+			synchronized (messages) {
+				return new ArrayList<>(messages);
+			}
+		}
+
+		public void addMessage(String content) {
+			Assert.isNotEmpty(content, "content");
+			synchronized (messages) {
+				Message message = new Message(content);
+
+				// auto-generate UID
+				int uid = generateNextUID();
+				message.setUID(uid);
+
+				messages.add(message);
+			}
+		}
+
+		public void removeMessage(int messageNumber) {
+			synchronized (messages) {
+				Assert.isInRange(messageNumber, 1, messages.size(), "messageNumber");
+				messages.remove(messageNumber - 1);
+			}
+		}
+
+		public void removeDeletedMessages() {
+			synchronized (messages) {
+				messages.removeIf(Message::isDeleted);
+			}
+		}
+
+		public int getUIDNext() {
+			return uidNext;
+		}
+
+		public void setUIDNext(int uidNext) {
+			this.uidNext = uidNext;
+		}
+
+		private int generateNextUID() {
+			return uidNext++;
+		}
+
+		public int getUIDValidity() {
+			return uidValidity;
+		}
+
+		public void setUIDValidity(int uidValidity) {
+			this.uidValidity = uidValidity;
+		}
+
 	}
 
 	public static class Message {

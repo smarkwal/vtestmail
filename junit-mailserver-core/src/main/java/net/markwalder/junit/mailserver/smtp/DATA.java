@@ -134,7 +134,8 @@ public class DATA extends SmtpCommand {
 		for (String email : session.getRecipients()) {
 			Mailbox mailbox = store.findMailbox(email);
 			if (mailbox != null) {
-				mailbox.addMessage(message);
+				Mailbox.Folder folder = mailbox.getInbox();
+				folder.addMessage(message);
 			}
 		}
 	}

@@ -363,8 +363,9 @@ public class Pop3ServerTest {
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
 		Mailbox mailbox = store.createMailbox(USERNAME, PASSWORD, EMAIL);
-		mailbox.addMessage("Subject: Test 1\r\n\r\nTest message 1");
-		mailbox.addMessage("Subject: Test 2\r\n\r\nTest message 2");
+		Mailbox.Folder folder = mailbox.getInbox();
+		folder.addMessage("Subject: Test 1\r\n\r\nTest message 1");
+		folder.addMessage("Subject: Test 2\r\n\r\nTest message 2");
 
 		// prepare: POP3 server
 		try (Pop3Server server = new Pop3Server(store)) {
@@ -408,7 +409,7 @@ public class Pop3ServerTest {
 			);
 
 			// assert: messages have not been deleted
-			assertThat(mailbox.getMessages()).hasSize(2);
+			assertThat(folder.getMessages()).hasSize(2);
 		}
 
 	}

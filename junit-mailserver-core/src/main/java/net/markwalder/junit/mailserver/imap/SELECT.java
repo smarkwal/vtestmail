@@ -65,7 +65,7 @@ public class SELECT extends ImapCommand {
 		// When deselecting a selected mailbox, the server MUST return an untagged OK response
 		// with the "[CLOSED]" response code when the currently selected mailbox is closed (see Section 7.1).
 		if (session.getState() == State.Selected) {
-			session.setState(State.Authenticated);
+			session.unselectFolder();
 			client.writeLine("* OK [CLOSED] Previous mailbox is now closed");
 		}
 
@@ -73,26 +73,19 @@ public class SELECT extends ImapCommand {
 
 		// The case-insensitive mailbox name INBOX is a special name reserved to
 		// mean "the primary mailbox for this user on this server".
-		// TODO: support mailboxes (folders) other than INBOX
-		if (!mailboxName.equalsIgnoreCase("INBOX")) {
-			throw ImapException.MailboxNotFound();
-		}
-
-		session.setState(State.Selected);
-
-		Mailbox mailbox = session.getMailbox();
+		Mailbox.Folder folder = session.selectFolder(mailboxName);
 
 		// The number of messages in the mailbox.
 		// See the description of the EXISTS response in Section 7.4.1 for more detail.
-		client.writeLine("* " + mailbox.getMessages().size() + " EXISTS");
+		client.writeLine("* " + folder.getMessages().size() + " EXISTS");
 
 		// The unique identifier validity value.
 		// Refer to Section 2.3.1.1 for more information.
-		client.writeLine("* OK [UIDVALIDITY " + mailbox.getUIDValidity() + "] UIDs valid");
+		client.writeLine("* OK [UIDVALIDITY " + folder.getUIDValidity() + "] UIDs valid");
 
 		// The next unique identifier value.
 		// Refer to Section 2.3.1.1 for more information.
-		client.writeLine("* OK [UIDNEXT " + mailbox.getUIDNext() + "] Predicted next UID");
+		client.writeLine("* OK [UIDNEXT " + folder.getUIDNext() + "] Predicted next UID");
 
 		// Defined flags in the mailbox.
 		// See the description of the FLAGS response in Section 7.3.5 for more detail.
@@ -108,7 +101,7 @@ public class SELECT extends ImapCommand {
 		// and the supplied mailbox name differs from the normalized version,
 		// the server MUST return LIST with the OLDNAME extended data item.
 		// See Section 6.3.9.7 for more details.
-		client.writeLine("* LIST () \"/\" INBOX"); // TODO: implement LIST response
+		client.writeLine("* LIST () \"/\" " + folder.getName()); // TODO: implement LIST response
 
 	}
 

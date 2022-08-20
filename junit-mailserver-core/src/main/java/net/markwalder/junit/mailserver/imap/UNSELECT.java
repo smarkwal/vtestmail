@@ -17,7 +17,6 @@
 package net.markwalder.junit.mailserver.imap;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Mailbox;
 
 public class UNSELECT extends ImapCommand {
 
@@ -45,7 +44,7 @@ public class UNSELECT extends ImapCommand {
 		// selected mailbox and returns the server to the authenticated state.
 		// This command performs the same actions as CLOSE, except that no
 		// messages are permanently removed from the currently selected mailbox.
-		session.setState(State.Authenticated);
+		session.unselectFolder();
 
 		client.writeLine(tag + " OK UNSELECT completed");
 	}

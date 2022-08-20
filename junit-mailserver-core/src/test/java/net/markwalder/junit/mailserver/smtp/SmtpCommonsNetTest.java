@@ -38,6 +38,7 @@ public class SmtpCommonsNetTest {
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
 		Mailbox mailbox = store.createMailbox(USERNAME, PASSWORD, EMAIL);
+		Mailbox.Folder folder = mailbox.getInbox();
 
 		// prepare: SMTP server
 		try (SmtpServer server = new SmtpServer(store)) {
@@ -174,7 +175,7 @@ public class SmtpCommonsNetTest {
 				);
 
 				// assert: messages have been delivered
-				List<Mailbox.Message> messages = mailbox.getMessages();
+				List<Mailbox.Message> messages = folder.getMessages();
 				assertThat(messages).hasSize(2);
 
 				Mailbox.Message message = messages.get(0);

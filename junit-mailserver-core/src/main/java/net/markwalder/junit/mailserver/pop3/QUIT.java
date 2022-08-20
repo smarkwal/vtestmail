@@ -43,12 +43,13 @@ public class QUIT extends Pop3Command {
 		// delete messages marked as deleted
 		Mailbox mailbox = session.getMailbox();
 		if (mailbox != null) {
+			Mailbox.Folder folder = mailbox.getInbox();
 			int[] messageNumbers = session.getDeleted();
 			if (messageNumbers.length > 0) {
 				// loop in reverse order to avoid index changes
 				for (int i = messageNumbers.length - 1; i >= 0; i--) {
 					int messageNumber = messageNumbers[i];
-					mailbox.removeMessage(messageNumber);
+					folder.removeMessage(messageNumber);
 				}
 			}
 		}
