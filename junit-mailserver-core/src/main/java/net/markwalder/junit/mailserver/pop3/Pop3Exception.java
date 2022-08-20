@@ -24,6 +24,10 @@ public class Pop3Exception extends MailException {
 		return new Pop3Exception("Unknown command");
 	}
 
+	public static Pop3Exception CommandDisabled() {
+		return new Pop3Exception("Disabled command");
+	}
+
 	public static Pop3Exception SyntaxError() {
 		return new Pop3Exception("Syntax error");
 	}

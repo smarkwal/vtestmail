@@ -206,7 +206,7 @@ class Pop3CommonsNetTest {
 				// CMD2 <-- disabled custom command
 				replyCode = client.sendCommand("CMD2");
 				assertThat(replyCode).isEqualTo(POP3Reply.ERROR);
-				assertReply(client, "-ERR Unknown command");
+				assertReply(client, "-ERR Disabled command");
 
 				// CMD3 <-- unknown command
 				replyCode = client.sendCommand("CMD3");
@@ -226,7 +226,6 @@ class Pop3CommonsNetTest {
 
 				// assert: commands have been recorded
 				List<Pop3Command> commands = session.getCommands();
-				assertThat(commands).hasSize(25);
 				assertThat(commands).containsExactly(
 						new CAPA(),
 						new USER(USERNAME),
@@ -252,6 +251,8 @@ class Pop3CommonsNetTest {
 						new TOP(2, 0),
 						new DELE(2),
 						new CustomCommand("CMD1"),
+						new DisabledCommand("CMD2"),
+						new UnknownCommand("CMD3"),
 						new QUIT()
 				);
 

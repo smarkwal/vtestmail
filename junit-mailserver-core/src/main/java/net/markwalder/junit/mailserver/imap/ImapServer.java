@@ -114,8 +114,10 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 		String parameters = StringUtils.substringAfter(line, " ");
 
 		// check if command is supported
-		if (!isCommandEnabled(name)) {
-			throw ImapException.CommandNotImplemented();
+		if (!hasCommand(name)) {
+			return new UnknownCommand(line);
+		} else if (!isCommandEnabled(name)) {
+			return new DisabledCommand(line);
 		}
 
 		// create command instance

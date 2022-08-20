@@ -123,6 +123,12 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 		commands.remove(command);
 	}
 
+	public boolean hasCommand(String command) {
+		Assert.isNotEmpty(command, "command");
+		command = command.toUpperCase();
+		return commands.containsKey(command);
+	}
+
 	public boolean isCommandEnabled(String command) {
 		Assert.isNotEmpty(command, "command");
 		command = command.toUpperCase();

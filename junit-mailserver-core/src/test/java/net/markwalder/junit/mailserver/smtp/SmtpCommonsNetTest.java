@@ -124,12 +124,12 @@ public class SmtpCommonsNetTest {
 				// CMD2 <-- disabled custom command
 				replyCode = client.sendCommand("CMD2");
 				assertThat(replyCode).isEqualTo(502);
-				assertReply(client, "502 5.5.1 Command not implemented");
+				assertReply(client, "502 5.5.1 Command disabled");
 
 				// CMD3 <-- unknown command
 				replyCode = client.sendCommand("CMD3");
-				assertThat(replyCode).isEqualTo(502);
-				assertReply(client, "502 5.5.1 Command not implemented");
+				assertThat(replyCode).isEqualTo(500);
+				assertReply(client, "500 5.5.1 Command not implemented");
 
 				// QUIT
 				success = client.logout();
@@ -141,13 +141,14 @@ public class SmtpCommonsNetTest {
 
 				// assert: commands have been recorded
 				List<SmtpCommand> commands = session.getCommands();
-				assertThat(commands).hasSize(6);
 				assertThat(commands).containsExactly(
 						new HELO("localhost"),
 						new NOOP(),
 						new RSET(),
 						new VRFY(EMAIL),
 						new CustomCommand("CMD1"),
+						new DisabledCommand("CMD2"),
+						new UnknownCommand("CMD3"),
 						new QUIT()
 				);
 

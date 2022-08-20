@@ -21,7 +21,13 @@ import net.markwalder.junit.mailserver.MailException;
 public class SmtpException extends MailException {
 
 	public static SmtpException CommandNotImplemented() {
-		return new SmtpException("502", "5.5.1", "Command not implemented");
+		// see https://datatracker.ietf.org/doc/html/rfc5321#section-4.2.4
+		return new SmtpException("500", "5.5.1", "Command not implemented");
+	}
+
+	public static SmtpException CommandDisabled() {
+		// see https://datatracker.ietf.org/doc/html/rfc5321#section-4.2.4
+		return new SmtpException("502", "5.5.1", "Command disabled");
 	}
 
 	public static SmtpException SyntaxError() {

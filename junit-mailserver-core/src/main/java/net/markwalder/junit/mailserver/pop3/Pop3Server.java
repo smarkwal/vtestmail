@@ -100,8 +100,10 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client,
 		String parameters = StringUtils.substringAfter(line, " ");
 
 		// check if command is supported
-		if (!isCommandEnabled(name)) {
-			throw Pop3Exception.CommandNotImplemented();
+		if (!hasCommand(name)) {
+			return new UnknownCommand(line);
+		} else if (!isCommandEnabled(name)) {
+			return new DisabledCommand(line);
 		}
 
 		// create command instance

@@ -116,12 +116,10 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 		String parameters = StringUtils.substringAfter(line, " ");
 
 		// check if command is supported
-		if (!isCommandEnabled(name)) {
-			// TODO: 502 SHOULD be used when the command is actually recognized
-			//  by the SMTP server, but not implemented. If the command is not
-			//  recognized, code 500 SHOULD be returned.
-			//  See https://datatracker.ietf.org/doc/html/rfc5321#section-4.2.4
-			throw SmtpException.CommandNotImplemented();
+		if (!hasCommand(name)) {
+			return new UnknownCommand(line);
+		} else if (!isCommandEnabled(name)) {
+			return new DisabledCommand(line);
 		}
 
 		// create command instance

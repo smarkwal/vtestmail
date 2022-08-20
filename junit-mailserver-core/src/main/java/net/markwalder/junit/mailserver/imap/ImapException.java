@@ -22,11 +22,15 @@ import net.markwalder.junit.mailserver.utils.Assert;
 public class ImapException extends MailException {
 
 	public static ImapException CommandNotImplemented() {
-		return new ImapException("BAD", "Command not implemented"); // TODO: BAD or NO?
+		return new ImapException("BAD", "Command not implemented");
+	}
+
+	public static ImapException CommandDisabled() {
+		return new ImapException("BAD", "Command disabled");
 	}
 
 	public static ImapException SyntaxError() {
-		return new ImapException("BAD", "Syntax error"); // TODO: BAD or NO?
+		return new ImapException("BAD", "Syntax error");
 	}
 
 	public static ImapException UnrecognizedAuthenticationType() {

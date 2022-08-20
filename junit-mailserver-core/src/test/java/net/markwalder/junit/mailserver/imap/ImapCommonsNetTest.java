@@ -60,6 +60,8 @@ class ImapCommonsNetTest {
 			IMAPClient client = new IMAPClient();
 			try {
 
+				TagGenerator tag = new TagGenerator();
+
 				// connect to server
 				client.connect("localhost", server.getPort());
 
@@ -77,13 +79,13 @@ class ImapCommonsNetTest {
 				assertThat(success).isTrue();
 				assertReply(client,
 						"* CAPABILITY IMAP4rev2 STARTTLS",
-						"AAAA OK CAPABILITY completed"
+						tag.next() + " OK CAPABILITY completed"
 				);
 
 				// LOGIN with wrong password
 				success = client.login(USERNAME, "wrong password");
 				assertThat(success).isFalse();
-				assertReply(client, "AAAB NO [AUTHENTICATIONFAILED] Authentication failed");
+				assertReply(client, tag.next() + " NO [AUTHENTICATIONFAILED] Authentication failed");
 
 				// assert: state is not authenticated
 				assertThat(session.getState()).isEqualTo(State.NotAuthenticated);
@@ -91,7 +93,7 @@ class ImapCommonsNetTest {
 				// LOGIN
 				success = client.login(USERNAME, PASSWORD);
 				assertThat(success).isTrue();
-				assertReply(client, "AAAC OK [CAPABILITY IMAP4rev2 STARTTLS] LOGIN completed");
+				assertReply(client, tag.next() + " OK [CAPABILITY IMAP4rev2 STARTTLS] LOGIN completed");
 
 				// assert: session is authenticated
 				assertThat(session.isAuthenticated()).isTrue();
@@ -103,16 +105,16 @@ class ImapCommonsNetTest {
 				// NOOP
 				success = client.noop();
 				assertThat(success).isTrue();
-				assertReply(client, "AAAD OK NOOP completed");
+				assertReply(client, tag.next() + " OK NOOP completed");
 
 				int replyCode = client.sendCommand("ENABLE", "FOO BAR");
 				assertThat(replyCode).isEqualTo(IMAPReply.OK);
-				assertReply(client, "AAAE OK ENABLE completed");
+				assertReply(client, tag.next() + " OK ENABLE completed");
 
 				// SELECT Drafts
 				success = client.select("Drafts");
 				assertThat(success).isFalse();
-				assertReply(client, "AAAF NO [TRYCREATE] No such mailbox");
+				assertReply(client, tag.next() + " NO [TRYCREATE] No such mailbox");
 
 				// assert: state is authenticated
 				assertThat(session.getState()).isEqualTo(State.Authenticated);
@@ -127,7 +129,7 @@ class ImapCommonsNetTest {
 						"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
 						"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
 						"* LIST () \"/\" INBOX",
-						"AAAG OK [READ-WRITE] SELECT completed"
+						tag.next() + " OK [READ-WRITE] SELECT completed"
 				);
 
 				// assert: state is selected
@@ -139,7 +141,7 @@ class ImapCommonsNetTest {
 				// CLOSE
 				success = client.close();
 				assertThat(success).isTrue();
-				assertReply(client, "AAAH OK CLOSE completed");
+				assertReply(client, tag.next() + " OK CLOSE completed");
 
 				// assert: state is authenticated
 				assertThat(session.getState()).isEqualTo(State.Authenticated);
@@ -154,7 +156,7 @@ class ImapCommonsNetTest {
 						"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
 						"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
 						"* LIST () \"/\" INBOX",
-						"AAAI OK [READ-WRITE] SELECT completed"
+						tag.next() + " OK [READ-WRITE] SELECT completed"
 				);
 
 				// assert: state is selected
@@ -168,13 +170,13 @@ class ImapCommonsNetTest {
 				assertThat(success).isTrue();
 				assertReply(client,
 						"* 1 EXPUNGE",
-						"AAAJ OK EXPUNGE completed"
+						tag.next() + " OK EXPUNGE completed"
 				);
 
 				// UNSELECT
 				replyCode = client.sendCommand("UNSELECT");
 				assertThat(replyCode).isEqualTo(IMAPReply.OK);
-				assertReply(client, "AAAK OK UNSELECT completed");
+				assertReply(client, tag.next() + " OK UNSELECT completed");
 
 				// assert: state is authenticated
 				assertThat(session.getState()).isEqualTo(State.Authenticated);
@@ -184,22 +186,30 @@ class ImapCommonsNetTest {
 				// CMD1 <-- custom command
 				replyCode = client.sendCommand("CMD1");
 				assertThat(replyCode).isEqualTo(IMAPReply.OK);
-				assertReply(client, "AAAL OK CMD1 completed");
+				assertReply(client, tag.next() + " OK CMD1 completed");
 
 				// CMD2 <-- disabled custom command
 				replyCode = client.sendCommand("CMD2");
 				assertThat(replyCode).isEqualTo(IMAPReply.BAD);
-				assertReply(client, "AAAM BAD Command not implemented");
+				assertReply(client, tag.next() + " BAD Command disabled");
 
 				// CMD3 <-- unknown command
 				replyCode = client.sendCommand("CMD3");
 				assertThat(replyCode).isEqualTo(IMAPReply.BAD);
-				assertReply(client, "AAAN BAD Command not implemented");
+				assertReply(client, tag.next() + " BAD Command not implemented");
+
+				// EXPUNGE <-- not valid in authenticated state
+				success = client.expunge();
+				assertThat(success).isFalse();
+				assertReply(client, tag.next() + " BAD Command is not allowed in Authenticated state");
 
 				// LOGOUT
 				success = client.logout();
 				assertThat(success).isTrue();
-				assertReply(client, "* BYE IMAP4rev2 Server logging out", "AAAO OK LOGOUT completed");
+				assertReply(client,
+						"* BYE IMAP4rev2 Server logging out",
+						tag.next() + " OK LOGOUT completed"
+				);
 
 				// assert: state is logout
 				assertThat(session.getState()).isEqualTo(State.Logout);
@@ -223,6 +233,9 @@ class ImapCommonsNetTest {
 						new EXPUNGE(),
 						new UNSELECT(),
 						new CustomCommand("CMD1"),
+						new DisabledCommand("CMD2"),
+						new UnknownCommand("CMD3"),
+						new EXPUNGE(),
 						new LOGOUT()
 				);
 
@@ -267,6 +280,30 @@ class ImapCommonsNetTest {
 		@Override
 		protected void execute(ImapServer server, ImapSession session, ImapClient client, String tag) throws IOException, ImapException {
 			client.writeLine(tag + " OK " + name + " completed");
+		}
+
+	}
+
+	private static class TagGenerator {
+
+		private int counter = 0;
+
+		public String next() {
+			String tag = formatTag(counter);
+			counter++;
+			return tag;
+		}
+
+		private String formatTag(int counter) {
+			int d4 = counter % 26;
+			int d3 = (counter / 26) % 26;
+			int d2 = (counter / (26 * 26)) % 26;
+			int d1 = (counter / (26 * 26 * 26)) % 26;
+			return "" + getLetter(d1) + getLetter(d2) + getLetter(d3) + getLetter(d4);
+		}
+
+		private static char getLetter(int digit) {
+			return (char) ('A' + digit);
 		}
 
 	}
