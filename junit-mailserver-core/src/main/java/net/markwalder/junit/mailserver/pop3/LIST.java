@@ -18,7 +18,7 @@ package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
 import java.util.List;
-import net.markwalder.junit.mailserver.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxMessage;
 import net.markwalder.junit.mailserver.utils.Assert;
 
 public class LIST extends Pop3Command {
@@ -62,9 +62,9 @@ public class LIST extends Pop3Command {
 			int totalSize = session.getTotalSize();
 			client.writeLine("+OK " + count + " messages (" + totalSize + " octets)");
 
-			List<Mailbox.Message> messages = session.getMessages();
+			List<MailboxMessage> messages = session.getMessages();
 			for (int i = 0; i < messages.size(); i++) {
-				Mailbox.Message message = messages.get(i);
+				MailboxMessage message = messages.get(i);
 				if (message.isDeleted() || session.isDeleted(i + 1)) {
 					continue; // ignore deleted messages
 				}
@@ -78,7 +78,7 @@ public class LIST extends Pop3Command {
 		} else {
 
 			// try to find message by number
-			Mailbox.Message message = session.getMessage(messageNumber);
+			MailboxMessage message = session.getMessage(messageNumber);
 			if (message == null || message.isDeleted() || session.isDeleted(messageNumber)) {
 				throw Pop3Exception.MessageNotFound();
 			}

@@ -16,6 +16,8 @@
 
 package net.markwalder.junit.mailserver;
 
+import net.markwalder.junit.mailserver.store.Mailbox;
+
 public interface MailboxProvider {
 
 	Mailbox getMailbox(String username);

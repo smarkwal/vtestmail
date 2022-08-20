@@ -17,7 +17,7 @@
 package net.markwalder.junit.mailserver.imap;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxFolder;
 import net.markwalder.junit.mailserver.utils.Assert;
 
 public class SELECT extends ImapCommand {
@@ -73,7 +73,7 @@ public class SELECT extends ImapCommand {
 
 		// The case-insensitive mailbox name INBOX is a special name reserved to
 		// mean "the primary mailbox for this user on this server".
-		Mailbox.Folder folder = session.selectFolder(mailboxName);
+		MailboxFolder folder = session.selectFolder(mailboxName);
 
 		// The number of messages in the mailbox.
 		// See the description of the EXISTS response in Section 7.4.1 for more detail.

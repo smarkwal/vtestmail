@@ -18,6 +18,7 @@ package net.markwalder.junit.mailserver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import net.markwalder.junit.mailserver.store.Mailbox;
 import org.junit.jupiter.api.Test;
 
 class MailboxTest {

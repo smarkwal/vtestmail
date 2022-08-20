@@ -20,8 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.util.List;
-import net.markwalder.junit.mailserver.Mailbox;
-import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.store.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxFolder;
+import net.markwalder.junit.mailserver.store.MailboxMessage;
+import net.markwalder.junit.mailserver.store.MailboxStore;
 import net.markwalder.junit.mailserver.testutils.TestUtils;
 import org.apache.commons.net.smtp.SMTPClient;
 import org.junit.jupiter.api.Test;
@@ -38,7 +40,7 @@ public class SmtpCommonsNetTest {
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
 		Mailbox mailbox = store.createMailbox(USERNAME, PASSWORD, EMAIL);
-		Mailbox.Folder folder = mailbox.getInbox();
+		MailboxFolder folder = mailbox.getInbox();
 
 		// prepare: SMTP server
 		try (SmtpServer server = new SmtpServer(store)) {
@@ -175,10 +177,10 @@ public class SmtpCommonsNetTest {
 				);
 
 				// assert: messages have been delivered
-				List<Mailbox.Message> messages = folder.getMessages();
+				List<MailboxMessage> messages = folder.getMessages();
 				assertThat(messages).hasSize(2);
 
-				Mailbox.Message message = messages.get(0);
+				MailboxMessage message = messages.get(0);
 				assertThat(message.getContent()).isEqualTo("Received: from 127.0.0.1 by 127.0.0.1; Wed, 1 Jan 2020 00:00:00 +0000\r\nSubject: Test 1\r\n\r\nTest message 1");
 
 				message = messages.get(1);

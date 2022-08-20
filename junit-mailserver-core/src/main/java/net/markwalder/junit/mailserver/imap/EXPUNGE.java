@@ -18,7 +18,8 @@ package net.markwalder.junit.mailserver.imap;
 
 import java.io.IOException;
 import java.util.List;
-import net.markwalder.junit.mailserver.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxFolder;
+import net.markwalder.junit.mailserver.store.MailboxMessage;
 
 public class EXPUNGE extends ImapCommand {
 
@@ -46,14 +47,14 @@ public class EXPUNGE extends ImapCommand {
 		// The EXPUNGE command permanently removes all messages that have the \Deleted flag set from the currently selected mailbox.
 		// Before returning an OK to the client, an untagged EXPUNGE response is sent for each message that is removed.
 
-		Mailbox.Folder folder = session.getFolder();
-		List<Mailbox.Message> messages = folder.getMessages();
+		MailboxFolder folder = session.getFolder();
+		List<MailboxMessage> messages = folder.getMessages();
 		if (messages.size() > 0) {
 
 			// send untagged EXPUNGE for each message that is marked as deleted
 			int deleted = 0;
 			for (int i = 0; i < messages.size(); i++) {
-				Mailbox.Message message = messages.get(i);
+				MailboxMessage message = messages.get(i);
 				if (message.isDeleted()) {
 					int messageNumber = i + 1 - deleted; // 1-based, decremented for each deleted message
 					client.writeLine("* " + messageNumber + " EXPUNGE");

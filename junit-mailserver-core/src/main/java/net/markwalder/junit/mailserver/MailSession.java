@@ -21,6 +21,7 @@ import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import java.net.Socket;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
+import net.markwalder.junit.mailserver.store.Mailbox;
 import net.markwalder.junit.mailserver.utils.Assert;
 import net.markwalder.junit.mailserver.utils.DigestUtils;
 

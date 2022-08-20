@@ -17,7 +17,7 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxMessage;
 import net.markwalder.junit.mailserver.utils.Assert;
 import net.markwalder.junit.mailserver.utils.StringUtils;
 
@@ -52,7 +52,7 @@ public class TOP extends Pop3Command {
 		session.assertState(State.TRANSACTION);
 
 		// try to find message by number, and get top n lines
-		Mailbox.Message message = session.getMessage(messageNumber);
+		MailboxMessage message = session.getMessage(messageNumber);
 		if (message == null || message.isDeleted() || session.isDeleted(messageNumber)) {
 			throw Pop3Exception.MessageNotFound();
 		}

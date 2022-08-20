@@ -38,6 +38,7 @@ import net.markwalder.junit.mailserver.auth.DigestMd5Authenticator;
 import net.markwalder.junit.mailserver.auth.LoginAuthenticator;
 import net.markwalder.junit.mailserver.auth.PlainAuthenticator;
 import net.markwalder.junit.mailserver.auth.XOauth2Authenticator;
+import net.markwalder.junit.mailserver.store.MailboxStore;
 import net.markwalder.junit.mailserver.utils.Assert;
 
 /**

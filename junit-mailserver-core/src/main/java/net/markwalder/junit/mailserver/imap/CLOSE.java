@@ -17,7 +17,7 @@
 package net.markwalder.junit.mailserver.imap;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxFolder;
 
 public class CLOSE extends ImapCommand {
 
@@ -49,7 +49,7 @@ public class CLOSE extends ImapCommand {
 			// \Deleted flag set from the currently selected mailbox, and it returns
 			// to the authenticated state from the selected state. No untagged
 			// EXPUNGE responses are sent.
-			Mailbox.Folder folder = session.getFolder();
+			MailboxFolder folder = session.getFolder();
 			folder.removeDeletedMessages();
 
 		}

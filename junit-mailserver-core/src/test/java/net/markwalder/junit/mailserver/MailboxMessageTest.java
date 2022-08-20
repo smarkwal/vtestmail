@@ -18,6 +18,7 @@ package net.markwalder.junit.mailserver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import net.markwalder.junit.mailserver.store.MailboxMessage;
 import org.junit.jupiter.api.Test;
 
 class MailboxMessageTest {
@@ -26,7 +27,7 @@ class MailboxMessageTest {
 	void getUID() {
 
 		// prepare
-		Mailbox.Message message = new Mailbox.Message("This is a test message.");
+		MailboxMessage message = new MailboxMessage("This is a test message.");
 
 		// test
 		int uid = message.getUID();
@@ -39,7 +40,7 @@ class MailboxMessageTest {
 	void getSize() {
 
 		// prepare
-		Mailbox.Message message = new Mailbox.Message("This is a test message.");
+		MailboxMessage message = new MailboxMessage("This is a test message.");
 
 		// test
 		int size = message.getSize();
@@ -52,7 +53,7 @@ class MailboxMessageTest {
 	void getTop_onlyHeaders() {
 
 		// prepare
-		Mailbox.Message message = new Mailbox.Message("From: X\r\nTo: Y\r\nSubject: Test\r\n\r\nThis is a\r\ntest message.");
+		MailboxMessage message = new MailboxMessage("From: X\r\nTo: Y\r\nSubject: Test\r\n\r\nThis is a\r\ntest message.");
 
 		// test
 		String top = message.getTop(0);
@@ -65,7 +66,7 @@ class MailboxMessageTest {
 	void getTop_ifMessageIsShorter() {
 
 		// prepare
-		Mailbox.Message message = new Mailbox.Message("From: X\r\nTo: Y\r\nSubject: Test\r\n\r\nThis is a\r\ntest message.");
+		MailboxMessage message = new MailboxMessage("From: X\r\nTo: Y\r\nSubject: Test\r\n\r\nThis is a\r\ntest message.");
 
 		// test
 		String top = message.getTop(3);
@@ -78,7 +79,7 @@ class MailboxMessageTest {
 	void getTop_ifMessageIsLonger() {
 
 		// prepare
-		Mailbox.Message message = new Mailbox.Message("From: X\r\nTo: Y\r\nSubject: Test\r\n\r\nThis is a\r\ntest message.");
+		MailboxMessage message = new MailboxMessage("From: X\r\nTo: Y\r\nSubject: Test\r\n\r\nThis is a\r\ntest message.");
 
 		// test
 		String top = message.getTop(1);

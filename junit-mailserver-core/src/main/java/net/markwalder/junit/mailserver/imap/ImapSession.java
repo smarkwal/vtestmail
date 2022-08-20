@@ -19,7 +19,8 @@ package net.markwalder.junit.mailserver.imap;
 import java.util.ArrayList;
 import java.util.List;
 import net.markwalder.junit.mailserver.MailSession;
-import net.markwalder.junit.mailserver.Mailbox;
+import net.markwalder.junit.mailserver.store.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxFolder;
 import net.markwalder.junit.mailserver.MailboxProvider;
 import net.markwalder.junit.mailserver.utils.Assert;
 
@@ -29,7 +30,7 @@ public class ImapSession extends MailSession {
 	private State state = State.NotAuthenticated;
 
 	private Mailbox mailbox = null;
-	private Mailbox.Folder folder = null;
+	private MailboxFolder folder = null;
 	private boolean readOnly = false;
 
 	private final List<ImapCommand> commands = new ArrayList<>();
@@ -60,11 +61,11 @@ public class ImapSession extends MailSession {
 		return mailbox;
 	}
 
-	public Mailbox.Folder getFolder() throws ImapException {
+	public MailboxFolder getFolder() throws ImapException {
 		return folder;
 	}
 
-	Mailbox.Folder selectFolder(String name) throws ImapException {
+	MailboxFolder selectFolder(String name) throws ImapException {
 		Assert.isNotEmpty(name, "name");
 		assertState(State.Authenticated);
 		if (name.equalsIgnoreCase("INBOX")) {

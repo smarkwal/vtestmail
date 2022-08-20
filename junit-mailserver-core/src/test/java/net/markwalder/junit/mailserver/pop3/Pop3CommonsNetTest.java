@@ -21,8 +21,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
-import net.markwalder.junit.mailserver.Mailbox;
-import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.store.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxFolder;
+import net.markwalder.junit.mailserver.store.MailboxMessage;
+import net.markwalder.junit.mailserver.store.MailboxStore;
 import org.apache.commons.net.pop3.POP3Client;
 import org.apache.commons.net.pop3.POP3MessageInfo;
 import org.apache.commons.net.pop3.POP3Reply;
@@ -40,7 +42,7 @@ class Pop3CommonsNetTest {
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
 		Mailbox mailbox = store.createMailbox(USERNAME, PASSWORD, EMAIL);
-		Mailbox.Folder folder = mailbox.getInbox();
+		MailboxFolder folder = mailbox.getInbox();
 		folder.addMessage("Subject: Test 1\r\n\r\nTest message 1");
 		folder.addMessage("Subject: Test 2\r\n\r\nTest message 2");
 
@@ -273,7 +275,7 @@ class Pop3CommonsNetTest {
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
 		Mailbox mailbox = store.createMailbox(USERNAME, PASSWORD, EMAIL);
-		Mailbox.Folder folder = mailbox.getInbox();
+		MailboxFolder folder = mailbox.getInbox();
 		folder.addMessage("Subject: Test\r\n\r\nTest message");
 
 		// prepare: POP3 server
@@ -303,11 +305,11 @@ class Pop3CommonsNetTest {
 			}
 
 			// assert: message has not been deleted
-			List<Mailbox.Message> messages = folder.getMessages();
+			List<MailboxMessage> messages = folder.getMessages();
 			assertThat(messages).hasSize(1);
 
 			// assert: message is not marked as deleted
-			Mailbox.Message message = messages.get(0);
+			MailboxMessage message = messages.get(0);
 			assertThat(message.isDeleted()).isFalse();
 
 		}

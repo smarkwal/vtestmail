@@ -24,8 +24,9 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Collections;
-import net.markwalder.junit.mailserver.Mailbox;
-import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.store.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxFolder;
+import net.markwalder.junit.mailserver.store.MailboxStore;
 import net.markwalder.junit.mailserver.testutils.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -34,7 +35,7 @@ class DATATest extends CommandTest {
 
 	private final MailboxStore store = Mockito.mock(MailboxStore.class);
 	private final Mailbox mailbox = Mockito.mock(Mailbox.class);
-	private final Mailbox.Folder folder = Mockito.mock(Mailbox.Folder.class);
+	private final MailboxFolder folder = Mockito.mock(MailboxFolder.class);
 
 	@Test
 	void execute() throws SmtpException, IOException {

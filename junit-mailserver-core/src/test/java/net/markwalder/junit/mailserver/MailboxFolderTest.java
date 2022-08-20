@@ -20,11 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assumptions.assumeThat;
 
 import java.util.List;
+import net.markwalder.junit.mailserver.store.MailboxFolder;
+import net.markwalder.junit.mailserver.store.MailboxMessage;
 import org.junit.jupiter.api.Test;
 
 class MailboxFolderTest {
 
-	private final Mailbox.Folder folder = new Mailbox.Folder("INBOX");
+	private final MailboxFolder folder = new MailboxFolder("INBOX");
 
 	@Test
 	void getName() {
@@ -35,7 +37,7 @@ class MailboxFolderTest {
 	void getMessages() {
 
 		// test: empty mailbox
-		List<Mailbox.Message> messages = folder.getMessages();
+		List<MailboxMessage> messages = folder.getMessages();
 		assertThat(messages).isEmpty();
 
 		// prepare: add first message
@@ -66,11 +68,11 @@ class MailboxFolderTest {
 		folder.addMessage("This is test message 2.");
 
 		// test
-		List<Mailbox.Message> messages = folder.getMessages();
+		List<MailboxMessage> messages = folder.getMessages();
 
 		// assert
 		assertThat(messages).hasSize(2);
-		Mailbox.Message message = messages.get(0);
+		MailboxMessage message = messages.get(0);
 		assertThat(message.getContent()).isEqualTo("This is test message 1.");
 		message = messages.get(1);
 		assertThat(message.getContent()).isEqualTo("This is test message 2.");
@@ -84,7 +86,7 @@ class MailboxFolderTest {
 		folder.addMessage("This is test message 2.");
 
 		// assume
-		List<Mailbox.Message> messages = folder.getMessages();
+		List<MailboxMessage> messages = folder.getMessages();
 		assumeThat(messages).hasSize(2);
 
 		// test
@@ -93,7 +95,7 @@ class MailboxFolderTest {
 		// assert: only message 1 is left in mailbox
 		messages = folder.getMessages();
 		assertThat(messages).hasSize(1);
-		Mailbox.Message message = messages.get(0);
+		MailboxMessage message = messages.get(0);
 		assertThat(message.getContent()).isEqualTo("This is test message 1.");
 
 		// test
@@ -113,11 +115,11 @@ class MailboxFolderTest {
 		folder.addMessage("This is test message 2.");
 
 		// assume
-		List<Mailbox.Message> messages = folder.getMessages();
+		List<MailboxMessage> messages = folder.getMessages();
 		assumeThat(messages).hasSize(2);
 
 		// prepare: mark first message as deleted
-		Mailbox.Message message = messages.get(0);
+		MailboxMessage message = messages.get(0);
 		message.setDeleted(true);
 
 		// test

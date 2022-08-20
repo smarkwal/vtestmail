@@ -22,7 +22,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import net.markwalder.junit.mailserver.MailSession;
-import net.markwalder.junit.mailserver.Mailbox;
+import net.markwalder.junit.mailserver.store.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxFolder;
+import net.markwalder.junit.mailserver.store.MailboxMessage;
 import net.markwalder.junit.mailserver.MailboxProvider;
 import net.markwalder.junit.mailserver.utils.Assert;
 
@@ -157,18 +159,18 @@ public class Pop3Session extends MailSession {
 
 	// helper methods ----------------------------------------------------------
 
-	List<Mailbox.Message> getMessages() {
+	List<MailboxMessage> getMessages() {
 		if (mailbox == null) {
 			// mailbox not found -> return empty list
 			return Collections.emptyList();
 		}
-		Mailbox.Folder folder = mailbox.getInbox();
+		MailboxFolder folder = mailbox.getInbox();
 		return folder.getMessages();
 	}
 
-	Mailbox.Message getMessage(int msg) {
+	MailboxMessage getMessage(int msg) {
 
-		List<Mailbox.Message> messages = getMessages();
+		List<MailboxMessage> messages = getMessages();
 		if (msg < 1 || msg > messages.size()) {
 			// index out of range -> message not found
 			return null;
@@ -186,9 +188,9 @@ public class Pop3Session extends MailSession {
 	 */
 	int getMessageCount() {
 		int count = 0;
-		List<Mailbox.Message> messages = getMessages();
+		List<MailboxMessage> messages = getMessages();
 		for (int i = 0; i < messages.size(); i++) {
-			Mailbox.Message message = messages.get(i);
+			MailboxMessage message = messages.get(i);
 			if (message.isDeleted() || isDeleted(i + 1)) {
 				continue; // ignore deleted messages
 			}
@@ -205,9 +207,9 @@ public class Pop3Session extends MailSession {
 	 */
 	int getTotalSize() {
 		int size = 0;
-		List<Mailbox.Message> messages = getMessages();
+		List<MailboxMessage> messages = getMessages();
 		for (int i = 0; i < messages.size(); i++) {
-			Mailbox.Message message = messages.get(i);
+			MailboxMessage message = messages.get(i);
 			if (message.isDeleted() || isDeleted(i + 1)) {
 				continue; // ignore deleted messages
 			}

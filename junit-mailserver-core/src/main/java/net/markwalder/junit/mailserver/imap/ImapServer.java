@@ -23,7 +23,7 @@ import java.util.List;
 import net.markwalder.junit.mailserver.MailCommand;
 import net.markwalder.junit.mailserver.MailException;
 import net.markwalder.junit.mailserver.MailServer;
-import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.store.MailboxStore;
 import net.markwalder.junit.mailserver.utils.StringUtils;
 
 public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient, ImapException> {

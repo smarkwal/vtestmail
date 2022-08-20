@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.store.MailboxStore;
 import net.markwalder.junit.mailserver.auth.Authenticator;
 import net.markwalder.junit.mailserver.auth.Credentials;
 import org.junit.jupiter.api.Test;

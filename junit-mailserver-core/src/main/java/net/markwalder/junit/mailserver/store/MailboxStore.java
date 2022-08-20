@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package net.markwalder.junit.mailserver;
+package net.markwalder.junit.mailserver.store;
 
 import java.util.HashMap;
 import java.util.Map;
+import net.markwalder.junit.mailserver.MailboxProvider;
+import net.markwalder.junit.mailserver.utils.Assert;
 
 public class MailboxStore implements MailboxProvider {
 
@@ -25,12 +27,14 @@ public class MailboxStore implements MailboxProvider {
 
 	@Override
 	public Mailbox getMailbox(String username) {
+		Assert.isNotEmpty(username, "username");
 		synchronized (mailboxes) {
 			return mailboxes.get(username);
 		}
 	}
 
 	public Mailbox findMailbox(String email) {
+		Assert.isNotEmpty(email, "email");
 		synchronized (mailboxes) {
 			for (Mailbox mailbox : mailboxes.values()) {
 				if (mailbox.getEmail().equals(email)) {
@@ -50,6 +54,7 @@ public class MailboxStore implements MailboxProvider {
 	}
 
 	public void deleteMailbox(String username) {
+		Assert.isNotEmpty(username, "username");
 		synchronized (mailboxes) {
 			mailboxes.remove(username);
 		}

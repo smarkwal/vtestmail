@@ -17,7 +17,8 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Mailbox;
+import net.markwalder.junit.mailserver.store.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxFolder;
 
 public class QUIT extends Pop3Command {
 
@@ -43,7 +44,7 @@ public class QUIT extends Pop3Command {
 		// delete messages marked as deleted
 		Mailbox mailbox = session.getMailbox();
 		if (mailbox != null) {
-			Mailbox.Folder folder = mailbox.getInbox();
+			MailboxFolder folder = mailbox.getInbox();
 			int[] messageNumbers = session.getDeleted();
 			if (messageNumbers.length > 0) {
 				// loop in reverse order to avoid index changes

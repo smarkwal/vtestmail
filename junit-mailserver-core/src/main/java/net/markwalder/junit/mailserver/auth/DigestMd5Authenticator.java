@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import net.markwalder.junit.mailserver.MailClient;
-import net.markwalder.junit.mailserver.Mailbox;
+import net.markwalder.junit.mailserver.store.Mailbox;
 import net.markwalder.junit.mailserver.MailboxProvider;
 import net.markwalder.junit.mailserver.utils.DigestUtils;
 import net.markwalder.junit.mailserver.utils.Hex;

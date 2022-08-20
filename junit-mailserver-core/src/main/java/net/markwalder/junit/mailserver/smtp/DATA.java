@@ -23,8 +23,9 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import net.markwalder.junit.mailserver.MailClient;
-import net.markwalder.junit.mailserver.Mailbox;
-import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.store.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxFolder;
+import net.markwalder.junit.mailserver.store.MailboxStore;
 
 public class DATA extends SmtpCommand {
 
@@ -134,7 +135,7 @@ public class DATA extends SmtpCommand {
 		for (String email : session.getRecipients()) {
 			Mailbox mailbox = store.findMailbox(email);
 			if (mailbox != null) {
-				Mailbox.Folder folder = mailbox.getInbox();
+				MailboxFolder folder = mailbox.getInbox();
 				folder.addMessage(message);
 			}
 		}

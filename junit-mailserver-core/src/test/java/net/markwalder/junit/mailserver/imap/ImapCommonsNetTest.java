@@ -21,8 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
-import net.markwalder.junit.mailserver.Mailbox;
-import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.store.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxFolder;
+import net.markwalder.junit.mailserver.store.MailboxStore;
 import org.apache.commons.net.imap.IMAPClient;
 import org.apache.commons.net.imap.IMAPReply;
 import org.junit.jupiter.api.Test;
@@ -39,7 +40,7 @@ class ImapCommonsNetTest {
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
 		Mailbox mailbox = store.createMailbox(USERNAME, PASSWORD, EMAIL);
-		Mailbox.Folder folder = mailbox.getFolder("INBOX");
+		MailboxFolder folder = mailbox.getFolder("INBOX");
 		folder.addMessage("Subject: Test 1\r\n\r\nTest message 1");
 		folder.addMessage("Subject: Test 2\r\n\r\nTest message 2");
 

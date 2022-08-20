@@ -28,8 +28,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import net.markwalder.junit.mailserver.AuthType;
-import net.markwalder.junit.mailserver.Mailbox;
-import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.store.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxFolder;
+import net.markwalder.junit.mailserver.store.MailboxStore;
 import net.markwalder.junit.mailserver.testutils.JavaUtils;
 import net.markwalder.junit.mailserver.testutils.Pop3Client;
 import net.markwalder.junit.mailserver.testutils.TestUtils;
@@ -363,7 +364,7 @@ public class Pop3ServerTest {
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
 		Mailbox mailbox = store.createMailbox(USERNAME, PASSWORD, EMAIL);
-		Mailbox.Folder folder = mailbox.getInbox();
+		MailboxFolder folder = mailbox.getInbox();
 		folder.addMessage("Subject: Test 1\r\n\r\nTest message 1");
 		folder.addMessage("Subject: Test 2\r\n\r\nTest message 2");
 

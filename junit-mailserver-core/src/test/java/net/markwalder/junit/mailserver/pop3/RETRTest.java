@@ -20,13 +20,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxMessage;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 public class RETRTest extends CommandTest {
 
-	private final Mailbox.Message message = Mockito.mock(Mailbox.Message.class);
+	private final MailboxMessage message = Mockito.mock(MailboxMessage.class);
 
 	@Test
 	void parse() throws Pop3Exception {

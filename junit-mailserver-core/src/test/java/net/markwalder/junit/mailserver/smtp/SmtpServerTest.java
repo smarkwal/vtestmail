@@ -33,8 +33,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import net.markwalder.junit.mailserver.AuthType;
-import net.markwalder.junit.mailserver.Mailbox;
-import net.markwalder.junit.mailserver.MailboxStore;
+import net.markwalder.junit.mailserver.store.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxFolder;
+import net.markwalder.junit.mailserver.store.MailboxMessage;
+import net.markwalder.junit.mailserver.store.MailboxStore;
 import net.markwalder.junit.mailserver.testutils.JavaUtils;
 import net.markwalder.junit.mailserver.testutils.SmtpClient;
 import net.markwalder.junit.mailserver.testutils.TestUtils;
@@ -129,11 +131,11 @@ class SmtpServerTest {
 			assertThat(session.isClosed()).isTrue();
 
 			Mailbox mailbox = store.getMailbox(USERNAME);
-			Mailbox.Folder folder = mailbox.getInbox();
-			List<Mailbox.Message> messages = folder.getMessages();
+			MailboxFolder folder = mailbox.getInbox();
+			List<MailboxMessage> messages = folder.getMessages();
 			assertThat(messages).hasSize(1);
 
-			Mailbox.Message mail = messages.get(0);
+			MailboxMessage mail = messages.get(0);
 			String content = mail.getContent();
 			assertThat(content).isEqualTo(
 					"Received: from 127.0.0.1 by 127.0.0.1; Wed, 1 Jan 2020 00:00:00 +0000\r\n" +
@@ -267,8 +269,8 @@ class SmtpServerTest {
 			assertThat(session.isClosed()).isTrue();
 
 			Mailbox mailbox = store.getMailbox(USERNAME);
-			Mailbox.Folder folder = mailbox.getInbox();
-			List<Mailbox.Message> messages = folder.getMessages();
+			MailboxFolder folder = mailbox.getInbox();
+			List<MailboxMessage> messages = folder.getMessages();
 			assertThat(messages).hasSize(1);
 
 			String log = session.getLog();
@@ -401,8 +403,8 @@ class SmtpServerTest {
 			assertThat(session.isClosed()).isTrue();
 
 			Mailbox mailbox = store.getMailbox(USERNAME);
-			Mailbox.Folder folder = mailbox.getInbox();
-			List<Mailbox.Message> messages = folder.getMessages();
+			MailboxFolder folder = mailbox.getInbox();
+			List<MailboxMessage> messages = folder.getMessages();
 			assertThat(messages).hasSize(1);
 		}
 	}
@@ -506,12 +508,12 @@ class SmtpServerTest {
 
 			// assert: email has been delivered to mailbox
 			Mailbox mailbox = store.getMailbox(USERNAME);
-			Mailbox.Folder folder = mailbox.getInbox();
-			List<Mailbox.Message> messages = folder.getMessages();
+			MailboxFolder folder = mailbox.getInbox();
+			List<MailboxMessage> messages = folder.getMessages();
 			assertThat(messages).hasSize(1);
 
 			// assert: BCC recipient is not included in message
-			Mailbox.Message email = messages.get(0);
+			MailboxMessage email = messages.get(0);
 			String content = email.getContent();
 			assertThat(content).doesNotContain("dan@localhost");
 
