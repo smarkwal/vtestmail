@@ -41,6 +41,7 @@ public class EXPUNGE extends ImapCommand {
 		// see https://datatracker.ietf.org/doc/html/rfc9051#section-6.4.3
 
 		session.assertState(State.Selected);
+		session.assertReadWrite();
 
 		// The EXPUNGE command permanently removes all messages that have the \Deleted flag set from the currently selected mailbox.
 		// Before returning an OK to the client, an untagged EXPUNGE response is sent for each message that is removed.

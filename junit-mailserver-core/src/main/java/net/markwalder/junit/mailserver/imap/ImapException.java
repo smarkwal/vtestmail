@@ -53,6 +53,10 @@ public class ImapException extends MailException {
 		return new ImapException("NO", "TRYCREATE", "No such mailbox");
 	}
 
+	public static ImapException MailboxIsReadOnly() {
+		return new ImapException("NO", "READ-ONLY", "Mailbox is read-only");
+	}
+
 	public ImapException(String response, String message) {
 		super(response + " " + message);
 		Assert.isNotEmpty(response, "response");

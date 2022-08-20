@@ -135,6 +135,9 @@ class ImapCommonsNetTest {
 				// assert: state is selected
 				assertThat(session.getState()).isEqualTo(State.Selected);
 
+				// assert: session is read-write
+				assertThat(session.isReadOnly()).isFalse();
+
 				// mark message 2 as deleted
 				mailbox.getMessages().get(1).setDeleted(true);
 
@@ -172,6 +175,38 @@ class ImapCommonsNetTest {
 						"* 1 EXPUNGE",
 						tag.next() + " OK EXPUNGE completed"
 				);
+
+				// UNSELECT
+				replyCode = client.sendCommand("UNSELECT");
+				assertThat(replyCode).isEqualTo(IMAPReply.OK);
+				assertReply(client, tag.next() + " OK UNSELECT completed");
+
+				// assert: state is authenticated
+				assertThat(session.getState()).isEqualTo(State.Authenticated);
+
+				// EXAMINE INBOX
+				success = client.examine("INBOX");
+				assertThat(success).isTrue();
+				assertReply(client,
+						"* 0 EXISTS",
+						"* OK [UIDVALIDITY 1000000000] UIDs valid",
+						"* OK [UIDNEXT 1000000003] Predicted next UID",
+						"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
+						"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
+						"* LIST () \"/\" INBOX",
+						tag.next() + " OK [READ-ONLY] EXAMINE completed"
+				);
+
+				// assert: state is selected
+				assertThat(session.getState()).isEqualTo(State.Selected);
+
+				// assert: session is read-only
+				assertThat(session.isReadOnly()).isTrue();
+
+				// EXPUNGE <-- not valid in read-only mode
+				success = client.expunge();
+				assertThat(success).isFalse();
+				assertReply(client, tag.next() + " NO [READ-ONLY] Mailbox is read-only");
 
 				// UNSELECT
 				replyCode = client.sendCommand("UNSELECT");
@@ -230,6 +265,9 @@ class ImapCommonsNetTest {
 						new SELECT("INBOX"),
 						new CLOSE(),
 						new SELECT("inbox"),
+						new EXPUNGE(),
+						new UNSELECT(),
+						new EXAMINE("INBOX"),
 						new EXPUNGE(),
 						new UNSELECT(),
 						new CustomCommand("CMD1"),

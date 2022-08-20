@@ -22,7 +22,7 @@ import net.markwalder.junit.mailserver.utils.Assert;
 
 public class SELECT extends ImapCommand {
 
-	private final String mailboxName;
+	protected final String mailboxName;
 
 	public SELECT(String mailboxName) {
 		Assert.isNotEmpty(mailboxName, "username");
@@ -43,6 +43,20 @@ public class SELECT extends ImapCommand {
 	protected void execute(ImapServer server, ImapSession session, ImapClient client, String tag) throws IOException, ImapException {
 
 		// see https://datatracker.ietf.org/doc/html/rfc9051#section-6.3.2
+
+		execute(session, client);
+
+		// TODO: are there other ways to enable read-only mode?
+		session.setReadOnly(false);
+
+		if (session.isReadOnly()) {
+			client.writeLine(tag + " OK [READ-ONLY] SELECT completed");
+		} else {
+			client.writeLine(tag + " OK [READ-WRITE] SELECT completed");
+		}
+	}
+
+	protected void execute(ImapSession session, ImapClient client) throws IOException, ImapException {
 
 		// Only one mailbox can be selected at a time in a connection;
 		// simultaneous access to multiple mailboxes requires multiple connections.
@@ -96,12 +110,6 @@ public class SELECT extends ImapCommand {
 		// See Section 6.3.9.7 for more details.
 		client.writeLine("* LIST () \"/\" INBOX"); // TODO: implement LIST response
 
-		boolean isReadOnly = false; // TODO: implement READ-ONLY mode
-		if (isReadOnly) {
-			client.writeLine(tag + " OK [READ-ONLY] SELECT completed");
-		} else {
-			client.writeLine(tag + " OK [READ-WRITE] SELECT completed");
-		}
 	}
 
 }

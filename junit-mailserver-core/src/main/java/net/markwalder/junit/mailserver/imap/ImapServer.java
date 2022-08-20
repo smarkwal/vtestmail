@@ -49,7 +49,7 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 		// authenticated state
 		addCommand("ENABLE", ENABLE::parse);
 		addCommand("SELECT", SELECT::parse);
-		// TODO: EXAMINE
+		addCommand("EXAMINE", EXAMINE::parse);
 		// TODO: CREATE
 		// TODO: DELETE
 		// TODO: RENAME

@@ -29,6 +29,7 @@ public class ImapSession extends MailSession {
 	private State state = State.NotAuthenticated;
 
 	private Mailbox mailbox = null;
+	private boolean readOnly = false;
 
 	private final List<ImapCommand> commands = new ArrayList<>();
 
@@ -107,6 +108,20 @@ public class ImapSession extends MailSession {
 		setState(State.Authenticated);
 
 		mailbox = store.getMailbox(username);
+	}
+
+	public boolean isReadOnly() {
+		return readOnly;
+	}
+
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
+	}
+
+	public void assertReadWrite() throws ImapException {
+		if (isReadOnly()) {
+			throw ImapException.MailboxIsReadOnly();
+		}
 	}
 
 }

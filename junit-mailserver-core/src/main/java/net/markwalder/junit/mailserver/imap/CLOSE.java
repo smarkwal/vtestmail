@@ -41,17 +41,20 @@ public class CLOSE extends ImapCommand {
 
 		session.assertState(State.Selected);
 
-		Mailbox mailbox = session.getMailbox();
+		// No messages are removed, and no error is given, if the mailbox is
+		// selected by an EXAMINE command or is otherwise selected as read-only.
+		if (!session.isReadOnly()) {
 
-		// The CLOSE command permanently removes all messages that have the
-		// \Deleted flag set from the currently selected mailbox, and it returns
-		// to the authenticated state from the selected state. No untagged
-		// EXPUNGE responses are sent.
-		mailbox.removeDeletedMessages();
+			// The CLOSE command permanently removes all messages that have the
+			// \Deleted flag set from the currently selected mailbox, and it returns
+			// to the authenticated state from the selected state. No untagged
+			// EXPUNGE responses are sent.
+			Mailbox mailbox = session.getMailbox();
+			mailbox.removeDeletedMessages();
+
+		}
+
 		session.setState(State.Authenticated);
-
-		// TODO: No messages are removed, and no error is given, if the mailbox is
-		//  selected by an EXAMINE command or is otherwise selected as read-only.
 
 		client.writeLine(tag + " OK CLOSE completed");
 	}
