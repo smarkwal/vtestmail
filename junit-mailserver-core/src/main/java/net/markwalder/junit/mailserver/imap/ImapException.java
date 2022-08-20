@@ -45,6 +45,10 @@ public class ImapException extends MailException {
 		return new ImapException("NO", "LOGIN not allowed");
 	}
 
+	public static ImapException MailboxNotFound() {
+		return new ImapException("NO", "TRYCREATE", "No such mailbox");
+	}
+
 	public ImapException(String response, String message) {
 		super(response + " " + message);
 		Assert.isNotEmpty(response, "response");

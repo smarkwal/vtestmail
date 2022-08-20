@@ -65,7 +65,11 @@ public class Mailbox {
 		Assert.isNotEmpty(content, "content");
 		synchronized (messages) {
 			Message message = new Message(content);
-			message.setUID(getNextUID());
+
+			// auto-generate UID
+			int uid = generateNextUID();
+			message.setUID(uid);
+
 			messages.add(message);
 		}
 	}
@@ -83,8 +87,24 @@ public class Mailbox {
 		}
 	}
 
-	private int getNextUID() {
+	public int getUIDNext() {
+		return uidNext;
+	}
+
+	public void setUIDNext(int uidNext) {
+		this.uidNext = uidNext;
+	}
+
+	private int generateNextUID() {
 		return uidNext++;
+	}
+
+	public int getUIDValidity() {
+		return uidValidity;
+	}
+
+	public void setUIDValidity(int uidValidity) {
+		this.uidValidity = uidValidity;
 	}
 
 	public static class Message {

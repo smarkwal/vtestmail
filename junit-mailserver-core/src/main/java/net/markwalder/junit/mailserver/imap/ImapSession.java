@@ -19,12 +19,16 @@ package net.markwalder.junit.mailserver.imap;
 import java.util.ArrayList;
 import java.util.List;
 import net.markwalder.junit.mailserver.MailSession;
+import net.markwalder.junit.mailserver.Mailbox;
+import net.markwalder.junit.mailserver.MailboxProvider;
 import net.markwalder.junit.mailserver.utils.Assert;
 
 public class ImapSession extends MailSession {
 
 	// see https://datatracker.ietf.org/doc/html/rfc9051#section-3
 	private State state = State.NotAuthenticated;
+
+	private Mailbox mailbox = null;
 
 	private final List<ImapCommand> commands = new ArrayList<>();
 
@@ -42,8 +46,16 @@ public class ImapSession extends MailSession {
 		}
 	}
 
+	State getState() {
+		return state;
+	}
+
 	void setState(State state) {
 		this.state = state;
+	}
+
+	public Mailbox getMailbox() {
+		return mailbox;
 	}
 
 	/**
@@ -69,6 +81,32 @@ public class ImapSession extends MailSession {
 		synchronized (commands) {
 			return new ArrayList<>(commands);
 		}
+	}
+
+	@Override
+	public void login(String authType, String username, String secret, MailboxProvider store) {
+		super.login(authType, username, secret, store);
+
+		if (isAuthenticated()) {
+			postLogin(username, store);
+		}
+	}
+
+	@Override
+	public void login(String authType, String username, String digest, String timestamp, MailboxProvider store) {
+		super.login(authType, username, digest, timestamp, store);
+
+		if (isAuthenticated()) {
+			postLogin(username, store);
+		}
+	}
+
+	private void postLogin(String username, MailboxProvider store) {
+
+		// enter Authenticated state
+		setState(State.Authenticated);
+
+		mailbox = store.getMailbox(username);
 	}
 
 }

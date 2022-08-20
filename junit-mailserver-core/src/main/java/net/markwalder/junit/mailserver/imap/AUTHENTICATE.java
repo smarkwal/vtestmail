@@ -82,8 +82,6 @@ public class AUTHENTICATE extends ImapCommand {
 			throw ImapException.AuthenticationFailed();
 		}
 
-		session.setState(State.Authenticated);
-
 		List<String> capabilities = server.getCapabilities(session);
 		client.writeLine(tag + " OK [" + StringUtils.join(capabilities, " ") + "] Logged in");
 	}

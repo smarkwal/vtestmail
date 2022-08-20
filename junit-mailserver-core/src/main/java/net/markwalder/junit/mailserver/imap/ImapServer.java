@@ -35,14 +35,42 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 		// https://datatracker.ietf.org/doc/html/rfc9051
 
 		// register available IMAP commands
+
+		// any state
 		addCommand("CAPABILITY", CAPABILITY::parse);
 		addCommand("NOOP", NOOP::parse);
+		addCommand("LOGOUT", LOGOUT::parse);
+
+		// not authenticated state
 		addCommand("STARTTLS", STARTTLS::parse); // TODO: implement test for STARTTLS
 		addCommand("LOGIN", LOGIN::parse);
 		addCommand("AUTHENTICATE", AUTHENTICATE::parse);
+
+		// authenticated state
 		addCommand("ENABLE", ENABLE::parse);
-		// TODO: implement more commands
-		addCommand("LOGOUT", LOGOUT::parse);
+		addCommand("SELECT", SELECT::parse);
+		// TODO: EXAMINE
+		// TODO: CREATE
+		// TODO: DELETE
+		// TODO: RENAME
+		// TODO: SUBSCRIBE
+		// TODO: UNSUBSCRIBE
+		// TODO: LIST
+		// TODO: NAMESPACE
+		// TODO: STATUS
+		// TODO: APPEND
+		// TODO: IDLE
+
+		// selected state
+		addCommand("CLOSE", CLOSE::parse);
+		addCommand("UNSELECT", UNSELECT::parse);
+		addCommand("EXPUNGE", EXPUNGE::parse);
+		// TODO: SEARCH
+		// TODO: FETCH
+		// TODO: STORE
+		// TODO: COPY
+		// TODO: MOVE
+		// TODO: UID
 	}
 
 	@Override

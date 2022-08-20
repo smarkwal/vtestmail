@@ -69,15 +69,24 @@ class ImapCommonsNetTest {
 				assertThat(session.isAuthenticated()).isFalse();
 				assertThat(session.getUsername()).isNull();
 
+				// assert: state is not authenticated
+				assertThat(session.getState()).isEqualTo(State.NotAuthenticated);
+
 				// CAPABILITY
 				boolean success = client.capability();
 				assertThat(success).isTrue();
-				assertReply(client, "* CAPABILITY IMAP4rev2 STARTTLS", "AAAA OK CAPABILITY completed");
+				assertReply(client,
+						"* CAPABILITY IMAP4rev2 STARTTLS",
+						"AAAA OK CAPABILITY completed"
+				);
 
 				// LOGIN with wrong password
 				success = client.login(USERNAME, "wrong password");
 				assertThat(success).isFalse();
 				assertReply(client, "AAAB NO [AUTHENTICATIONFAILED] Authentication failed");
+
+				// assert: state is not authenticated
+				assertThat(session.getState()).isEqualTo(State.NotAuthenticated);
 
 				// LOGIN
 				success = client.login(USERNAME, PASSWORD);
@@ -88,6 +97,9 @@ class ImapCommonsNetTest {
 				assertThat(session.isAuthenticated()).isTrue();
 				assertThat(session.getUsername()).isEqualTo(USERNAME);
 
+				// assert: state is authenticated
+				assertThat(session.getState()).isEqualTo(State.Authenticated);
+
 				// NOOP
 				success = client.noop();
 				assertThat(success).isTrue();
@@ -97,27 +109,100 @@ class ImapCommonsNetTest {
 				assertThat(replyCode).isEqualTo(IMAPReply.OK);
 				assertReply(client, "AAAE OK ENABLE completed");
 
+				// SELECT Drafts
+				success = client.select("Drafts");
+				assertThat(success).isFalse();
+				assertReply(client, "AAAF NO [TRYCREATE] No such mailbox");
+
+				// assert: state is authenticated
+				assertThat(session.getState()).isEqualTo(State.Authenticated);
+
+				// SELECT INBOX
+				success = client.select("INBOX");
+				assertThat(success).isTrue();
+				assertReply(client,
+						"* 2 EXISTS",
+						"* OK [UIDVALIDITY 1000000000] UIDs valid",
+						"* OK [UIDNEXT 1000000003] Predicted next UID",
+						"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
+						"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
+						"* LIST () \"/\" INBOX",
+						"AAAG OK [READ-WRITE] SELECT completed"
+				);
+
+				// assert: state is selected
+				assertThat(session.getState()).isEqualTo(State.Selected);
+
+				// mark message 2 as deleted
+				mailbox.getMessages().get(1).setDeleted(true);
+
+				// CLOSE
+				success = client.close();
+				assertThat(success).isTrue();
+				assertReply(client, "AAAH OK CLOSE completed");
+
+				// assert: state is authenticated
+				assertThat(session.getState()).isEqualTo(State.Authenticated);
+
+				// SELECT inbox
+				success = client.select("inbox");
+				assertThat(success).isTrue();
+				assertReply(client,
+						"* 1 EXISTS",
+						"* OK [UIDVALIDITY 1000000000] UIDs valid",
+						"* OK [UIDNEXT 1000000003] Predicted next UID",
+						"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
+						"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
+						"* LIST () \"/\" INBOX",
+						"AAAI OK [READ-WRITE] SELECT completed"
+				);
+
+				// assert: state is selected
+				assertThat(session.getState()).isEqualTo(State.Selected);
+
+				// mark message 1 as deleted
+				mailbox.getMessages().get(0).setDeleted(true);
+
+				// EXPUNGE
+				success = client.expunge();
+				assertThat(success).isTrue();
+				assertReply(client,
+						"* 1 EXPUNGE",
+						"AAAJ OK EXPUNGE completed"
+				);
+
+				// UNSELECT
+				replyCode = client.sendCommand("UNSELECT");
+				assertThat(replyCode).isEqualTo(IMAPReply.OK);
+				assertReply(client, "AAAK OK UNSELECT completed");
+
+				// assert: state is authenticated
+				assertThat(session.getState()).isEqualTo(State.Authenticated);
+
 				// TODO: execute more commands
 
 				// CMD1 <-- custom command
 				replyCode = client.sendCommand("CMD1");
 				assertThat(replyCode).isEqualTo(IMAPReply.OK);
-				assertReply(client, "AAAF OK CMD1 completed");
+				assertReply(client, "AAAL OK CMD1 completed");
 
 				// CMD2 <-- disabled custom command
 				replyCode = client.sendCommand("CMD2");
 				assertThat(replyCode).isEqualTo(IMAPReply.BAD);
-				assertReply(client, "AAAG BAD Command not implemented");
+				assertReply(client, "AAAM BAD Command not implemented");
 
 				// CMD3 <-- unknown command
 				replyCode = client.sendCommand("CMD3");
 				assertThat(replyCode).isEqualTo(IMAPReply.BAD);
-				assertReply(client, "AAAH BAD Command not implemented");
+				assertReply(client, "AAAN BAD Command not implemented");
 
 				// LOGOUT
 				success = client.logout();
 				assertThat(success).isTrue();
-				assertReply(client, "* BYE IMAP4rev2 Server logging out", "AAAI OK LOGOUT completed");
+				assertReply(client, "* BYE IMAP4rev2 Server logging out", "AAAO OK LOGOUT completed");
+
+				// assert: state is logout
+				assertThat(session.getState()).isEqualTo(State.Logout);
 
 				// assert: session has been closed
 				session.waitUntilClosed(5000);
@@ -125,13 +210,18 @@ class ImapCommonsNetTest {
 
 				// assert: commands have been recorded
 				List<ImapCommand> commands = session.getCommands();
-				assertThat(commands).hasSize(7);
 				assertThat(commands).containsExactly(
 						new CAPABILITY(),
 						new LOGIN(USERNAME, "wrong password"),
 						new LOGIN(USERNAME, PASSWORD),
 						new NOOP(),
 						new ENABLE(List.of("FOO", "BAR")),
+						new SELECT("Drafts"),
+						new SELECT("INBOX"),
+						new CLOSE(),
+						new SELECT("inbox"),
+						new EXPUNGE(),
+						new UNSELECT(),
 						new CustomCommand("CMD1"),
 						new LOGOUT()
 				);
