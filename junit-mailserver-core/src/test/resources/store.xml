@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <store schema="1.0.0">
     <mailbox email="user1@localhost" secret="secret1" username="user1">
-        <folder name="INBOX" uidNext="1000000003" uidValidity="1000000000">
-            <message uid="1000000001">
+        <folder name="INBOX" uidNext="3" uidValidity="1">
+            <message uid="1">
                 <flag>\Flagged</flag>
                 <flag>\Seen</flag>
                 <content>Subject: Test 1[CRLF][CRLF]This is test message 1.</content>
             </message>
-            <message uid="1000000002">
+            <message uid="2">
                 <content>Subject: Test 2[CRLF][CRLF]This is test message 2.</content>
             </message>
         </folder>
-        <folder name="Drafts" uidNext="1000000002" uidValidity="1000000000">
-            <message uid="1000000001">
+        <folder name="Drafts" uidNext="2" uidValidity="1">
+            <message uid="1">
                 <flag>\Draft</flag>
                 <content>Subject: Test 3[CRLF][CRLF]This is a draft.</content>
             </message>
         </folder>
     </mailbox>
     <mailbox email="user2@localhost" secret="secret2" username="user2">
-        <folder name="INBOX" uidNext="1000000003" uidValidity="1000000000">
-            <message uid="1000000001">
+        <folder name="INBOX" uidNext="3" uidValidity="1">
+            <message uid="1">
                 <flag>\Answered</flag>
                 <flag>\Seen</flag>
                 <content>Subject: Test 1[CRLF][CRLF]This is test message 1.</content>
             </message>
-            <message uid="1000000002">
+            <message uid="2">
                 <content>Subject: Test 2[CRLF][CRLF]This is test message 2.</content>
             </message>
         </folder>
-        <folder name="Trash" uidNext="1000000002" uidValidity="1000000000">
-            <message uid="1000000001">
+        <folder name="Trash" uidNext="2" uidValidity="1">
+            <message uid="1">
                 <flag>$Junk</flag>
                 <flag>\Deleted</flag>
                 <content>Subject: Test 3[CRLF][CRLF]This is spam.</content>

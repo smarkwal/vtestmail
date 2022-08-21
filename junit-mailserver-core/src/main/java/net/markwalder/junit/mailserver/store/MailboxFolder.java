@@ -27,8 +27,8 @@ public class MailboxFolder {
 	private final List<MailboxMessage> messages = new ArrayList<>();
 
 	// see https://datatracker.ietf.org/doc/html/rfc9051#section-2.3.1.1
-	private int uidNext = 1000000001;
-	private int uidValidity = 1000000000;
+	private int uidNext = 1;
+	private int uidValidity = 1;
 
 	MailboxFolder(String name) {
 		Assert.isNotEmpty(name, "name");

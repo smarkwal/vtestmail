@@ -68,7 +68,7 @@ public class UIDL extends Pop3Command {
 
 				String msg = String.valueOf(i + 1);
 				int uid = message.getUID();
-				client.writeLine(msg + " " + uid);
+				client.writeLine(msg + " " + toHexUID(uid));
 			}
 			client.writeLine(".");
 
@@ -81,10 +81,14 @@ public class UIDL extends Pop3Command {
 			}
 
 			int uid = message.getUID();
-			client.writeLine("+OK " + messageNumber + " " + uid);
+			client.writeLine("+OK " + messageNumber + " " + toHexUID(uid));
 
 		}
 
+	}
+
+	private static String toHexUID(int uid) {
+		return String.format("%1$8x", uid).replace(' ', '0');
 	}
 
 }

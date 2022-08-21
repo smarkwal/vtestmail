@@ -126,8 +126,8 @@ class ImapCommonsNetTest {
 				assertThat(success).isTrue();
 				assertReply(client,
 						"* 2 EXISTS",
-						"* OK [UIDVALIDITY 1000000000] UIDs valid",
-						"* OK [UIDNEXT 1000000003] Predicted next UID",
+						"* OK [UIDVALIDITY 1] UIDs valid",
+						"* OK [UIDNEXT 3] Predicted next UID",
 						"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
 						"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
 						"* LIST () \"/\" INBOX",
@@ -156,8 +156,8 @@ class ImapCommonsNetTest {
 				assertThat(success).isTrue();
 				assertReply(client,
 						"* 1 EXISTS",
-						"* OK [UIDVALIDITY 1000000000] UIDs valid",
-						"* OK [UIDNEXT 1000000003] Predicted next UID",
+						"* OK [UIDVALIDITY 1] UIDs valid",
+						"* OK [UIDNEXT 3] Predicted next UID",
 						"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
 						"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
 						"* LIST () \"/\" INBOX",
@@ -191,8 +191,8 @@ class ImapCommonsNetTest {
 				assertThat(success).isTrue();
 				assertReply(client,
 						"* 0 EXISTS",
-						"* OK [UIDVALIDITY 1000000000] UIDs valid",
-						"* OK [UIDNEXT 1000000003] Predicted next UID",
+						"* OK [UIDVALIDITY 1] UIDs valid",
+						"* OK [UIDNEXT 3] Predicted next UID",
 						"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
 						"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
 						"* LIST () \"/\" INBOX",
