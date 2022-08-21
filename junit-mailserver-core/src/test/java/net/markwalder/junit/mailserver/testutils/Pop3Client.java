@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
-import net.markwalder.junit.mailserver.AuthType;
+import net.markwalder.junit.mailserver.auth.AuthType;
 import net.markwalder.junit.mailserver.pop3.Pop3Server;
 import net.markwalder.junit.mailserver.utils.Assert;
 

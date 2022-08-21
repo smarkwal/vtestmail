@@ -19,7 +19,7 @@ package net.markwalder.junit.mailserver.smtp;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import net.markwalder.junit.mailserver.MailClient;
+import net.markwalder.junit.mailserver.core.MailClient;
 
 public class SmtpClient extends MailClient {
 

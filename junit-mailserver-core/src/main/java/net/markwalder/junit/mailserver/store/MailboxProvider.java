@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-package net.markwalder.junit.mailserver;
+package net.markwalder.junit.mailserver.store;
 
-public interface AuthType {
+public interface MailboxProvider {
 
-	String LOGIN = "LOGIN";
-	String PLAIN = "PLAIN";
-	String CRAM_MD5 = "CRAM-MD5";
-	String DIGEST_MD5 = "DIGEST-MD5";
-	String XOAUTH2 = "XOAUTH2";
+	Mailbox getMailbox(String username);
 
 }

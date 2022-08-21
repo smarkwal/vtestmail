@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.markwalder.junit.mailserver;
+package net.markwalder.junit.mailserver.core;
 
 import java.io.IOException;
 import java.io.InputStream;

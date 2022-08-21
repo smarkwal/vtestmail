@@ -18,9 +18,9 @@ package net.markwalder.junit.mailserver.imap;
 
 import java.io.IOException;
 import java.util.List;
-import net.markwalder.junit.mailserver.store.MailboxStore;
 import net.markwalder.junit.mailserver.auth.Authenticator;
 import net.markwalder.junit.mailserver.auth.Credentials;
+import net.markwalder.junit.mailserver.store.MailboxStore;
 import net.markwalder.junit.mailserver.utils.Assert;
 import net.markwalder.junit.mailserver.utils.StringUtils;
 

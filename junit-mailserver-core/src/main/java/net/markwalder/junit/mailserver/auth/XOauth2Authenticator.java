@@ -18,8 +18,8 @@ package net.markwalder.junit.mailserver.auth;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import net.markwalder.junit.mailserver.MailClient;
-import net.markwalder.junit.mailserver.MailboxProvider;
+import net.markwalder.junit.mailserver.core.MailClient;
+import net.markwalder.junit.mailserver.store.MailboxProvider;
 import net.markwalder.junit.mailserver.utils.StringUtils;
 
 public class XOauth2Authenticator implements Authenticator {

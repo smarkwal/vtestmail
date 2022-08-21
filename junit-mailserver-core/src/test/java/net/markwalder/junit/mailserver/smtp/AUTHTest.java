@@ -20,9 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.store.MailboxStore;
 import net.markwalder.junit.mailserver.auth.Authenticator;
 import net.markwalder.junit.mailserver.auth.Credentials;
+import net.markwalder.junit.mailserver.store.MailboxStore;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 

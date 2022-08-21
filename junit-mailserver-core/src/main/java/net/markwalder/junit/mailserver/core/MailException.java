@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package net.markwalder.junit.mailserver.auth;
+package net.markwalder.junit.mailserver.core;
 
-import java.io.IOException;
-import net.markwalder.junit.mailserver.core.MailClient;
-import net.markwalder.junit.mailserver.store.MailboxProvider;
+public abstract class MailException extends Exception {
 
-public interface Authenticator {
-
-	Credentials authenticate(String parameters, MailClient client, MailboxProvider store) throws IOException;
+	public MailException(String message) {
+		super(message);
+	}
 
 }

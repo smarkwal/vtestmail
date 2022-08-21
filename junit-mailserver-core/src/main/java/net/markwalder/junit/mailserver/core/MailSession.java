@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.markwalder.junit.mailserver;
+package net.markwalder.junit.mailserver.core;
 
 import static java.nio.charset.StandardCharsets.ISO_8859_1;
 
@@ -22,10 +22,11 @@ import java.net.Socket;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import net.markwalder.junit.mailserver.store.Mailbox;
+import net.markwalder.junit.mailserver.store.MailboxProvider;
 import net.markwalder.junit.mailserver.utils.Assert;
 import net.markwalder.junit.mailserver.utils.DigestUtils;
 
-public class MailSession {
+public abstract class MailSession {
 
 	private String serverAddress = null;
 	private int serverPort = -1;

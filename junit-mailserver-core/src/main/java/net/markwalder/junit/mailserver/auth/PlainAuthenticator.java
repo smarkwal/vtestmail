@@ -19,8 +19,8 @@ package net.markwalder.junit.mailserver.auth;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import net.markwalder.junit.mailserver.MailClient;
-import net.markwalder.junit.mailserver.MailboxProvider;
+import net.markwalder.junit.mailserver.core.MailClient;
+import net.markwalder.junit.mailserver.store.MailboxProvider;
 
 /**
  * Implementation of PLAIN authentication.

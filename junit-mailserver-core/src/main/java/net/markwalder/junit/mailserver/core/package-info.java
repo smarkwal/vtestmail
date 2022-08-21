@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package net.markwalder.junit.mailserver;
-
-public class MailException extends Exception {
-
-	public MailException(String message) {
-		super(message);
-	}
-
-}
+/**
+ * JUnit Mail Server Core
+ */
+// TODO: write JavaDoc for all packages and classes.
+package net.markwalder.junit.mailserver.core;

@@ -17,7 +17,7 @@
 package net.markwalder.junit.mailserver.pop3;
 
 import java.io.IOException;
-import net.markwalder.junit.mailserver.MailCommand;
+import net.markwalder.junit.mailserver.core.MailCommand;
 
 public abstract class Pop3Command extends MailCommand {
 

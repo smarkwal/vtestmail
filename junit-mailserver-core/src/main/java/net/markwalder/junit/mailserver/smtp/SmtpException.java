@@ -16,7 +16,7 @@
 
 package net.markwalder.junit.mailserver.smtp;
 
-import net.markwalder.junit.mailserver.MailException;
+import net.markwalder.junit.mailserver.core.MailException;
 
 public class SmtpException extends MailException {
 

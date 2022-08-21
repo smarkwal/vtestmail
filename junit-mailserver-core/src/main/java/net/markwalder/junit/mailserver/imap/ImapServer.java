@@ -20,9 +20,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import net.markwalder.junit.mailserver.MailCommand;
-import net.markwalder.junit.mailserver.MailException;
-import net.markwalder.junit.mailserver.MailServer;
+import net.markwalder.junit.mailserver.core.MailCommand;
+import net.markwalder.junit.mailserver.core.MailException;
+import net.markwalder.junit.mailserver.core.MailServer;
 import net.markwalder.junit.mailserver.store.MailboxStore;
 import net.markwalder.junit.mailserver.utils.StringUtils;
 

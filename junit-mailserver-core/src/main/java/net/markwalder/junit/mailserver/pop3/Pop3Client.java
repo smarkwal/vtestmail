@@ -19,7 +19,7 @@ package net.markwalder.junit.mailserver.pop3;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import net.markwalder.junit.mailserver.MailClient;
+import net.markwalder.junit.mailserver.core.MailClient;
 import net.markwalder.junit.mailserver.utils.Assert;
 
 public class Pop3Client extends MailClient {

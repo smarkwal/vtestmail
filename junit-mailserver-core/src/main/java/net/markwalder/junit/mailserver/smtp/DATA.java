@@ -22,7 +22,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import net.markwalder.junit.mailserver.MailClient;
+import net.markwalder.junit.mailserver.core.MailClient;
 import net.markwalder.junit.mailserver.store.Mailbox;
 import net.markwalder.junit.mailserver.store.MailboxFolder;
 import net.markwalder.junit.mailserver.store.MailboxStore;

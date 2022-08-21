@@ -16,7 +16,7 @@
 
 package net.markwalder.junit.mailserver.pop3;
 
-import net.markwalder.junit.mailserver.MailException;
+import net.markwalder.junit.mailserver.core.MailException;
 
 public class Pop3Exception extends MailException {
 

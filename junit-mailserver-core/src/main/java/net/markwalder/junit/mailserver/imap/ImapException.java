@@ -16,7 +16,7 @@
 
 package net.markwalder.junit.mailserver.imap;
 
-import net.markwalder.junit.mailserver.MailException;
+import net.markwalder.junit.mailserver.core.MailException;
 import net.markwalder.junit.mailserver.utils.Assert;
 
 public class ImapException extends MailException {

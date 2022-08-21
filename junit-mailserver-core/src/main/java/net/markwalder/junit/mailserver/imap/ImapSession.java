@@ -18,10 +18,10 @@ package net.markwalder.junit.mailserver.imap;
 
 import java.util.ArrayList;
 import java.util.List;
-import net.markwalder.junit.mailserver.MailSession;
+import net.markwalder.junit.mailserver.core.MailSession;
 import net.markwalder.junit.mailserver.store.Mailbox;
 import net.markwalder.junit.mailserver.store.MailboxFolder;
-import net.markwalder.junit.mailserver.MailboxProvider;
+import net.markwalder.junit.mailserver.store.MailboxProvider;
 import net.markwalder.junit.mailserver.utils.Assert;
 
 public class ImapSession extends MailSession {

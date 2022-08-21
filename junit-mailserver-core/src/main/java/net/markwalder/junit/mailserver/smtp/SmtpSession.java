@@ -19,7 +19,7 @@ package net.markwalder.junit.mailserver.smtp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import net.markwalder.junit.mailserver.MailSession;
+import net.markwalder.junit.mailserver.core.MailSession;
 
 public class SmtpSession extends MailSession {
 

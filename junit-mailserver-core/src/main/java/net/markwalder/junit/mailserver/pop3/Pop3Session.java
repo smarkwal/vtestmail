@@ -21,11 +21,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import net.markwalder.junit.mailserver.MailSession;
+import net.markwalder.junit.mailserver.core.MailSession;
 import net.markwalder.junit.mailserver.store.Mailbox;
 import net.markwalder.junit.mailserver.store.MailboxFolder;
 import net.markwalder.junit.mailserver.store.MailboxMessage;
-import net.markwalder.junit.mailserver.MailboxProvider;
+import net.markwalder.junit.mailserver.store.MailboxProvider;
 import net.markwalder.junit.mailserver.utils.Assert;
 
 public class Pop3Session extends MailSession {

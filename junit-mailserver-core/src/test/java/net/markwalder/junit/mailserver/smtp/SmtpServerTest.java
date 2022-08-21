@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import net.markwalder.junit.mailserver.AuthType;
+import net.markwalder.junit.mailserver.auth.AuthType;
 import net.markwalder.junit.mailserver.store.Mailbox;
 import net.markwalder.junit.mailserver.store.MailboxFolder;
 import net.markwalder.junit.mailserver.store.MailboxMessage;

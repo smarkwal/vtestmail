@@ -16,8 +16,8 @@
 
 package net.markwalder.junit.mailserver.auth;
 
-import net.markwalder.junit.mailserver.MailClient;
-import net.markwalder.junit.mailserver.MailboxProvider;
+import net.markwalder.junit.mailserver.core.MailClient;
+import net.markwalder.junit.mailserver.store.MailboxProvider;
 import org.mockito.Mockito;
 
 abstract class AuthenticatorTest {

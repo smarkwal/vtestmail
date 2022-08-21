@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.markwalder.junit.mailserver;
+package net.markwalder.junit.mailserver.core;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -32,6 +32,7 @@ import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
+import net.markwalder.junit.mailserver.auth.AuthType;
 import net.markwalder.junit.mailserver.auth.Authenticator;
 import net.markwalder.junit.mailserver.auth.CramMd5Authenticator;
 import net.markwalder.junit.mailserver.auth.DigestMd5Authenticator;
