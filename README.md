@@ -1,4 +1,4 @@
-# junit-mailserver
+# vtestmail
 
 Embedded SMTP, POP3, and IMAP servers for integration tests in Java projects.
 
@@ -11,9 +11,9 @@ Run embedded in-memory mail servers as part of your integration tests and allow 
 
 ## Modules
 
-### junit-mailserver-core
+### vtestmail-core
 
-`junit-mailserver-core` is the core module of the `junit-mailserver` project.
+`vtestmail-core` is the core module of the `vtestmail` project.
 It contains the implementations of the SMTP, POP3, and IMAP server.
 It does not have any dependencies on other libraries.
 
@@ -27,7 +27,7 @@ It does not have any dependencies on other libraries.
 ```xml
 <dependency>
     <groupId>net.markwalder</groupId>
-    <artifactId>junit-mailserver-core</artifactId>
+    <artifactId>vtestmail-core</artifactId>
     <version>1.0.0</version>
     <scope>test</scope>
 </dependency>    
@@ -35,7 +35,7 @@ It does not have any dependencies on other libraries.
 
 ### Gradle (Kotlin)
 ```kotlin
-testImplementation("net.markwalder:junit-mailserver-core:1.0.0")
+testImplementation("net.markwalder:vtestmail-core:1.0.0")
 ```
 
 ## Usage
@@ -137,7 +137,7 @@ server.start();
 Clients can also switch to a SSL/TLS connection at runtime by sending the `STARTTLS` (SMTP and IMAP) or `STLS` (POP3) command.
 
 The server will use a self-signed certificate for the domain "localhost" with an 2048-bit RSA key, valid until July 31st 2032. 
-The certificate and the RSA key pair are loaded from the classpath resource `junit-mailserver.pfx`.
+The certificate and the RSA key pair are loaded from the classpath resource `vtestmail.pfx`.
 
 #### Select a specific SSL/TLS protocol
 

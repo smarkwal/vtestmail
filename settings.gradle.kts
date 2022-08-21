@@ -7,5 +7,5 @@
  * in the user manual at https://docs.gradle.org/7.4/userguide/multi_project_builds.html
  */
 
-rootProject.name = "junit-mailserver"
-include("junit-mailserver-core")
+rootProject.name = "vtestmail"
+include("vtestmail-core")

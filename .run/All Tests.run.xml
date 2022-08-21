@@ -10,7 +10,7 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value=":junit-mailserver-core:test" />
+          <option value=":vtestmail-core:test" />
         </list>
       </option>
       <option name="vmOptions" />
