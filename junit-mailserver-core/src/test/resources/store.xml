@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<store>
+    <mailbox email="user1@localhost" secret="secret1" username="user1">
+        <folder name="INBOX" uidNext="1000000003" uidValidity="1000000000">
+            <message content="Subject: Test 1&#13;&#10;&#13;&#10;This is test message 1." flags="\Flagged,\Seen" uid="1000000001"/>
+            <message content="Subject: Test 2&#13;&#10;&#13;&#10;This is test message 2." uid="1000000002"/>
+        </folder>
+        <folder name="Drafts" uidNext="1000000002" uidValidity="1000000000">
+            <message content="Subject: Test 3&#13;&#10;&#13;&#10;This is a draft." flags="\Draft" uid="1000000001"/>
+        </folder>
+    </mailbox>
+    <mailbox email="user2@localhost" secret="secret2" username="user2">
+        <folder name="INBOX" uidNext="1000000003" uidValidity="1000000000">
+            <message content="Subject: Test 1&#13;&#10;&#13;&#10;This is test message 1." flags="\Answered,\Seen" uid="1000000001"/>
+            <message content="Subject: Test 2&#13;&#10;&#13;&#10;This is test message 2." uid="1000000002"/>
+        </folder>
+        <folder name="Trash" uidNext="1000000002" uidValidity="1000000000">
+            <message content="Subject: Test 3&#13;&#10;&#13;&#10;This is spam." flags="$Junk,\Deleted" uid="1000000001"/>
+        </folder>
+    </mailbox>
+</store>

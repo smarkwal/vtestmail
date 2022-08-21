@@ -30,9 +30,18 @@ public class MailboxFolder {
 	private int uidNext = 1000000001;
 	private int uidValidity = 1000000000;
 
-	public MailboxFolder(String name) {
+	MailboxFolder(String name) {
 		Assert.isNotEmpty(name, "name");
 		this.name = name;
+	}
+
+	MailboxFolder(String name, int uidNext, int uidValidity) {
+		Assert.isNotEmpty(name, "name");
+		Assert.isInRange(uidNext, 1, Integer.MAX_VALUE, "uidNext");
+		Assert.isInRange(uidValidity, 1, Integer.MAX_VALUE, "uidValidity");
+		this.name = name;
+		this.uidNext = uidNext;
+		this.uidValidity = uidValidity;
 	}
 
 	public String getName() {
@@ -45,7 +54,7 @@ public class MailboxFolder {
 		}
 	}
 
-	public void addMessage(String content) {
+	public MailboxMessage addMessage(String content) {
 		Assert.isNotEmpty(content, "content");
 		synchronized (messages) {
 			MailboxMessage message = new MailboxMessage(content);
@@ -55,6 +64,20 @@ public class MailboxFolder {
 			message.setUID(uid);
 
 			messages.add(message);
+			return message;
+		}
+	}
+
+	void addMessage(MailboxMessage message) {
+		Assert.isNotNull(message, "message");
+		synchronized (messages) {
+			messages.add(message);
+
+			// check if uidNext must be updated
+			int uid = message.getUID();
+			if (uid >= uidNext) {
+				uidNext = uid + 1;
+			}
 		}
 	}
 

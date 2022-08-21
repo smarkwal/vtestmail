@@ -16,14 +16,22 @@
 
 package net.markwalder.junit.mailserver.store;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import net.markwalder.junit.mailserver.MailboxProvider;
 import net.markwalder.junit.mailserver.utils.Assert;
 
 public class MailboxStore implements MailboxProvider {
 
-	private final Map<String, Mailbox> mailboxes = new HashMap<>();
+	private final Map<String, Mailbox> mailboxes = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+
+	public List<String> getUsernames() {
+		synchronized (mailboxes) {
+			return new ArrayList<>(mailboxes.keySet());
+		}
+	}
 
 	@Override
 	public Mailbox getMailbox(String username) {
@@ -46,11 +54,20 @@ public class MailboxStore implements MailboxProvider {
 	}
 
 	public Mailbox createMailbox(String username, String secret, String email) {
+
+		// create mailbox with default INBOX folder
 		Mailbox mailbox = new Mailbox(username, secret, email);
-		synchronized (mailboxes) {
-			mailboxes.put(username, mailbox);
-		}
+		mailbox.createFolder("INBOX");
+
+		addMailbox(mailbox);
 		return mailbox;
+	}
+
+	void addMailbox(Mailbox mailbox) {
+		Assert.isNotNull(mailbox, "mailbox");
+		synchronized (mailboxes) {
+			mailboxes.put(mailbox.getUsername(), mailbox);
+		}
 	}
 
 	public void deleteMailbox(String username) {

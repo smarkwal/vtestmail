@@ -16,7 +16,9 @@
 
 package net.markwalder.junit.mailserver.store;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -29,9 +31,9 @@ public class Mailbox {
 	private final String email;
 
 	public static final String INBOX = "INBOX";
-	private final Map<String, MailboxFolder> folders = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+	private final Map<String, MailboxFolder> folders = new TreeMap<>(FolderNameComparator.INSTANCE);
 
-	public Mailbox(String username, String secret, String email) {
+	Mailbox(String username, String secret, String email) {
 		Assert.isNotEmpty(username, "username");
 		Assert.isNotEmpty(secret, "secret");
 		Assert.isNotEmpty(email, "email");
@@ -39,9 +41,6 @@ public class Mailbox {
 		this.username = username;
 		this.secret = secret;
 		this.email = email;
-
-		// create default INBOX folder
-		createFolder(INBOX);
 	}
 
 	public String getUsername() {
@@ -81,12 +80,17 @@ public class Mailbox {
 	}
 
 	public MailboxFolder createFolder(String name) {
-		Assert.isNotEmpty(name, "name");
+		MailboxFolder folder = new MailboxFolder(name);
+		addFolder(folder);
+		return folder;
+	}
+
+	void addFolder(MailboxFolder folder) {
+		Assert.isNotNull(folder, "folder");
+		String name = folder.getName();
 		synchronized (folders) {
 			Assert.isFalse(folders.containsKey(name), "Folder already exists: " + name);
-			MailboxFolder folder = new MailboxFolder(name);
 			folders.put(name, folder);
-			return folder;
 		}
 	}
 
@@ -95,6 +99,35 @@ public class Mailbox {
 		synchronized (folders) {
 			Assert.isTrue(folders.containsKey(name), "Folder not found: " + name);
 			folders.remove(name);
+		}
+	}
+
+	/**
+	 * Comparator for folder names.
+	 * Prefers "INBOX" over other folders.
+	 * Other folders are ordered alphabetically, case-insensitive.
+	 * If two names only differ in case, they are ordered case-sensitive.
+	 */
+	private static class FolderNameComparator implements Comparator<String>, Serializable {
+
+		private static final FolderNameComparator INSTANCE = new FolderNameComparator();
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public int compare(String name1, String name2) {
+			if (name1.equals(name2)) {
+				return 0;
+			} else if (name1.equals(INBOX)) {
+				return -1;
+			} else if (name2.equals(INBOX)) {
+				return 1;
+			}
+			int diff = name1.compareToIgnoreCase(name2);
+			if (diff != 0) {
+				return diff;
+			}
+			return name1.compareTo(name2);
 		}
 	}
 

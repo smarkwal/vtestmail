@@ -51,10 +51,17 @@ public class MailboxMessage {
 	// TODO: implement internal date
 	private long internalDate;
 
-	public MailboxMessage(String content) {
+	MailboxMessage(String content) {
 		Assert.isNotEmpty(content, "content");
 		this.content = content;
 		this.uid = Math.abs(content.hashCode());
+	}
+
+	MailboxMessage(int uid, String content) {
+		Assert.isNotEmpty(content, "content");
+		Assert.isInRange(uid, 1, Integer.MAX_VALUE, "uid");
+		this.content = content;
+		this.uid = uid;
 	}
 
 	public String getContent() {

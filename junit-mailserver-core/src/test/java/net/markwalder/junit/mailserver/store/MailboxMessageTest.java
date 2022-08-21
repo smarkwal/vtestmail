@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package net.markwalder.junit.mailserver;
+package net.markwalder.junit.mailserver.store;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import net.markwalder.junit.mailserver.store.MailboxMessage;
 import org.junit.jupiter.api.Test;
 
 class MailboxMessageTest {
