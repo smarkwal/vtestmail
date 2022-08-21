@@ -26,6 +26,16 @@ import net.markwalder.junit.mailserver.core.MailServer;
 import net.markwalder.junit.mailserver.store.MailboxStore;
 import net.markwalder.junit.mailserver.utils.StringUtils;
 
+/**
+ * Virtual IMAP server for integration tests.
+ * <p>
+ * Limitations:
+ * <ul>
+ *     <li>Only one client can connect to the server at a time.</li>
+ *     <li>Only IMAP4rev2 (RFC 9051) is supported.</li>
+ *     <li>The format of messages is not validated.</li>
+ * </ul>
+ */
 public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient, ImapException> {
 
 	public ImapServer(MailboxStore store) {
