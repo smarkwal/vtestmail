@@ -30,7 +30,7 @@ class MailboxStoreUtilsTest {
 	void load() throws IOException {
 
 		// prepare
-		InputStream stream = TestUtils.openResource("store.xml");
+		InputStream stream = TestUtils.openResource("mailbox-store.xml");
 
 		// test
 		MailboxStore store = MailboxStoreUtils.load(stream);
@@ -39,7 +39,7 @@ class MailboxStoreUtilsTest {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		MailboxStoreUtils.store(store, out);
 		String xml = out.toString(StandardCharsets.UTF_8);
-		String expectedXml = TestUtils.readResource("store.xml");
+		String expectedXml = TestUtils.readResource("mailbox-store.xml");
 		Assertions.assertEquals(expectedXml, xml);
 
 	}
@@ -69,10 +69,16 @@ class MailboxStoreUtilsTest {
 			message1.setFlag(MailboxMessage.FLAG_SEEN);
 			message1.setFlag(MailboxMessage.FLAG_ANSWERED);
 			inbox.addMessage("Subject: Test 2\r\n\r\nThis is test message 2.");
+			mailbox.createFolder("Drafts"); // empty folder
 			MailboxFolder folder = mailbox.createFolder("Trash");
 			MailboxMessage message3 = folder.addMessage("Subject: Test 3\r\n\r\nThis is spam.");
 			message3.setFlag(MailboxMessage.FLAG_DELETED);
 			message3.setFlag(MailboxMessage.KEYWORD_JUNK);
+		}
+
+		{
+			Mailbox mailbox = new Mailbox("user3", "secret3", "user3@localhost");
+			store.addMailbox(mailbox); // empty mailbox
 		}
 
 		// test
@@ -81,7 +87,7 @@ class MailboxStoreUtilsTest {
 
 		// assert
 		String xml = stream.toString(StandardCharsets.UTF_8);
-		String expectedXml = TestUtils.readResource("store.xml");
+		String expectedXml = TestUtils.readResource("mailbox-store.xml");
 		Assertions.assertEquals(expectedXml, xml);
 
 	}

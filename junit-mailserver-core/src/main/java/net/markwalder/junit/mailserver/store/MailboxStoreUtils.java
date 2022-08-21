@@ -102,7 +102,8 @@ public class MailboxStoreUtils {
 
 		Element storeElement = document.createElement("store");
 		document.appendChild(storeElement);
-		storeElement.setAttribute("schema", "1.0.0");
+		storeElement.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+		storeElement.setAttribute("xsi:noNamespaceSchemaLocation", "https://smarkwal.github.io/junit-mailserver/xsd/mailbox-store-1.0.0.xsd");
 
 		List<String> usernames = store.getUsernames();
 		for (String username : usernames) {

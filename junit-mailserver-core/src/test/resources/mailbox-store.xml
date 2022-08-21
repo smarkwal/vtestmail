@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<store schema="1.0.0">
+<store xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://smarkwal.github.io/junit-mailserver/xsd/mailbox-store-1.0.0.xsd">
     <mailbox email="user1@localhost" secret="secret1" username="user1">
         <folder name="INBOX" uidNext="3" uidValidity="1">
             <message uid="1">
@@ -29,6 +29,7 @@
                 <content>Subject: Test 2[CRLF][CRLF]This is test message 2.</content>
             </message>
         </folder>
+        <folder name="Drafts" uidNext="1" uidValidity="1"/>
         <folder name="Trash" uidNext="2" uidValidity="1">
             <message uid="1">
                 <flag>$Junk</flag>
@@ -37,4 +38,5 @@
             </message>
         </folder>
     </mailbox>
+    <mailbox email="user3@localhost" secret="secret3" username="user3"/>
 </store>
