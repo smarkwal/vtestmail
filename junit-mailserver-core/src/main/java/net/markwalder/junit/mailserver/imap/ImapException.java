@@ -57,6 +57,18 @@ public class ImapException extends MailException {
 		return new ImapException("NO", "READ-ONLY", "Mailbox is read-only");
 	}
 
+	public static ImapException MailboxAlreadyExists() {
+		return new ImapException("NO", "Mailbox already exists");
+	}
+
+	public static ImapException MailboxNotDeleted() {
+		return new ImapException("NO", "Mailbox not deleted");
+	}
+
+	public static ImapException MailboxHasChildren() {
+		return new ImapException("NO", "HASCHILDREN", "Mailbox has inferior hierarchical names");
+	}
+
 	public ImapException(String response, String message) {
 		super(response + " " + message);
 		Assert.isNotEmpty(response, "response");

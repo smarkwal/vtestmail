@@ -18,6 +18,8 @@ package net.markwalder.junit.mailserver.imap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import net.markwalder.junit.mailserver.core.MailSession;
 import net.markwalder.junit.mailserver.store.Mailbox;
 import net.markwalder.junit.mailserver.store.MailboxFolder;
@@ -32,6 +34,7 @@ public class ImapSession extends MailSession {
 	private Mailbox mailbox = null;
 	private MailboxFolder folder = null;
 	private boolean readOnly = false;
+	private final Set<String> subscriptions = new TreeSet<>();
 
 	private final List<ImapCommand> commands = new ArrayList<>();
 
@@ -41,12 +44,15 @@ public class ImapSession extends MailSession {
 	/**
 	 * Check if session is currently in given state.
 	 *
-	 * @param expectedState Expected state.
+	 * @param expectedStates Expected states.
 	 */
-	void assertState(State expectedState) throws ImapException {
-		if (this.state != expectedState) {
-			throw ImapException.IllegalState(this.state);
+	void assertState(State... expectedStates) throws ImapException {
+		for (State expectedState : expectedStates) {
+			if (this.state == expectedState) {
+				return; // OK
+			}
 		}
+		throw ImapException.IllegalState(this.state);
 	}
 
 	State getState() {
@@ -157,6 +163,30 @@ public class ImapSession extends MailSession {
 	public void assertReadWrite() throws ImapException {
 		if (isReadOnly()) {
 			throw ImapException.MailboxIsReadOnly();
+		}
+	}
+
+	public List<String> getSubscriptions() {
+		synchronized (subscriptions) {
+			return new ArrayList<>(subscriptions);
+		}
+	}
+
+	public boolean hasSubscription(String folderName) {
+		synchronized (subscriptions) {
+			return subscriptions.contains(folderName);
+		}
+	}
+
+	public void subscribe(String folderName) {
+		synchronized (subscriptions) {
+			subscriptions.add(folderName);
+		}
+	}
+
+	public void unsubscribe(String folderName) {
+		synchronized (subscriptions) {
+			subscriptions.remove(folderName);
 		}
 	}
 

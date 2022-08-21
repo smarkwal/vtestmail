@@ -94,6 +94,18 @@ public class Mailbox {
 		}
 	}
 
+	public void renameFolder(String oldName, String newName) {
+		Assert.isNotEmpty(oldName, "oldName");
+		Assert.isNotEmpty(newName, "newName");
+		synchronized (folders) {
+			Assert.isTrue(folders.containsKey(oldName), "Folder not found: " + oldName);
+			Assert.isFalse(folders.containsKey(newName), "Folder already exists: " + newName);
+			MailboxFolder folder = folders.remove(oldName);
+			folder.setName(newName);
+			folders.put(newName, folder);
+		}
+	}
+
 	public void deleteFolder(String name) {
 		Assert.isNotEmpty(name, "name");
 		synchronized (folders) {

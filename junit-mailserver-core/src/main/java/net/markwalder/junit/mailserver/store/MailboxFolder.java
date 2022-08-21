@@ -22,7 +22,7 @@ import net.markwalder.junit.mailserver.utils.Assert;
 
 public class MailboxFolder {
 
-	private final String name;
+	private String name;
 
 	private final List<MailboxMessage> messages = new ArrayList<>();
 
@@ -46,6 +46,11 @@ public class MailboxFolder {
 
 	public String getName() {
 		return name;
+	}
+
+	void setName(String name) {
+		Assert.isNotEmpty(name, "name");
+		this.name = name;
 	}
 
 	public List<MailboxMessage> getMessages() {

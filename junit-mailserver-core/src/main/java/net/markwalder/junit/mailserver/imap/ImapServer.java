@@ -50,14 +50,14 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 		addCommand("ENABLE", ENABLE::parse);
 		addCommand("SELECT", SELECT::parse);
 		addCommand("EXAMINE", EXAMINE::parse);
-		// TODO: CREATE
-		// TODO: DELETE
-		// TODO: RENAME
-		// TODO: SUBSCRIBE
-		// TODO: UNSUBSCRIBE
+		addCommand("CREATE", CREATE::parse);
+		addCommand("DELETE", DELETE::parse);
+		addCommand("RENAME", RENAME::parse);
+		addCommand("SUBSCRIBE", SUBSCRIBE::parse);
+		addCommand("UNSUBSCRIBE", UNSUBSCRIBE::parse);
 		// TODO: LIST
-		// TODO: NAMESPACE
-		// TODO: STATUS
+		addCommand("NAMESPACE", NAMESPACE::parse);
+		addCommand("STATUS", STATUS::parse);
 		// TODO: APPEND
 		// TODO: IDLE
 

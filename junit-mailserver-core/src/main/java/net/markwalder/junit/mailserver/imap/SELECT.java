@@ -22,11 +22,11 @@ import net.markwalder.junit.mailserver.utils.Assert;
 
 public class SELECT extends ImapCommand {
 
-	protected final String mailboxName;
+	protected final String folderName;
 
-	public SELECT(String mailboxName) {
-		Assert.isNotEmpty(mailboxName, "username");
-		this.mailboxName = mailboxName;
+	public SELECT(String folderName) {
+		Assert.isNotEmpty(folderName, "folderName");
+		this.folderName = folderName;
 	}
 
 	public static SELECT parse(String parameters) throws ImapException {
@@ -36,7 +36,7 @@ public class SELECT extends ImapCommand {
 
 	@Override
 	public String toString() {
-		return "SELECT " + mailboxName;
+		return "SELECT " + folderName;
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class SELECT extends ImapCommand {
 
 		// see https://datatracker.ietf.org/doc/html/rfc9051#section-6.3.2
 
-		execute(session, client);
+		select(session, client);
 
 		// TODO: are there other ways to enable read-only mode?
 		session.setReadOnly(false);
@@ -56,7 +56,7 @@ public class SELECT extends ImapCommand {
 		}
 	}
 
-	protected void execute(ImapSession session, ImapClient client) throws IOException, ImapException {
+	protected void select(ImapSession session, ImapClient client) throws IOException, ImapException {
 
 		// Only one mailbox can be selected at a time in a connection;
 		// simultaneous access to multiple mailboxes requires multiple connections.
@@ -73,7 +73,7 @@ public class SELECT extends ImapCommand {
 
 		// The case-insensitive mailbox name INBOX is a special name reserved to
 		// mean "the primary mailbox for this user on this server".
-		MailboxFolder folder = session.selectFolder(mailboxName);
+		MailboxFolder folder = session.selectFolder(folderName);
 
 		// The number of messages in the mailbox.
 		// See the description of the EXISTS response in Section 7.4.1 for more detail.
@@ -101,7 +101,7 @@ public class SELECT extends ImapCommand {
 		// and the supplied mailbox name differs from the normalized version,
 		// the server MUST return LIST with the OLDNAME extended data item.
 		// See Section 6.3.9.7 for more details.
-		client.writeLine("* LIST () \"/\" " + folder.getName()); // TODO: implement LIST response
+		client.writeLine("* LIST () \"" + HIERARCHY_SEPARATOR + "\" " + folder.getName()); // TODO: implement LIST response
 
 	}
 

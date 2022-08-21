@@ -21,6 +21,8 @@ import net.markwalder.junit.mailserver.core.MailCommand;
 
 public abstract class ImapCommand extends MailCommand {
 
+	public static final String HIERARCHY_SEPARATOR = "/";
+
 	protected abstract void execute(ImapServer server, ImapSession session, ImapClient client, String tag) throws IOException, ImapException;
 
 	protected static void isNull(String value) throws ImapException {

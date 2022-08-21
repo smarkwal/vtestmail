@@ -20,8 +20,8 @@ import java.io.IOException;
 
 public class EXAMINE extends SELECT {
 
-	public EXAMINE(String mailboxName) {
-		super(mailboxName);
+	public EXAMINE(String folderName) {
+		super(folderName);
 	}
 
 	public static EXAMINE parse(String parameters) throws ImapException {
@@ -31,7 +31,7 @@ public class EXAMINE extends SELECT {
 
 	@Override
 	public String toString() {
-		return "EXAMINE " + mailboxName;
+		return "EXAMINE " + folderName;
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class EXAMINE extends SELECT {
 		// The EXAMINE command is identical to SELECT and returns the same output; however, the selected mailbox is identified as read-only.
 		// No changes to the permanent state of the mailbox, including per-user state, are permitted.
 
-		execute(session, client);
+		select(session, client);
 
 		session.setReadOnly(true);
 
