@@ -68,15 +68,18 @@ public class MailboxStoreUtils {
 					Element messageElement = (Element) messageElements.item(k);
 
 					int uid = Integer.parseInt(messageElement.getAttribute("uid"));
-					String content = messageElement.getAttribute("content");
+
+					Element contentElement = (Element) messageElement.getElementsByTagName("content").item(0);
+					String content = unescapeContent(contentElement.getTextContent());
+
 					MailboxMessage message = new MailboxMessage(uid, content);
 					folder.addMessage(message);
 
-					if (messageElement.hasAttribute("flags")) {
-						String[] flags = messageElement.getAttribute("flags").split(",");
-						for (String flag : flags) {
-							message.setFlag(flag);
-						}
+					NodeList flagElements = messageElement.getElementsByTagName("flag");
+					for (int l = 0; l < flagElements.getLength(); l++) {
+						Element flagElement = (Element) flagElements.item(l);
+						String flag = flagElement.getTextContent();
+						message.setFlag(flag);
 					}
 
 				}
@@ -99,6 +102,7 @@ public class MailboxStoreUtils {
 
 		Element storeElement = document.createElement("store");
 		document.appendChild(storeElement);
+		storeElement.setAttribute("schema", "1.0.0");
 
 		List<String> usernames = store.getUsernames();
 		for (String username : usernames) {
@@ -122,21 +126,44 @@ public class MailboxStoreUtils {
 
 				List<MailboxMessage> messages = folder.getMessages();
 				for (MailboxMessage message : messages) {
+					int uid = message.getUID();
+					List<String> flags = message.getFlags();
+					String content = message.getContent();
+
 					Element messageElement = document.createElement("message");
 					folderElement.appendChild(messageElement);
+					messageElement.setAttribute("uid", String.valueOf(uid));
 
-					messageElement.setAttribute("uid", String.valueOf(message.getUID()));
-					messageElement.setAttribute("content", message.getContent());
-
-					List<String> flags = message.getFlags();
-					if (flags.size() > 0) {
-						messageElement.setAttribute("flags", String.join(",", flags));
+					for (String flag : flags) {
+						Element flagElement = document.createElement("flag");
+						messageElement.appendChild(flagElement);
+						flagElement.setTextContent(flag);
 					}
+
+					Element contentElement = document.createElement("content");
+					messageElement.appendChild(contentElement);
+					contentElement.setTextContent(escapeContent(content));
+
 				}
 			}
 		}
 
 		XMLUtils.writeDocument(document, xmlStream);
+	}
+
+	private static String escapeContent(String content) {
+		// TODO: handle escape sequences if they appear in original content
+		content = content.replace("\r\n", "[CRLF]");
+		content = content.replace("\r", "[CR]");
+		content = content.replace("\n", "[LF]");
+		return content;
+	}
+
+	private static String unescapeContent(String content) {
+		content = content.replace("[CRLF]", "\r\n");
+		content = content.replace("[CR]", "\r");
+		content = content.replace("[LF]", "\n");
+		return content;
 	}
 
 }
