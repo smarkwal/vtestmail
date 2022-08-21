@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="store" type="storeType"/>
+    <xs:complexType name="storeType">
+        <xs:sequence>
+            <xs:element type="mailboxType" name="mailbox" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="mailboxType">
+        <xs:sequence>
+            <xs:element type="folderType" name="folder" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="email" use="required"/>
+        <xs:attribute type="xs:string" name="secret" use="required"/>
+        <xs:attribute type="xs:string" name="username" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="folderType">
+        <xs:sequence>
+            <xs:element type="messageType" name="message" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="name" use="required"/>
+        <xs:attribute type="xs:string" name="uidNext" use="required"/>
+        <xs:attribute type="xs:string" name="uidValidity" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="messageType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="flag" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element type="xs:string" name="content"/>
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="uid" use="required"/>
+    </xs:complexType>
+</xs:schema>
