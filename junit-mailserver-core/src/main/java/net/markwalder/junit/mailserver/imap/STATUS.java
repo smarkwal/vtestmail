@@ -38,6 +38,7 @@ public class STATUS extends ImapCommand {
 
 	public static STATUS parse(String parameters) throws ImapException {
 		isNotEmpty(parameters);
+		// TODO: support quoted mailbox name
 		String[] parts = StringUtils.split(parameters, 2);
 		String folderName = parts[0];
 		String items = parts[1];

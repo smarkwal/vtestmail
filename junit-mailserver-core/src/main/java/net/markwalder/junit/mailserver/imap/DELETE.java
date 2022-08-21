@@ -32,6 +32,7 @@ public class DELETE extends ImapCommand {
 
 	public static DELETE parse(String parameters) throws ImapException {
 		isNotEmpty(parameters);
+		// TODO: support quoted mailbox name
 		return new DELETE(parameters);
 	}
 

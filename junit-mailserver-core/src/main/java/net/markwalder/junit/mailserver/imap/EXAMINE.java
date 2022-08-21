@@ -26,6 +26,7 @@ public class EXAMINE extends SELECT {
 
 	public static EXAMINE parse(String parameters) throws ImapException {
 		isNotEmpty(parameters);
+		// TODO: support quoted mailbox name
 		return new EXAMINE(parameters);
 	}
 

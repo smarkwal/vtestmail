@@ -33,6 +33,7 @@ public class CREATE extends ImapCommand {
 
 	public static CREATE parse(String parameters) throws ImapException {
 		isNotEmpty(parameters);
+		// TODO: support quoted mailbox name
 		return new CREATE(parameters);
 	}
 

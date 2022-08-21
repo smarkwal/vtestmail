@@ -31,6 +31,7 @@ public class SELECT extends ImapCommand {
 
 	public static SELECT parse(String parameters) throws ImapException {
 		isNotEmpty(parameters);
+		// TODO: support quoted mailbox name
 		return new SELECT(parameters);
 	}
 

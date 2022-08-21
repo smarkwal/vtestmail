@@ -113,6 +113,22 @@ class ImapCommonsNetTest {
 				assertThat(replyCode).isEqualTo(IMAPReply.OK);
 				assertReply(client, tag.next() + " OK ENABLE completed");
 
+				// NAMESPACE
+				replyCode = client.sendCommand("NAMESPACE");
+				assertThat(replyCode).isEqualTo(IMAPReply.OK);
+				assertReply(client,
+						"* NAMESPACE ((\"\" \"/\")) NIL NIL",
+						tag.next() + " OK NAMESPACE completed"
+				);
+
+				// STATUS INBOX (MESSAGES UIDNEXT UIDVALIDITY UNSEEN DELETED SIZE)
+				success = client.status("INBOX", new String[] { "MESSAGES", "UIDNEXT", "UIDVALIDITY", "UNSEEN", "DELETED", "SIZE" });
+				assertThat(success).isTrue();
+				assertReply(client,
+						"* STATUS INBOX (MESSAGES 2 UIDNEXT 3 UIDVALIDITY 1 UNSEEN 2 DELETED 0 SIZE 66)",
+						tag.next() + " OK STATUS completed"
+				);
+
 				// SELECT Drafts
 				success = client.select("Drafts");
 				assertThat(success).isFalse();
@@ -218,6 +234,31 @@ class ImapCommonsNetTest {
 				// assert: state is authenticated
 				assertThat(session.getState()).isEqualTo(State.Authenticated);
 
+				// CREATE Work
+				success = client.create("Work");
+				assertThat(success).isTrue();
+				assertReply(client, tag.next() + " OK CREATE completed");
+
+				// RENAME Work Private
+				success = client.rename("Work", "Private");
+				assertThat(success).isTrue();
+				assertReply(client, tag.next() + " OK RENAME completed");
+
+				// SUBSCRIBE Private
+				success = client.subscribe("Private");
+				assertThat(success).isTrue();
+				assertReply(client, tag.next() + " OK SUBSCRIBE completed");
+
+				// UNSUBSCRIBE Private
+				success = client.unsubscribe("Private");
+				assertThat(success).isTrue();
+				assertReply(client, tag.next() + " OK UNSUBSCRIBE completed");
+
+				// DELETE Private
+				success = client.delete("Private");
+				assertThat(success).isTrue();
+				assertReply(client, tag.next() + " OK DELETE completed");
+
 				// TODO: execute more commands
 
 				// CMD1 <-- custom command
@@ -263,6 +304,8 @@ class ImapCommonsNetTest {
 						new LOGIN(USERNAME, PASSWORD),
 						new NOOP(),
 						new ENABLE(List.of("FOO", "BAR")),
+						new NAMESPACE(),
+						new STATUS("INBOX", "MESSAGES", "UIDNEXT", "UIDVALIDITY", "UNSEEN", "DELETED", "SIZE"),
 						new SELECT("Drafts"),
 						new SELECT("INBOX"),
 						new CLOSE(),
@@ -272,6 +315,11 @@ class ImapCommonsNetTest {
 						new EXAMINE("INBOX"),
 						new EXPUNGE(),
 						new UNSELECT(),
+						new CREATE("Work"),
+						new RENAME("Work", "Private"),
+						new SUBSCRIBE("Private"),
+						new UNSUBSCRIBE("Private"),
+						new DELETE("Private"),
 						new CustomCommand("CMD1"),
 						new DisabledCommand("CMD2"),
 						new UnknownCommand("CMD3"),

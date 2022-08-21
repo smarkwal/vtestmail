@@ -38,6 +38,7 @@ public class RENAME extends ImapCommand {
 
 	public static RENAME parse(String parameters) throws ImapException {
 		isNotEmpty(parameters);
+		// TODO: support quoted mailbox names
 		String[] parts = StringUtils.split(parameters, 2);
 		String oldFolderName = parts[0];
 		String newFolderName = parts[1];
