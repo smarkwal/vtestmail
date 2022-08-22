@@ -125,7 +125,7 @@ TODO
 
 ### How to use SSL/TLS
 
-For implicit SSL/TLS where the server only accepts SSL/TLS connections, call `server.setUseSSL(true)` before starting the server:
+For implicit SSL/TLS where the server only accepts SSL/TLS connections (also known as SMTPS, IMAPS, or POP3S), call `server.setUseSSL(true)` before starting the server:
 
 ```java
 SmtpServer server = new SmtpServer(store);
@@ -134,7 +134,7 @@ server.start();
 // ...
 ```
 
-Clients can also switch to a SSL/TLS connection at runtime by sending the `STARTTLS` (SMTP and IMAP) or `STLS` (POP3) command.
+Clients can also switch to an SSL/TLS connection at runtime (also known as "opportunistic TLS") by sending the `STARTTLS` (SMTP and IMAP) or `STLS` (POP3) command.
 
 The server will use a self-signed certificate for the domain "localhost" with an 2048-bit RSA key, valid until July 31st 2032. 
 The certificate and the RSA key pair are loaded from the classpath resource `vtestmail.pfx`.
@@ -207,18 +207,79 @@ TODO
 
 ### SMTP server
 
+SMTP standards:
+
+* [RFC 5321 - Simple Mail Transfer Protocol](https://datatracker.ietf.org/doc/html/rfc5321)
+* [RFC 4954 - SMTP Service Extension for Authentication](https://datatracker.ietf.org/doc/html/rfc4954)
+* [RFC 3207 - SMTP Service Extension for Secure SMTP over Transport Layer Security](https://datatracker.ietf.org/doc/html/rfc3207)
+* [RFC 3463 - Enhanced Mail System Status Codes](https://datatracker.ietf.org/doc/html/rfc3463)
+
 Supported commands:
-* `TODO`
+
+* `HELO` and `EHLO`
+* `STARTTLS` 
+* `AUTH` 
+* `VRFY` 
+* `MAIL FROM` 
+* `RCPT TO` 
+* `DATA` 
+* `NOOP` 
+* `RSET` 
+* `QUIT`
 
 ### POP3 server
 
+POP3 standards:
+
+* [RFC 1939 - Post Office Protocol - Version 3](https://datatracker.ietf.org/doc/html/rfc1939)
+* [RFC 2195 - IMAP/POP AUTHorize Extension for Simple Challenge/Response](https://datatracker.ietf.org/doc/html/rfc2195)
+* [RFC 2449 - POP3 Extension Mechanism](https://datatracker.ietf.org/doc/html/rfc2449)
+* [RFC 2595 - Using TLS with IMAP, POP3 and ACAP](https://datatracker.ietf.org/doc/html/rfc2595)
+* [RFC 5034 - The Post Office Protocol (POP3) Simple Authentication and Security Layer (SASL) Authentication Mechanism](https://datatracker.ietf.org/doc/html/rfc5034)
+
 Supported commands:
-* `TODO`
+
+* `CAPA`
+* `STLS`
+* `AUTH`, `APOP`, `USER` and `PASS`
+* `STAT`
+* `LIST`
+* `UIDL`
+* `TOP`
+* `RETR`
+* `DELE`
+* `NOOP`
+* `RSET`
+* `QUIT`
 
 ### IMAP server
 
-Supported commands:
-* `TODO`
+IMAP standards:
+
+* [RFC 9051 - Internet Message Access Protocol (IMAP) - Version 4rev2](https://datatracker.ietf.org/doc/html/rfc9051)
+
+Supported commands (work in progress):
+
+* `CAPABILITY`
+* `STARTTLS`
+* `LOGIN` and `AUTHENTICATE`
+* `ENABLE`
+* `SELECT`, `EXAMINE`, `UNSELECT`, and `CLOSE`
+* `CREATE`, `DELETE`, and `RENAME`
+* `SUBSCRIBE` and `UNSUBSCRIBE`
+* `NAMESPACE` and `LIST`
+* `STATUS`
+* `SEARCH`
+* `FETCH`
+* `STORE`
+* `APPEND`
+* `COPY`
+* `MOVE`
+* `UID`
+* `EXPUNGE`
+* `IDLE`
+* `NOOP`
+* `LOGOUT`
 
 ## Limitations
 
