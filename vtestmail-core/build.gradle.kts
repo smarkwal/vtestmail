@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.0")
     testImplementation("org.mockito:mockito-core:4.6.1")
     testImplementation("org.assertj:assertj-core:3.23.1")
     testImplementation("com.sun.mail:jakarta.mail:2.0.1")
