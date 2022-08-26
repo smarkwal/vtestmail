@@ -133,7 +133,7 @@ public abstract class MailClient {
 	}
 
 	public void writeContinue(String message) throws IOException {
-		if (message == null || message.isEmpty()) {
+		if (message == null) {
 			writeLine(continuation);
 		} else {
 			writeLine(continuation + " " + message);
