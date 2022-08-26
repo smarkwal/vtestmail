@@ -30,8 +30,10 @@ public class UNSUBSCRIBE extends ImapCommand {
 
 	public static UNSUBSCRIBE parse(String parameters) throws ImapException {
 		isNotEmpty(parameters);
-		// TODO: support quoted mailbox name
-		return new UNSUBSCRIBE(parameters);
+		ImapCommandParser parser = new ImapCommandParser(parameters);
+		String folderName = parser.readMailbox();
+		parser.assertNoMoreArguments();
+		return new UNSUBSCRIBE(folderName);
 	}
 
 	@Override

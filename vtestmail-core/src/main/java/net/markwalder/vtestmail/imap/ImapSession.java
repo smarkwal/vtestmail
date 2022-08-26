@@ -67,7 +67,7 @@ public class ImapSession extends MailSession {
 		return mailbox;
 	}
 
-	public MailboxFolder getFolder() throws ImapException {
+	public MailboxFolder getFolder() {
 		return folder;
 	}
 

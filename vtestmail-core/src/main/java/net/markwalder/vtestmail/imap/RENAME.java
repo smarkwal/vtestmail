@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import net.markwalder.vtestmail.store.Mailbox;
 import net.markwalder.vtestmail.utils.Assert;
-import net.markwalder.vtestmail.utils.StringUtils;
 
 public class RENAME extends ImapCommand {
 
@@ -38,10 +37,11 @@ public class RENAME extends ImapCommand {
 
 	public static RENAME parse(String parameters) throws ImapException {
 		isNotEmpty(parameters);
-		// TODO: support quoted mailbox names
-		String[] parts = StringUtils.split(parameters, 2);
-		String oldFolderName = parts[0];
-		String newFolderName = parts[1];
+		ImapCommandParser parser = new ImapCommandParser(parameters);
+		String oldFolderName = parser.readMailbox();
+		parser.assertMoreArguments();
+		String newFolderName = parser.readMailbox();
+		parser.assertNoMoreArguments();
 		return new RENAME(oldFolderName, newFolderName);
 	}
 

@@ -26,6 +26,8 @@ import net.markwalder.vtestmail.store.MailboxFolder;
 import net.markwalder.vtestmail.store.MailboxStore;
 import org.apache.commons.net.imap.IMAPClient;
 import org.apache.commons.net.imap.IMAPReply;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class ImapCommonsNetTest {
@@ -34,8 +36,12 @@ class ImapCommonsNetTest {
 	private static final String PASSWORD = "p\u00E4ssw\u00F6rd!123";
 	private static final String EMAIL = "alice@localhost";
 
-	@Test
-	void test() throws IOException, InterruptedException {
+	private ImapServer server;
+	private IMAPClient client;
+	private TagGenerator tag;
+
+	@BeforeEach
+	void setUp() throws IOException {
 
 		// prepare: mailbox
 		MailboxStore store = new MailboxStore();
@@ -45,295 +51,342 @@ class ImapCommonsNetTest {
 		folder.addMessage("Subject: Test 2\r\n\r\nTest message 2");
 
 		// prepare: IMAP server
-		try (ImapServer server = new ImapServer(store)) {
-			server.setAuthenticationRequired(true);
-			// server.setAuthTypes("LOGIN", "PLAIN");
+		server = new ImapServer(store);
+		server.setAuthenticationRequired(true);
+		// server.setAuthTypes("LOGIN", "PLAIN");
 
-			// add custom command CMD1 (enabled)
-			server.addCommand("CMD1", parameters -> new CustomCommand("CMD1"));
-			// add custom command CMD2 (disabled)
-			server.addCommand("CMD2", parameters -> new CustomCommand("CMD2"));
-			server.setCommandEnabled("CMD2", false);
-			// note: CMD3 is an unknown commend
+		// add custom command CMD1 (enabled)
+		server.addCommand("CMD1", parameters -> new CustomCommand("CMD1"));
+		// add custom command CMD2 (disabled)
+		server.addCommand("CMD2", parameters -> new CustomCommand("CMD2"));
+		server.setCommandEnabled("CMD2", false);
+		// note: CMD3 is an unknown commend
 
-			server.start();
+		// start IMAP server
+		server.start();
 
-			// prepare: IMAP client
-			IMAPClient client = new IMAPClient();
-			try {
+		// prepare: IMAP client
+		client = new IMAPClient();
 
-				TagGenerator tag = new TagGenerator();
+		// prepare: tag generator
+		tag = new TagGenerator();
 
-				// connect to server
-				client.connect("localhost", server.getPort());
+	}
 
-				// assert: new session started
-				ImapSession session = server.getActiveSession();
-				assertThat(session).isNotNull();
-				assertThat(session.isAuthenticated()).isFalse();
-				assertThat(session.getUsername()).isNull();
+	@AfterEach
+	void tearDown() throws IOException {
 
-				// assert: state is not authenticated
-				assertThat(session.getState()).isEqualTo(State.NotAuthenticated);
-
-				// CAPABILITY
-				boolean success = client.capability();
-				assertThat(success).isTrue();
-				assertReply(client,
-						"* CAPABILITY IMAP4rev2 STARTTLS",
-						tag.next() + " OK CAPABILITY completed"
-				);
-
-				// LOGIN with wrong password
-				success = client.login(USERNAME, "wrong password");
-				assertThat(success).isFalse();
-				assertReply(client, tag.next() + " NO [AUTHENTICATIONFAILED] Authentication failed");
-
-				// assert: state is not authenticated
-				assertThat(session.getState()).isEqualTo(State.NotAuthenticated);
-
-				// LOGIN
-				success = client.login(USERNAME, PASSWORD);
-				assertThat(success).isTrue();
-				assertReply(client, tag.next() + " OK [CAPABILITY IMAP4rev2 STARTTLS] LOGIN completed");
-
-				// assert: session is authenticated
-				assertThat(session.isAuthenticated()).isTrue();
-				assertThat(session.getUsername()).isEqualTo(USERNAME);
-
-				// assert: state is authenticated
-				assertThat(session.getState()).isEqualTo(State.Authenticated);
-
-				// NOOP
-				success = client.noop();
-				assertThat(success).isTrue();
-				assertReply(client, tag.next() + " OK NOOP completed");
-
-				int replyCode = client.sendCommand("ENABLE", "FOO BAR");
-				assertThat(replyCode).isEqualTo(IMAPReply.OK);
-				assertReply(client, tag.next() + " OK ENABLE completed");
-
-				// NAMESPACE
-				replyCode = client.sendCommand("NAMESPACE");
-				assertThat(replyCode).isEqualTo(IMAPReply.OK);
-				assertReply(client,
-						"* NAMESPACE ((\"\" \"/\")) NIL NIL",
-						tag.next() + " OK NAMESPACE completed"
-				);
-
-				// STATUS INBOX (MESSAGES UIDNEXT UIDVALIDITY UNSEEN DELETED SIZE)
-				success = client.status("INBOX", new String[] { "MESSAGES", "UIDNEXT", "UIDVALIDITY", "UNSEEN", "DELETED", "SIZE" });
-				assertThat(success).isTrue();
-				assertReply(client,
-						"* STATUS INBOX (MESSAGES 2 UIDNEXT 3 UIDVALIDITY 1 UNSEEN 2 DELETED 0 SIZE 66)",
-						tag.next() + " OK STATUS completed"
-				);
-
-				// SELECT Drafts
-				success = client.select("Drafts");
-				assertThat(success).isFalse();
-				assertReply(client, tag.next() + " NO [TRYCREATE] No such mailbox");
-
-				// assert: state is authenticated
-				assertThat(session.getState()).isEqualTo(State.Authenticated);
-
-				// SELECT INBOX
-				success = client.select("INBOX");
-				assertThat(success).isTrue();
-				assertReply(client,
-						"* 2 EXISTS",
-						"* OK [UIDVALIDITY 1] UIDs valid",
-						"* OK [UIDNEXT 3] Predicted next UID",
-						"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
-						"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
-						"* LIST () \"/\" INBOX",
-						tag.next() + " OK [READ-WRITE] SELECT completed"
-				);
-
-				// assert: state is selected
-				assertThat(session.getState()).isEqualTo(State.Selected);
-
-				// assert: session is read-write
-				assertThat(session.isReadOnly()).isFalse();
-
-				// mark message 2 as deleted
-				folder.getMessages().get(1).setDeleted(true);
-
-				// CLOSE
-				success = client.close();
-				assertThat(success).isTrue();
-				assertReply(client, tag.next() + " OK CLOSE completed");
-
-				// assert: state is authenticated
-				assertThat(session.getState()).isEqualTo(State.Authenticated);
-
-				// SELECT inbox
-				success = client.select("inbox");
-				assertThat(success).isTrue();
-				assertReply(client,
-						"* 1 EXISTS",
-						"* OK [UIDVALIDITY 1] UIDs valid",
-						"* OK [UIDNEXT 3] Predicted next UID",
-						"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
-						"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
-						"* LIST () \"/\" INBOX",
-						tag.next() + " OK [READ-WRITE] SELECT completed"
-				);
-
-				// assert: state is selected
-				assertThat(session.getState()).isEqualTo(State.Selected);
-
-				// mark message 1 as deleted
-				folder.getMessages().get(0).setDeleted(true);
-
-				// EXPUNGE
-				success = client.expunge();
-				assertThat(success).isTrue();
-				assertReply(client,
-						"* 1 EXPUNGE",
-						tag.next() + " OK EXPUNGE completed"
-				);
-
-				// UNSELECT
-				replyCode = client.sendCommand("UNSELECT");
-				assertThat(replyCode).isEqualTo(IMAPReply.OK);
-				assertReply(client, tag.next() + " OK UNSELECT completed");
-
-				// assert: state is authenticated
-				assertThat(session.getState()).isEqualTo(State.Authenticated);
-
-				// EXAMINE INBOX
-				success = client.examine("INBOX");
-				assertThat(success).isTrue();
-				assertReply(client,
-						"* 0 EXISTS",
-						"* OK [UIDVALIDITY 1] UIDs valid",
-						"* OK [UIDNEXT 3] Predicted next UID",
-						"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
-						"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
-						"* LIST () \"/\" INBOX",
-						tag.next() + " OK [READ-ONLY] EXAMINE completed"
-				);
-
-				// assert: state is selected
-				assertThat(session.getState()).isEqualTo(State.Selected);
-
-				// assert: session is read-only
-				assertThat(session.isReadOnly()).isTrue();
-
-				// EXPUNGE <-- not valid in read-only mode
-				success = client.expunge();
-				assertThat(success).isFalse();
-				assertReply(client, tag.next() + " NO [READ-ONLY] Mailbox is read-only");
-
-				// UNSELECT
-				replyCode = client.sendCommand("UNSELECT");
-				assertThat(replyCode).isEqualTo(IMAPReply.OK);
-				assertReply(client, tag.next() + " OK UNSELECT completed");
-
-				// assert: state is authenticated
-				assertThat(session.getState()).isEqualTo(State.Authenticated);
-
-				// CREATE Work
-				success = client.create("Work");
-				assertThat(success).isTrue();
-				assertReply(client, tag.next() + " OK CREATE completed");
-
-				// RENAME Work Private
-				success = client.rename("Work", "Private");
-				assertThat(success).isTrue();
-				assertReply(client, tag.next() + " OK RENAME completed");
-
-				// SUBSCRIBE Private
-				success = client.subscribe("Private");
-				assertThat(success).isTrue();
-				assertReply(client, tag.next() + " OK SUBSCRIBE completed");
-
-				// UNSUBSCRIBE Private
-				success = client.unsubscribe("Private");
-				assertThat(success).isTrue();
-				assertReply(client, tag.next() + " OK UNSUBSCRIBE completed");
-
-				// DELETE Private
-				success = client.delete("Private");
-				assertThat(success).isTrue();
-				assertReply(client, tag.next() + " OK DELETE completed");
-
-				// TODO: execute more commands
-
-				// CMD1 <-- custom command
-				replyCode = client.sendCommand("CMD1");
-				assertThat(replyCode).isEqualTo(IMAPReply.OK);
-				assertReply(client, tag.next() + " OK CMD1 completed");
-
-				// CMD2 <-- disabled custom command
-				replyCode = client.sendCommand("CMD2");
-				assertThat(replyCode).isEqualTo(IMAPReply.BAD);
-				assertReply(client, tag.next() + " BAD Command disabled");
-
-				// CMD3 <-- unknown command
-				replyCode = client.sendCommand("CMD3");
-				assertThat(replyCode).isEqualTo(IMAPReply.BAD);
-				assertReply(client, tag.next() + " BAD Command not implemented");
-
-				// EXPUNGE <-- not valid in authenticated state
-				success = client.expunge();
-				assertThat(success).isFalse();
-				assertReply(client, tag.next() + " BAD Command is not allowed in Authenticated state");
-
-				// LOGOUT
-				success = client.logout();
-				assertThat(success).isTrue();
-				assertReply(client,
-						"* BYE IMAP4rev2 Server logging out",
-						tag.next() + " OK LOGOUT completed"
-				);
-
-				// assert: state is logout
-				assertThat(session.getState()).isEqualTo(State.Logout);
-
-				// assert: session has been closed
-				session.waitUntilClosed(5000);
-				assertThat(session.isClosed()).isTrue();
-
-				// assert: commands have been recorded
-				List<ImapCommand> commands = session.getCommands();
-				assertThat(commands).containsExactly(
-						new CAPABILITY(),
-						new LOGIN(USERNAME, "wrong password"),
-						new LOGIN(USERNAME, PASSWORD),
-						new NOOP(),
-						new ENABLE(List.of("FOO", "BAR")),
-						new NAMESPACE(),
-						new STATUS("INBOX", "MESSAGES", "UIDNEXT", "UIDVALIDITY", "UNSEEN", "DELETED", "SIZE"),
-						new SELECT("Drafts"),
-						new SELECT("INBOX"),
-						new CLOSE(),
-						new SELECT("inbox"),
-						new EXPUNGE(),
-						new UNSELECT(),
-						new EXAMINE("INBOX"),
-						new EXPUNGE(),
-						new UNSELECT(),
-						new CREATE("Work"),
-						new RENAME("Work", "Private"),
-						new SUBSCRIBE("Private"),
-						new UNSUBSCRIBE("Private"),
-						new DELETE("Private"),
-						new CustomCommand("CMD1"),
-						new DisabledCommand("CMD2"),
-						new UnknownCommand("CMD3"),
-						new EXPUNGE(),
-						new LOGOUT()
-				);
-
-			} finally {
-
-				// close connection
-				client.disconnect();
-			}
-
+		if (client != null) {
+			// close connection
+			client.disconnect();
 		}
+
+		if (server != null) {
+			// stop server
+			server.stop();
+		}
+
+	}
+
+	@Test
+	void test() throws IOException, InterruptedException {
+
+		// connect to server
+		client.connect("localhost", server.getPort());
+
+		// assert: new session started
+		ImapSession session = server.getActiveSession();
+		assertThat(session).isNotNull();
+		assertThat(session.isAuthenticated()).isFalse();
+		assertThat(session.getUsername()).isNull();
+
+		// assert: state is not authenticated
+		assertThat(session.getState()).isEqualTo(State.NotAuthenticated);
+
+		// CAPABILITY
+		boolean success = client.capability();
+		assertThat(success).isTrue();
+		assertReply(client,
+				"* CAPABILITY IMAP4rev2 STARTTLS",
+				tag.next() + " OK CAPABILITY completed"
+		);
+
+		// LOGIN with wrong password
+		success = client.login(USERNAME, "wrong password");
+		assertThat(success).isFalse();
+		assertReply(client, tag.next() + " NO [AUTHENTICATIONFAILED] Authentication failed");
+
+		// assert: state is not authenticated
+		assertThat(session.getState()).isEqualTo(State.NotAuthenticated);
+
+		// LOGIN
+		success = client.login(USERNAME, PASSWORD);
+		assertThat(success).isTrue();
+		assertReply(client, tag.next() + " OK [CAPABILITY IMAP4rev2 STARTTLS] LOGIN completed");
+
+		// assert: session is authenticated
+		assertThat(session.isAuthenticated()).isTrue();
+		assertThat(session.getUsername()).isEqualTo(USERNAME);
+
+		// assert: state is authenticated
+		assertThat(session.getState()).isEqualTo(State.Authenticated);
+
+		// NOOP
+		success = client.noop();
+		assertThat(success).isTrue();
+		assertReply(client, tag.next() + " OK NOOP completed");
+
+		int replyCode = client.sendCommand("ENABLE", "FOO BAR");
+		assertThat(replyCode).isEqualTo(IMAPReply.OK);
+		assertReply(client, tag.next() + " OK ENABLE completed");
+
+		// NAMESPACE
+		replyCode = client.sendCommand("NAMESPACE");
+		assertThat(replyCode).isEqualTo(IMAPReply.OK);
+		assertReply(client,
+				"* NAMESPACE ((\"\" \"/\")) NIL NIL",
+				tag.next() + " OK NAMESPACE completed"
+		);
+
+		// STATUS INBOX (MESSAGES UIDNEXT UIDVALIDITY UNSEEN DELETED SIZE)
+		success = client.status("INBOX", new String[] { "MESSAGES", "UIDNEXT", "UIDVALIDITY", "UNSEEN", "DELETED", "SIZE" });
+		assertThat(success).isTrue();
+		assertReply(client,
+				"* STATUS INBOX (MESSAGES 2 UIDNEXT 3 UIDVALIDITY 1 UNSEEN 2 DELETED 0 SIZE 66)",
+				tag.next() + " OK STATUS completed"
+		);
+
+		// SELECT Drafts
+		success = client.select("Drafts");
+		assertThat(success).isFalse();
+		assertReply(client, tag.next() + " NO [TRYCREATE] No such mailbox");
+
+		// assert: state is authenticated
+		assertThat(session.getState()).isEqualTo(State.Authenticated);
+
+		// SELECT INBOX
+		success = client.select("INBOX");
+		assertThat(success).isTrue();
+		assertReply(client,
+				"* 2 EXISTS",
+				"* OK [UIDVALIDITY 1] UIDs valid",
+				"* OK [UIDNEXT 3] Predicted next UID",
+				"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
+				"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
+				"* LIST () \"/\" INBOX",
+				tag.next() + " OK [READ-WRITE] SELECT completed"
+		);
+
+		// assert: state is selected
+		assertThat(session.getState()).isEqualTo(State.Selected);
+
+		// assert: session is read-write
+		assertThat(session.isReadOnly()).isFalse();
+
+		// mark message 2 as deleted
+		MailboxFolder folder = session.getFolder();
+		folder.getMessages().get(1).setDeleted(true);
+
+		// CLOSE
+		success = client.close();
+		assertThat(success).isTrue();
+		assertReply(client, tag.next() + " OK CLOSE completed");
+
+		// assert: state is authenticated
+		assertThat(session.getState()).isEqualTo(State.Authenticated);
+
+		// SELECT inbox
+		success = client.select("inbox");
+		assertThat(success).isTrue();
+		assertReply(client,
+				"* 1 EXISTS",
+				"* OK [UIDVALIDITY 1] UIDs valid",
+				"* OK [UIDNEXT 3] Predicted next UID",
+				"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
+				"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
+				"* LIST () \"/\" INBOX",
+				tag.next() + " OK [READ-WRITE] SELECT completed"
+		);
+
+		// assert: state is selected
+		assertThat(session.getState()).isEqualTo(State.Selected);
+
+		// mark message 1 as deleted
+		folder = session.getFolder();
+		folder.getMessages().get(0).setDeleted(true);
+
+		// EXPUNGE
+		success = client.expunge();
+		assertThat(success).isTrue();
+		assertReply(client,
+				"* 1 EXPUNGE",
+				tag.next() + " OK EXPUNGE completed"
+		);
+
+		// UNSELECT
+		replyCode = client.sendCommand("UNSELECT");
+		assertThat(replyCode).isEqualTo(IMAPReply.OK);
+		assertReply(client, tag.next() + " OK UNSELECT completed");
+
+		// assert: state is authenticated
+		assertThat(session.getState()).isEqualTo(State.Authenticated);
+
+		// EXAMINE INBOX
+		success = client.examine("INBOX");
+		assertThat(success).isTrue();
+		assertReply(client,
+				"* 0 EXISTS",
+				"* OK [UIDVALIDITY 1] UIDs valid",
+				"* OK [UIDNEXT 3] Predicted next UID",
+				"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
+				"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
+				"* LIST () \"/\" INBOX",
+				tag.next() + " OK [READ-ONLY] EXAMINE completed"
+		);
+
+		// assert: state is selected
+		assertThat(session.getState()).isEqualTo(State.Selected);
+
+		// assert: session is read-only
+		assertThat(session.isReadOnly()).isTrue();
+
+		// EXPUNGE <-- not valid in read-only mode
+		success = client.expunge();
+		assertThat(success).isFalse();
+		assertReply(client, tag.next() + " NO [READ-ONLY] Mailbox is read-only");
+
+		// UNSELECT
+		replyCode = client.sendCommand("UNSELECT");
+		assertThat(replyCode).isEqualTo(IMAPReply.OK);
+		assertReply(client, tag.next() + " OK UNSELECT completed");
+
+		// assert: state is authenticated
+		assertThat(session.getState()).isEqualTo(State.Authenticated);
+
+		// CREATE Work
+		success = client.create("Work");
+		assertThat(success).isTrue();
+		assertReply(client, tag.next() + " OK CREATE completed");
+
+		// RENAME Work Private
+		success = client.rename("Work", "Private");
+		assertThat(success).isTrue();
+		assertReply(client, tag.next() + " OK RENAME completed");
+
+		// SUBSCRIBE Private
+		success = client.subscribe("Private");
+		assertThat(success).isTrue();
+		assertReply(client, tag.next() + " OK SUBSCRIBE completed");
+
+		// UNSUBSCRIBE Private
+		success = client.unsubscribe("Private");
+		assertThat(success).isTrue();
+		assertReply(client, tag.next() + " OK UNSUBSCRIBE completed");
+
+		// DELETE Private
+		success = client.delete("Private");
+		assertThat(success).isTrue();
+		assertReply(client, tag.next() + " OK DELETE completed");
+
+		// TODO: execute more commands
+
+		// CMD1 <-- custom command
+		replyCode = client.sendCommand("CMD1");
+		assertThat(replyCode).isEqualTo(IMAPReply.OK);
+		assertReply(client, tag.next() + " OK CMD1 completed");
+
+		// CMD2 <-- disabled custom command
+		replyCode = client.sendCommand("CMD2");
+		assertThat(replyCode).isEqualTo(IMAPReply.BAD);
+		assertReply(client, tag.next() + " BAD Command disabled");
+
+		// CMD3 <-- unknown command
+		replyCode = client.sendCommand("CMD3");
+		assertThat(replyCode).isEqualTo(IMAPReply.BAD);
+		assertReply(client, tag.next() + " BAD Command not implemented");
+
+		// EXPUNGE <-- not valid in authenticated state
+		success = client.expunge();
+		assertThat(success).isFalse();
+		assertReply(client, tag.next() + " BAD Command is not allowed in Authenticated state");
+
+		// LOGOUT
+		success = client.logout();
+		assertThat(success).isTrue();
+		assertReply(client,
+				"* BYE IMAP4rev2 Server logging out",
+				tag.next() + " OK LOGOUT completed"
+		);
+
+		// assert: state is logout
+		assertThat(session.getState()).isEqualTo(State.Logout);
+
+		// assert: session has been closed
+		session.waitUntilClosed(5000);
+		assertThat(session.isClosed()).isTrue();
+
+		// assert: commands have been recorded
+		List<ImapCommand> commands = session.getCommands();
+		assertThat(commands).containsExactly(
+				new CAPABILITY(),
+				new LOGIN(USERNAME, "wrong password"),
+				new LOGIN(USERNAME, PASSWORD),
+				new NOOP(),
+				new ENABLE(List.of("FOO", "BAR")),
+				new NAMESPACE(),
+				new STATUS("INBOX", "MESSAGES", "UIDNEXT", "UIDVALIDITY", "UNSEEN", "DELETED", "SIZE"),
+				new SELECT("Drafts"),
+				new SELECT("INBOX"),
+				new CLOSE(),
+				new SELECT("inbox"),
+				new EXPUNGE(),
+				new UNSELECT(),
+				new EXAMINE("INBOX"),
+				new EXPUNGE(),
+				new UNSELECT(),
+				new CREATE("Work"),
+				new RENAME("Work", "Private"),
+				new SUBSCRIBE("Private"),
+				new UNSUBSCRIBE("Private"),
+				new DELETE("Private"),
+				new CustomCommand("CMD1"),
+				new DisabledCommand("CMD2"),
+				new UnknownCommand("CMD3"),
+				new EXPUNGE(),
+				new LOGOUT()
+		);
+
+	}
+
+	@Test
+	void test_folders() throws IOException {
+
+		// connect to server
+		client.connect("localhost", server.getPort());
+
+		// LOGIN
+		boolean success = client.login(USERNAME, PASSWORD);
+		assertThat(success).isTrue();
+		tag.next();
+
+		// CREATE "Foo Bar"
+		success = client.create("Foo Bar");
+		assertThat(success).isTrue();
+		assertReply(client, tag.next() + " OK CREATE completed");
+
+		// RENAME "Foo Bar" "Hello World!"
+		success = client.rename("Foo Bar", "Hello World!");
+		assertThat(success).isTrue();
+		assertReply(client, tag.next() + " OK RENAME completed");
+
+		// DELETE "Hello World!"
+		success = client.delete("Hello World!");
+		assertThat(success).isTrue();
+		assertReply(client, tag.next() + " OK DELETE completed");
+
+		// LOGOUT
+		success = client.logout();
+		assertThat(success).isTrue();
 
 	}
 

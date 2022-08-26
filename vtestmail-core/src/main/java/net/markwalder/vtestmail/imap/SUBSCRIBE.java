@@ -31,8 +31,10 @@ public class SUBSCRIBE extends ImapCommand {
 
 	public static SUBSCRIBE parse(String parameters) throws ImapException {
 		isNotEmpty(parameters);
-		// TODO: support quoted mailbox name
-		return new SUBSCRIBE(parameters);
+		ImapCommandParser parser = new ImapCommandParser(parameters);
+		String folderName = parser.readMailbox();
+		parser.assertNoMoreArguments();
+		return new SUBSCRIBE(folderName);
 	}
 
 	@Override

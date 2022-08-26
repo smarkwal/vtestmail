@@ -33,8 +33,10 @@ public class CREATE extends ImapCommand {
 
 	public static CREATE parse(String parameters) throws ImapException {
 		isNotEmpty(parameters);
-		// TODO: support quoted mailbox name
-		return new CREATE(parameters);
+		ImapCommandParser parser = new ImapCommandParser(parameters);
+		String folderName = parser.readMailbox();
+		parser.assertNoMoreArguments();
+		return new CREATE(folderName);
 	}
 
 	@Override
@@ -71,7 +73,10 @@ public class CREATE extends ImapCommand {
 		// that refers to an extant mailbox. Any error in creation will return
 		// a tagged NO response.
 		Mailbox mailbox = session.getMailbox();
-		if (mailbox.hasFolder(folderName)) {
+		if (folderName.equalsIgnoreCase("INBOX")) {
+			// TODO: create dedicated exception
+			throw ImapException.MailboxAlreadyExists();
+		} else if (mailbox.hasFolder(folderName)) {
 			throw ImapException.MailboxAlreadyExists();
 		}
 
