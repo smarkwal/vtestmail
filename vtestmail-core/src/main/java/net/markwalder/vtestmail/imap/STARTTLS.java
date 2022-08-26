@@ -41,7 +41,7 @@ public class STARTTLS extends ImapCommand {
 			return;
 		}
 
-		client.writeLine("OK Begin TLS negotiation now");
+		client.writeLine(tag + " OK Begin TLS negotiation now");
 
 		// start TLS handshake
 		String sslProtocol = server.getSSLProtocol();
