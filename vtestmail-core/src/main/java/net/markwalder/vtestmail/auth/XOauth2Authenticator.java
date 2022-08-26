@@ -16,6 +16,7 @@
 
 package net.markwalder.vtestmail.auth;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import net.markwalder.vtestmail.core.MailClient;
@@ -27,13 +28,14 @@ public class XOauth2Authenticator implements Authenticator {
 	private static final Charset CHARSET = StandardCharsets.UTF_8;
 
 	@Override
-	public Credentials authenticate(String parameters, MailClient client, MailboxProvider store) {
+	public Credentials authenticate(String parameters, MailClient client, MailboxProvider store) throws IOException {
 
 		// https://developers.google.com/gmail/imap/xoauth2-protocol
 
 		if (parameters == null) {
-			// XOAUTH2 requires parameters
-			return null;
+			// ask client for credentials
+			client.writeContinue(null);
+			parameters = client.readLine();
 		}
 
 		// decode credentials
