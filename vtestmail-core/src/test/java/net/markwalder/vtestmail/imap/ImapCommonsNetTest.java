@@ -66,7 +66,7 @@ class ImapCommonsNetTest {
 		server.start();
 
 		// prepare: IMAP client
-		client = new IMAPClient();
+		client = new FixedIMAPClient();
 
 		// prepare: tag generator
 		tag = new TagGenerator();
@@ -445,6 +445,30 @@ class ImapCommonsNetTest {
 
 		private static char getLetter(int digit) {
 			return (char) ('A' + digit);
+		}
+
+	}
+
+	/**
+	 * Patched IMAP client which quotes username and password if needed.
+	 */
+	private static class FixedIMAPClient extends IMAPClient {
+
+		@Override
+		public boolean login(String username, String password) throws IOException {
+			return super.login(quote(username), quote(password));
+		}
+
+		private static String quote(String value) {
+			if (value == null || value.isEmpty()) {
+				return "\"\"";
+			} else if (!value.matches("[a-zA-Z0-9]")) {
+				value = value.replace("\\", "\\\\");
+				value = value.replace("\"", "\\\"");
+				return "\"" + value + "\"";
+			} else {
+				return value;
+			}
 		}
 
 	}

@@ -38,6 +38,16 @@ class ImapCommandParser {
 		return readAString();
 	}
 
+	public String readUserId() throws ImapException {
+		// userid = astring
+		return readAString();
+	}
+
+	public String readPassword() throws ImapException {
+		// password = astring
+		return readAString();
+	}
+
 	void assertNoMoreArguments() throws ImapException {
 		int chr = read();
 		if (!isEndOfStream(chr)) {

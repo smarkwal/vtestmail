@@ -35,11 +35,14 @@ public class LOGIN extends ImapCommand {
 
 	public static LOGIN parse(String parameters) throws ImapException {
 		isNotEmpty(parameters);
-		String username = StringUtils.substringBefore(parameters, " ");
-		String digest = StringUtils.substringAfter(parameters, " ");
+		ImapCommandParser parser = new ImapCommandParser(parameters);
+		String username = parser.readUserId();
+		parser.assertMoreArguments();
+		String password = parser.readPassword();
+		parser.assertNoMoreArguments();
 		isNotEmpty(username);
-		isNotEmpty(digest);
-		return new LOGIN(username, digest);
+		isNotEmpty(password);
+		return new LOGIN(username, password);
 	}
 
 	@Override
