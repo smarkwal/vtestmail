@@ -16,11 +16,15 @@
 
 package net.markwalder.vtestmail.utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 public class StringUtils {
+
+	public static Comparator<String> CASE_INSENSITIVE = new CaseInsensitiveStringComparator();
 
 	public static String substringBefore(String value, String separator) {
 		Assert.isNotNull(value, "value");
@@ -99,6 +103,24 @@ public class StringUtils {
 			buffer.append(value);
 		}
 		return buffer.toString();
+	}
+
+	private static class CaseInsensitiveStringComparator implements Comparator<String>, Serializable {
+
+		private static final long serialVersionUID = 1L;
+
+		private CaseInsensitiveStringComparator() {
+		}
+
+		@Override
+		public int compare(String string1, String string2) {
+			int diff = string1.compareToIgnoreCase(string2);
+			if (diff == 0) {
+				diff = string1.compareTo(string2);
+			}
+			return diff;
+		}
+
 	}
 
 }

@@ -23,6 +23,7 @@ import java.io.Reader;
 import java.util.List;
 import net.markwalder.vtestmail.store.Mailbox;
 import net.markwalder.vtestmail.store.MailboxFolder;
+import net.markwalder.vtestmail.store.MailboxMessage;
 import net.markwalder.vtestmail.store.MailboxStore;
 import org.apache.commons.net.imap.IMAPClient;
 import org.apache.commons.net.imap.IMAPReply;
@@ -178,8 +179,8 @@ class ImapCommonsNetTest {
 				"* 2 EXISTS",
 				"* OK [UIDVALIDITY 1] UIDs valid",
 				"* OK [UIDNEXT 3] Predicted next UID",
-				"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
-				"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
+				"* FLAGS (\\Answered \\Deleted \\Draft \\Flagged \\Seen)",
+				"* OK [PERMANENTFLAGS (\\Answered \\Deleted \\Draft \\Flagged \\Seen \\*)] Limited",
 				"* LIST () \"/\" INBOX",
 				tag.next() + " OK [READ-WRITE] SELECT completed"
 		);
@@ -209,8 +210,8 @@ class ImapCommonsNetTest {
 				"* 1 EXISTS",
 				"* OK [UIDVALIDITY 1] UIDs valid",
 				"* OK [UIDNEXT 3] Predicted next UID",
-				"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
-				"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
+				"* FLAGS (\\Answered \\Deleted \\Draft \\Flagged \\Seen)",
+				"* OK [PERMANENTFLAGS (\\Answered \\Deleted \\Draft \\Flagged \\Seen \\*)] Limited",
 				"* LIST () \"/\" INBOX",
 				tag.next() + " OK [READ-WRITE] SELECT completed"
 		);
@@ -245,8 +246,8 @@ class ImapCommonsNetTest {
 				"* 0 EXISTS",
 				"* OK [UIDVALIDITY 1] UIDs valid",
 				"* OK [UIDNEXT 3] Predicted next UID",
-				"* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)",
-				"* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited",
+				"* FLAGS (\\Answered \\Deleted \\Draft \\Flagged \\Seen)",
+				"* OK [PERMANENTFLAGS (\\Answered \\Deleted \\Draft \\Flagged \\Seen \\*)] Limited",
 				"* LIST () \"/\" INBOX",
 				tag.next() + " OK [READ-ONLY] EXAMINE completed"
 		);
@@ -464,6 +465,38 @@ class ImapCommonsNetTest {
 		int replyCode = client.sendCommand("LOGIN", "{5000+}");
 		assertThat(replyCode).isEqualTo(IMAPReply.BAD);
 		assertReply(client, tag.next() + " BAD Syntax error");
+
+	}
+
+	@Test
+	void test_flags() throws IOException {
+
+		// prepare: \Answered is not supported anymore
+		server.removeFlag(MailboxMessage.FLAG_ANSWERED);
+
+		// prepare: \Deleted is not a permanent flag
+		server.addFlag(MailboxMessage.FLAG_DELETED, false);
+
+		// prepare: \Recent is added as new permanent flag
+		server.addFlag(MailboxMessage.FLAG_RECENT, true);
+
+		// LOGIN
+		boolean success = client.login(USERNAME, PASSWORD);
+		assertThat(success).isTrue();
+		assertReply(client, tag.next() + " OK [CAPABILITY IMAP4rev2 STARTTLS] LOGIN completed");
+
+		// SELECT INBOX
+		success = client.select("INBOX");
+		assertThat(success).isTrue();
+		assertReply(client,
+				"* 2 EXISTS",
+				"* OK [UIDVALIDITY 1] UIDs valid",
+				"* OK [UIDNEXT 3] Predicted next UID",
+				"* FLAGS (\\Deleted \\Draft \\Flagged \\Recent \\Seen)",
+				"* OK [PERMANENTFLAGS (\\Draft \\Flagged \\Recent \\Seen \\*)] Limited",
+				"* LIST () \"/\" INBOX",
+				tag.next() + " OK [READ-WRITE] SELECT completed"
+		);
 
 	}
 

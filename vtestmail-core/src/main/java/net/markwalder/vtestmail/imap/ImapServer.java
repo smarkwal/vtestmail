@@ -21,10 +21,15 @@ import java.math.BigInteger;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 import net.markwalder.vtestmail.core.MailCommand;
 import net.markwalder.vtestmail.core.MailException;
 import net.markwalder.vtestmail.core.MailServer;
+import net.markwalder.vtestmail.store.MailboxMessage;
 import net.markwalder.vtestmail.store.MailboxStore;
+import net.markwalder.vtestmail.utils.Assert;
 import net.markwalder.vtestmail.utils.StringUtils;
 
 /**
@@ -40,6 +45,11 @@ import net.markwalder.vtestmail.utils.StringUtils;
 public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient, ImapException> {
 
 	private boolean loginDisabled = true;
+
+	/**
+	 * Supported flags. Key: flag name, value: permanent flag.
+	 */
+	private final Map<String, Boolean> flags = new TreeMap<>(StringUtils.CASE_INSENSITIVE);
 
 	public ImapServer(MailboxStore store) {
 		super("IMAP", store);
@@ -84,6 +94,13 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 		// TODO: COPY
 		// TODO: MOVE
 		// TODO: UID
+
+		// add flags
+		addFlag(MailboxMessage.FLAG_SEEN, true);
+		addFlag(MailboxMessage.FLAG_ANSWERED, true);
+		addFlag(MailboxMessage.FLAG_FLAGGED, true);
+		addFlag(MailboxMessage.FLAG_DELETED, true);
+		addFlag(MailboxMessage.FLAG_DRAFT, true);
 	}
 
 	public boolean isLoginDisabled() {
@@ -280,6 +297,49 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 		// TODO: implement support for UTF-8
 
 		return capabilities;
+	}
+
+	public void addFlag(String flag, boolean permanent) {
+		Assert.isNotEmpty(flag, "flag");
+		synchronized (flags) {
+			flags.put(flag, permanent);
+		}
+	}
+
+	public boolean hasFlag(String flag) {
+		Assert.isNotEmpty(flag, "flag");
+		synchronized (flags) {
+			return flags.containsKey(flag);
+		}
+	}
+
+	public boolean isPermanentFlag(String flag) {
+		Assert.isNotEmpty(flag, "flag");
+		synchronized (flags) {
+			return flags.getOrDefault(flag, false);
+		}
+	}
+
+	public void removeFlag(String flag) {
+		Assert.isNotEmpty(flag, "flag");
+		synchronized (flags) {
+			flags.remove(flag);
+		}
+	}
+
+	public List<String> getFlags() {
+		synchronized (flags) {
+			return new ArrayList<>(flags.keySet());
+		}
+	}
+
+	public List<String> getPermanentFlags() {
+		synchronized (flags) {
+			return flags.entrySet().stream()
+					.filter(Map.Entry::getValue) // only permanent flags
+					.map(Map.Entry::getKey)
+					.collect(Collectors.toList());
+		}
 	}
 
 }

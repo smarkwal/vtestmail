@@ -45,7 +45,7 @@ public class EXAMINE extends SELECT {
 		// The EXAMINE command is identical to SELECT and returns the same output; however, the selected mailbox is identified as read-only.
 		// No changes to the permanent state of the mailbox, including per-user state, are permitted.
 
-		select(session, client);
+		select(server, session, client);
 
 		session.setReadOnly(true);
 

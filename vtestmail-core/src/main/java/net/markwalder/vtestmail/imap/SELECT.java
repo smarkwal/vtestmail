@@ -47,7 +47,7 @@ public class SELECT extends ImapCommand {
 
 		// see https://datatracker.ietf.org/doc/html/rfc9051#section-6.3.2
 
-		select(session, client);
+		select(server, session, client);
 
 		// TODO: are there other ways to enable read-only mode?
 		session.setReadOnly(false);
@@ -59,7 +59,7 @@ public class SELECT extends ImapCommand {
 		}
 	}
 
-	protected void select(ImapSession session, ImapClient client) throws IOException, ImapException {
+	protected void select(ImapServer server, ImapSession session, ImapClient client) throws IOException, ImapException {
 
 		// Only one mailbox can be selected at a time in a connection;
 		// simultaneous access to multiple mailboxes requires multiple connections.
@@ -91,12 +91,21 @@ public class SELECT extends ImapCommand {
 		client.writeLine("* OK [UIDNEXT " + folder.getUIDNext() + "] Predicted next UID");
 
 		// Defined flags in the mailbox.
-		// See the description of the FLAGS response in Section 7.3.5 for more detail.
-		client.writeLine("* FLAGS (\\Answered \\Flagged \\Deleted \\Seen \\Draft)"); // TODO: get supported flags from server
+		// The FLAGS response occurs as a result of a SELECT or EXAMINE command.
+		// The flag parenthesized list identifies the flags (at a minimum, the
+		// system-defined flags) that are applicable for this mailbox.  Flags
+		// other than the system flags can also exist, depending on server
+		// implementation.
+		client.writeLine("* FLAGS (" + String.join(" ", server.getFlags()) + ")");
 
 		// A list of message flags that the client can change permanently.
 		// If this is missing, the client should assume that all flags can be changed permanently.
-		client.writeLine("* OK [PERMANENTFLAGS (\\Deleted \\Seen \\*)] Limited"); // TODO: get permanent flags from server
+		// Any flags that are in the FLAGS untagged response, but not in the PERMANENTFLAGS
+		// list, cannot be set permanently.  The PERMANENTFLAGS list can also
+		// include the special flag \*, which indicates that it is possible
+		// to create new keywords by attempting to store those keywords in
+		// the mailbox.
+		client.writeLine("* OK [PERMANENTFLAGS (" + String.join(" ", server.getPermanentFlags()) + " \\*)] Limited");
 
 		// The server MUST return a LIST response with the mailbox name.
 		// The list of mailbox attributes MUST be accurate.
