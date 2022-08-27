@@ -69,7 +69,7 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 
 	@Override
 	protected void handleNewClient() throws IOException {
-		client.writeLine("220 localhost Service ready");
+		client.writeLine("220 localhost SMTP server ready");
 	}
 
 	@Override

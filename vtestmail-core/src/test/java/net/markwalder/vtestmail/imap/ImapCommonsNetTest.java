@@ -93,6 +93,7 @@ class ImapCommonsNetTest {
 
 		// connect to server
 		client.connect("localhost", server.getPort());
+		assertReply(client, "* OK [CAPABILITY IMAP4rev2 STARTTLS] IMAP server ready");
 
 		// assert: new session started
 		ImapSession session = server.getActiveSession();
@@ -363,6 +364,7 @@ class ImapCommonsNetTest {
 
 		// connect to server
 		client.connect("localhost", server.getPort());
+		assertReply(client, "* OK [CAPABILITY IMAP4rev2 STARTTLS] IMAP server ready");
 
 		// LOGIN
 		boolean success = client.login(USERNAME, PASSWORD);

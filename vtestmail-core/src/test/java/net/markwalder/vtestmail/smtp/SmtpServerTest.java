@@ -173,7 +173,7 @@ class SmtpServerTest {
 			);
 
 			String log = session.getLog();
-			assertThat(log).contains("220 localhost Service ready\n" +
+			assertThat(log).contains("220 localhost SMTP server ready\n" +
 					"HELO localhost\n" +
 					"250 OK\n" +
 					"MAIL FROM:<bob@localhost>\n" +
@@ -276,7 +276,7 @@ class SmtpServerTest {
 
 			String log = session.getLog();
 			if (useStartTLS) {
-				assertThat(log).startsWith("220 localhost Service ready\n" +
+				assertThat(log).startsWith("220 localhost SMTP server ready\n" +
 						"EHLO localhost\n" +
 						"250-127.0.0.1 Hello localhost\n" +
 						"250-STARTTLS\n" +
@@ -291,7 +291,7 @@ class SmtpServerTest {
 						"250-ENHANCEDSTATUSCODES\n" +
 						"250 OK\n");
 			} else {
-				assertThat(log).startsWith("220 localhost Service ready\n" +
+				assertThat(log).startsWith("220 localhost SMTP server ready\n" +
 						"EHLO localhost\n" +
 						"250-127.0.0.1 Hello localhost\n" +
 						"250-VRFY\n" +

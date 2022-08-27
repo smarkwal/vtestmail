@@ -96,7 +96,7 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 	@Override
 	protected void handleNewClient() throws IOException {
 		List<String> capabilities = getCapabilities(session);
-		client.writeLine("* OK [" + StringUtils.join(capabilities, " ") + "]  Server ready");
+		client.writeLine("* OK [" + StringUtils.join(capabilities, " ") + "] IMAP server ready");
 	}
 
 	@Override
