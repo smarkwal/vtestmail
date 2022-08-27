@@ -53,6 +53,7 @@ class ImapCommonsNetTest {
 		// prepare: IMAP server
 		server = new ImapServer(store);
 		server.setAuthenticationRequired(true);
+		server.setLoginDisabled(false); // enable LOGIN on unencrypted connections
 		// server.setAuthTypes("LOGIN", "PLAIN");
 
 		// add custom command CMD1 (enabled)
@@ -385,6 +386,26 @@ class ImapCommonsNetTest {
 		success = client.delete("Hello World!");
 		assertThat(success).isTrue();
 		assertReply(client, tag.next() + " OK DELETE completed");
+
+		// LOGOUT
+		success = client.logout();
+		assertThat(success).isTrue();
+
+	}
+
+	@Test
+	void test_login_disabled() throws IOException {
+
+		server.setLoginDisabled(true);
+
+		// connect to server
+		client.connect("localhost", server.getPort());
+		assertReply(client, "* OK [CAPABILITY IMAP4rev2 STARTTLS LOGINDISABLED] IMAP server ready");
+
+		// LOGIN
+		boolean success = client.login(USERNAME, PASSWORD);
+		assertThat(success).isFalse();
+		assertReply(client, tag.next() + " NO LOGIN not allowed");
 
 		// LOGOUT
 		success = client.logout();

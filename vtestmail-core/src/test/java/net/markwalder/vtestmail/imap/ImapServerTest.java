@@ -225,6 +225,9 @@ public class ImapServerTest {
 			// enable only the authentication command we want to test
 			if (authType.equals("DEFAULT")) {
 				server.setCommandEnabled("LOGIN", true);
+				if (!encrypted) {
+					server.setLoginDisabled(false); // enable LOGIN on unencrypted connections
+				}
 			} else {
 				server.setCommandEnabled("AUTHENTICATE", true);
 				server.setAuthTypes(authType);

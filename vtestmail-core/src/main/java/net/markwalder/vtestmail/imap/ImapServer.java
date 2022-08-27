@@ -38,6 +38,8 @@ import net.markwalder.vtestmail.utils.StringUtils;
  */
 public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient, ImapException> {
 
+	private boolean loginDisabled = true;
+
 	public ImapServer(MailboxStore store) {
 		super("IMAP", store);
 
@@ -83,6 +85,14 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 		// TODO: UID
 	}
 
+	public boolean isLoginDisabled() {
+		return loginDisabled;
+	}
+
+	public void setLoginDisabled(boolean loginDisabled) {
+		this.loginDisabled = loginDisabled;
+	}
+
 	@Override
 	protected ImapClient createClient(Socket socket, StringBuilder log) throws IOException {
 		return new ImapClient(socket, log);
@@ -105,7 +115,7 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 		String line = client.readLine();
 
 		// while line ends with a literal ...
-		while (line.contains("{") && line.endsWith("}")) {
+		while (line != null && line.contains("{") && line.endsWith("}")) {
 
 			// parse literal (number of characters and synchronizing flag)
 			long number;
@@ -211,10 +221,11 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 			}
 		}
 
-		// TODO: implemenmt LOGINDISABLED
-		// if (!session.isEncrypted()) {
-		// 	capabilities.add("LOGINDISABLED");
-		// }
+		if (loginDisabled) {
+			if (!session.isEncrypted()) {
+				capabilities.add("LOGINDISABLED");
+			}
+		}
 
 		// TODO: implement support for UTF-8
 

@@ -54,10 +54,11 @@ public class LOGIN extends ImapCommand {
 	protected void execute(ImapServer server, ImapSession session, ImapClient client, String tag) throws IOException, ImapException {
 		session.assertState(State.NotAuthenticated);
 
-		// TODO: implemenmt LOGINDISABLED
-		// if (!session.isEncrypted()) {
-		// 	throw ImapException.LoginNotAllowed();
-		// }
+		if (server.isLoginDisabled()) {
+			if (!session.isEncrypted()) {
+				throw ImapException.LoginNotAllowed();
+			}
+		}
 
 		session.login("LOGIN", username, password, server.getStore());
 
