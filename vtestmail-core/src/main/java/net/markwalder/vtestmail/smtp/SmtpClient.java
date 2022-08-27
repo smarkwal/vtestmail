@@ -18,13 +18,12 @@ package net.markwalder.vtestmail.smtp;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import net.markwalder.vtestmail.core.MailClient;
 
 public class SmtpClient extends MailClient {
 
 	protected SmtpClient(Socket socket, StringBuilder log) throws IOException {
-		super(socket, StandardCharsets.ISO_8859_1, "334", log);
+		super(socket, "334", log);
 	}
 
 }

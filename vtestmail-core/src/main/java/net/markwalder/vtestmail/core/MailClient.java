@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import net.markwalder.vtestmail.utils.Assert;
@@ -38,8 +39,8 @@ public abstract class MailClient {
 
 	protected static final String CRLF = "\r\n";
 	protected static final String LF = "\n";
+	protected static final Charset CHARSET = StandardCharsets.ISO_8859_1;
 
-	private final Charset charset;
 	private final String continuation;
 	private final StringBuilder log;
 
@@ -47,13 +48,11 @@ public abstract class MailClient {
 	private LineReader reader;
 	private BufferedWriter writer;
 
-	protected MailClient(Socket socket, Charset charset, String continuation, StringBuilder log) throws IOException {
+	protected MailClient(Socket socket, String continuation, StringBuilder log) throws IOException {
 		Assert.isNotNull(socket, "socket");
-		Assert.isNotNull(charset, "charset");
 		Assert.isNotEmpty(continuation, "continuation");
 		Assert.isNotNull(log, "log");
 
-		this.charset = charset;
 		this.continuation = continuation;
 		this.log = log;
 
@@ -96,11 +95,11 @@ public abstract class MailClient {
 
 		// create reader to read commands from client
 		InputStream inputStream = socket.getInputStream();
-		this.reader = new LineReader(new InputStreamReader(inputStream, charset));
+		this.reader = new LineReader(new InputStreamReader(inputStream, CHARSET));
 
 		// create writer to write responses to client
 		OutputStream outputStream = socket.getOutputStream();
-		this.writer = new BufferedWriter(new OutputStreamWriter(outputStream, charset));
+		this.writer = new BufferedWriter(new OutputStreamWriter(outputStream, CHARSET));
 
 	}
 

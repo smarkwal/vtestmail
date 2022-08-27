@@ -18,14 +18,12 @@ package net.markwalder.vtestmail.imap;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import net.markwalder.vtestmail.core.MailClient;
 
 public class ImapClient extends MailClient {
 
 	protected ImapClient(Socket socket, StringBuilder log) throws IOException {
-		// TODO: why is the charset not UTF-8 as mentioned in IMAP RFC 9051?
-		super(socket, StandardCharsets.ISO_8859_1, "+", log);
+		super(socket, "+", log);
 	}
 
 }

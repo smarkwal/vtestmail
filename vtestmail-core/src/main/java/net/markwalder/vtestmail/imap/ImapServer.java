@@ -216,6 +216,8 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 		// 	capabilities.add("LOGINDISABLED");
 		// }
 
+		// TODO: implement support for UTF-8
+
 		return capabilities;
 	}
 
