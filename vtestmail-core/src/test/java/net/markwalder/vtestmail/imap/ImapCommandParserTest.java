@@ -96,6 +96,18 @@ class ImapCommandParserTest {
 	}
 
 	@Test
+	void read_literal_minValue_non_synchronized() throws ImapException {
+		// prepare
+		String parameters = "{0+}\r\n";
+		ImapCommandParser parser = new ImapCommandParser(parameters);
+		// test
+		String result = parser.readMailbox();
+		// assert
+		assertEquals("", result);
+		parser.assertNoMoreArguments();
+	}
+
+	@Test
 	void assertNoMoreArguments() throws ImapException {
 		// prepare
 		ImapCommandParser parser = new ImapCommandParser("");

@@ -17,6 +17,7 @@
 package net.markwalder.vtestmail.imap;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -111,25 +112,55 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 
 	@Override
 	@SuppressWarnings("StringConcatenationInLoop")
-	protected String readCommand() throws IOException {
+	protected String readCommand() throws ImapException, IOException {
 		String line = client.readLine();
+
+		// get tag
+		String tag = StringUtils.substringBefore(line, " ");
 
 		// while line ends with a literal ...
 		while (line != null && line.contains("{") && line.endsWith("}")) {
 
+			// literal = "{" number64 ["+"] "}" CRLF *CHAR8 ; <number64> represents the number of CHAR8s.
+			// A non-synchronizing literal is distinguished from a synchronizing literal by the presence of "+" before the closing "}".
+			// number64 = 1*DIGIT ; Unsigned 63-bit integer ; (0 <= n <= 9,223,372,036,854,775,807)
+
 			// parse literal (number of characters and synchronizing flag)
-			long number;
+			String value;
 			boolean synchronizing = true;
 			int pos = line.lastIndexOf('{');
 			if (line.endsWith("+}")) {
 				// non-synchronizing literal
-				String value = line.substring(pos + 1, line.length() - 2);
-				number = Long.parseLong(value);
+				value = line.substring(pos + 1, line.length() - 2);
 				synchronizing = false;
 			} else {
 				// synchronizing literal
-				String value = line.substring(pos + 1, line.length() - 1);
-				number = Long.parseLong(value);
+				value = line.substring(pos + 1, line.length() - 1);
+			}
+
+			// number must contain only digits
+			if (!value.matches("0|[1-9][0-9]*")) {
+				throw ImapException.SyntaxError(tag);
+			}
+
+			// Unless otherwise specified in an IMAP extension,
+			// non-synchronizing literals MUST NOT be larger than 4096
+			// octets. Any literal larger than 4096 bytes MUST be sent as a
+			// synchronizing literal.
+
+			BigInteger number = new BigInteger(value);
+			BigInteger minNumber = BigInteger.ZERO;
+			BigInteger maxNumber = synchronizing ? BigInteger.valueOf(Long.MAX_VALUE) : BigInteger.valueOf(4096);
+			if (number.compareTo(minNumber) < 0 || number.compareTo(maxNumber) > 0) {
+
+				// (Non-synchronizing literals defined in this document are the
+				// same as non-synchronizing literals defined by the LITERAL-
+				// extension from [RFC7888]. See that document for details on
+				// how to handle invalid non-synchronizing literals longer than
+				// 4096 octets and for interaction with other IMAP extensions.)
+				// TODO: implement correct error handling
+
+				throw ImapException.SyntaxError(tag);
 			}
 
 			// synchronizing literal -> tell client to proceed with the literal
@@ -138,7 +169,8 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 			}
 
 			// read literal characters
-			String chars = client.readChars(number); // TODO: re-encode to UTF-8?
+			long len = number.intValue();
+			String chars = client.readChars(len); // TODO: re-encode to UTF-8?
 
 			// read rest of line
 			String remaining = client.readLine();
@@ -188,7 +220,25 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 
 	@Override
 	protected void handleException(String line, MailException e) throws IOException {
-		String tag = StringUtils.substringBefore(line, " ");
+
+		String tag = null;
+		if (e instanceof ImapException) {
+			ImapException ie = (ImapException) e;
+			tag = ie.getTag();
+		}
+
+		// if tag is not known, try to get it from command line
+		if (tag == null) {
+			if (line == null) {
+				// send bye response with alert and close connection
+				client.writeLine("* BYE [ALERT] " + e.getMessage());
+				session.close();
+				return;
+			}
+
+			tag = StringUtils.substringBefore(line, " ");
+		}
+
 		client.writeLine(tag + " " + e.getMessage());
 	}
 

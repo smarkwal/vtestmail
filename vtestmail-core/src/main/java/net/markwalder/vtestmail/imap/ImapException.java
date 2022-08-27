@@ -22,64 +22,76 @@ import net.markwalder.vtestmail.utils.Assert;
 public class ImapException extends MailException {
 
 	public static ImapException CommandNotImplemented() {
-		return new ImapException("BAD", "Command not implemented");
+		return new ImapException(null, "BAD", "Command not implemented");
 	}
 
 	public static ImapException CommandDisabled() {
-		return new ImapException("BAD", "Command disabled");
+		return new ImapException(null, "BAD", "Command disabled");
 	}
 
 	public static ImapException SyntaxError() {
-		return new ImapException("BAD", "Syntax error");
+		return SyntaxError(null);
+	}
+
+	public static ImapException SyntaxError(String tag) {
+		return new ImapException(tag, "BAD", "Syntax error");
 	}
 
 	public static ImapException UnrecognizedAuthenticationType() {
-		return new ImapException("BAD", "Unrecognized authentication type"); // TODO: BAD or NO?
+		return new ImapException(null, "BAD", "Unrecognized authentication type"); // TODO: BAD or NO?
 	}
 
 	public static ImapException AuthenticationFailed() {
-		return new ImapException("NO", "AUTHENTICATIONFAILED", "Authentication failed");
+		return new ImapException(null, "NO", "AUTHENTICATIONFAILED", "Authentication failed");
 	}
 
 	public static ImapException IllegalState(State state) {
-		return new ImapException("BAD", "Command is not allowed in " + state.name() + " state");
+		return new ImapException(null, "BAD", "Command is not allowed in " + state.name() + " state");
 	}
 
 	public static ImapException LoginNotAllowed() {
-		return new ImapException("NO", "LOGIN not allowed");
+		return new ImapException(null, "NO", "LOGIN not allowed");
 	}
 
 	public static ImapException MailboxNotFound() {
-		return new ImapException("NO", "TRYCREATE", "No such mailbox");
+		return new ImapException(null, "NO", "TRYCREATE", "No such mailbox");
 	}
 
 	public static ImapException MailboxIsReadOnly() {
-		return new ImapException("NO", "READ-ONLY", "Mailbox is read-only");
+		return new ImapException(null, "NO", "READ-ONLY", "Mailbox is read-only");
 	}
 
 	public static ImapException MailboxAlreadyExists() {
-		return new ImapException("NO", "Mailbox already exists");
+		return new ImapException(null, "NO", "Mailbox already exists");
 	}
 
 	public static ImapException MailboxNotDeleted() {
-		return new ImapException("NO", "Mailbox not deleted");
+		return new ImapException(null, "NO", "Mailbox not deleted");
 	}
 
 	public static ImapException MailboxHasChildren() {
-		return new ImapException("NO", "HASCHILDREN", "Mailbox has inferior hierarchical names");
+		return new ImapException(null, "NO", "HASCHILDREN", "Mailbox has inferior hierarchical names");
 	}
 
-	public ImapException(String response, String message) {
+	private final String tag;
+
+	public ImapException(String tag, String response, String message) {
 		super(response + " " + message);
 		Assert.isNotEmpty(response, "response");
 		Assert.isNotEmpty(message, "message");
+		this.tag = tag;
 	}
 
-	public ImapException(String response, String code, String message) {
+	public ImapException(String tag, String response, String code, String message) {
 		super(response + " [" + code + "] " + message);
 		Assert.isNotEmpty(response, "response");
 		Assert.isNotEmpty(code, "code");
 		Assert.isNotEmpty(message, "message");
+		this.tag = tag;
+	}
+
+	public String getTag() {
+		return tag;
 	}
 
 }

@@ -371,27 +371,30 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 				// read and handle client commands
 				while (true) {
 
-					// read next command from client
-					String command = readCommand();
-					if (command == null) {
-
-						// client has closed the connection
-						System.out.println(protocol + " client closed connection");
-
-						// stop waiting for new commands
-						break;
-
-					} else if (command.isEmpty()) {
-						// TODO: how should an empty line be handled?
-						//  (sent after failed authentication)
-						continue;
-					}
-
-					// TODO: implement command listener
-
-					// execute command
+					String command = null;
 					try {
+
+						// read next command from client
+						command = readCommand();
+						if (command == null) {
+
+							// client has closed the connection
+							System.out.println(protocol + " client closed connection");
+
+							// stop waiting for new commands
+							break;
+
+						} else if (command.isEmpty()) {
+							// TODO: how should an empty line be handled?
+							//  (sent after failed authentication)
+							continue;
+						}
+
+						// TODO: implement command listener
+
+						// execute command
 						handleCommand(command);
+
 					} catch (MailException e) {
 						handleException(command, e);
 					}
@@ -450,7 +453,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	 * @return The command, or {@code null} if the client has closed the connection.
 	 * @throws IOException If an I/O error occurs.
 	 */
-	protected String readCommand() throws IOException {
+	protected String readCommand() throws E, IOException {
 		return client.readLine();
 	}
 

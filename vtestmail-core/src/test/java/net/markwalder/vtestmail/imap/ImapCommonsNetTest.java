@@ -72,12 +72,21 @@ class ImapCommonsNetTest {
 		// prepare: tag generator
 		tag = new TagGenerator();
 
+		// connect to server
+		client.connect("localhost", server.getPort());
+		assertReply(client, "* OK [CAPABILITY IMAP4rev2 STARTTLS] IMAP server ready");
+
 	}
 
 	@AfterEach
 	void tearDown() throws IOException {
 
-		if (client != null) {
+		if (client != null && client.isConnected()) {
+
+			// LOGOUT
+			boolean success = client.logout();
+			assertThat(success).isTrue();
+
 			// close connection
 			client.disconnect();
 		}
@@ -91,10 +100,6 @@ class ImapCommonsNetTest {
 
 	@Test
 	void test() throws IOException, InterruptedException {
-
-		// connect to server
-		client.connect("localhost", server.getPort());
-		assertReply(client, "* OK [CAPABILITY IMAP4rev2 STARTTLS] IMAP server ready");
 
 		// assert: new session started
 		ImapSession session = server.getActiveSession();
@@ -327,6 +332,9 @@ class ImapCommonsNetTest {
 		session.waitUntilClosed(5000);
 		assertThat(session.isClosed()).isTrue();
 
+		// release client
+		client = null;
+
 		// assert: commands have been recorded
 		List<ImapCommand> commands = session.getCommands();
 		assertThat(commands).containsExactly(
@@ -363,10 +371,6 @@ class ImapCommonsNetTest {
 	@Test
 	void test_folders() throws IOException {
 
-		// connect to server
-		client.connect("localhost", server.getPort());
-		assertReply(client, "* OK [CAPABILITY IMAP4rev2 STARTTLS] IMAP server ready");
-
 		// LOGIN
 		boolean success = client.login(USERNAME, PASSWORD);
 		assertThat(success).isTrue();
@@ -387,29 +391,79 @@ class ImapCommonsNetTest {
 		assertThat(success).isTrue();
 		assertReply(client, tag.next() + " OK DELETE completed");
 
-		// LOGOUT
-		success = client.logout();
-		assertThat(success).isTrue();
-
 	}
 
 	@Test
 	void test_login_disabled() throws IOException {
 
+		// enable LOGINDISABLED
 		server.setLoginDisabled(true);
 
-		// connect to server
-		client.connect("localhost", server.getPort());
-		assertReply(client, "* OK [CAPABILITY IMAP4rev2 STARTTLS LOGINDISABLED] IMAP server ready");
+		// recheck capabilities
+		client.capability();
+		assertReply(client,
+				"* CAPABILITY IMAP4rev2 STARTTLS LOGINDISABLED",
+				tag.next() + " OK CAPABILITY completed"
+		);
 
 		// LOGIN
 		boolean success = client.login(USERNAME, PASSWORD);
 		assertThat(success).isFalse();
 		assertReply(client, tag.next() + " NO LOGIN not allowed");
 
-		// LOGOUT
-		success = client.logout();
-		assertThat(success).isTrue();
+	}
+
+	@Test
+	void test_login_withSynchronizingLiterals() throws IOException {
+
+		int replyCode = client.sendCommand("LOGIN", "{" + USERNAME.length() + "}");
+		assertThat(replyCode).isEqualTo(IMAPReply.CONT);
+		assertReply(client, "+");
+
+		replyCode = client.sendData(USERNAME + " {" + PASSWORD.length() + "}");
+		assertThat(replyCode).isEqualTo(IMAPReply.CONT);
+		assertReply(client, "+");
+
+		replyCode = client.sendData(PASSWORD);
+		assertThat(replyCode).isEqualTo(IMAPReply.OK);
+		assertReply(client, tag.next() + " OK [CAPABILITY IMAP4rev2 STARTTLS] LOGIN completed");
+
+	}
+
+	@Test
+	void test_login_withNonSynchronizingLiterals() throws IOException {
+
+		String args = "{" + USERNAME.length() + "+}\r\n" + USERNAME + " {" + PASSWORD.length() + "+}\r\n" + PASSWORD;
+		int replyCode = client.sendCommand("LOGIN", args);
+		assertThat(replyCode).isEqualTo(IMAPReply.OK);
+		assertReply(client, tag.next() + " OK [CAPABILITY IMAP4rev2 STARTTLS] LOGIN completed");
+
+	}
+
+	@Test
+	void test_login_withInvalidLiteral_XYZ() throws IOException {
+
+		int replyCode = client.sendCommand("LOGIN", "{XYZ}");
+		assertThat(replyCode).isEqualTo(IMAPReply.BAD);
+		assertReply(client, tag.next() + " BAD Syntax error");
+
+	}
+
+	@Test
+	void test_login_withInvalidLiteral_007() throws IOException {
+
+		int replyCode = client.sendCommand("LOGIN", "{007}");
+		assertThat(replyCode).isEqualTo(IMAPReply.BAD);
+		assertReply(client, tag.next() + " BAD Syntax error");
+
+	}
+
+	@Test
+	void test_login_withInvalidLiteral_5000plus() throws IOException {
+
+		int replyCode = client.sendCommand("LOGIN", "{5000+}");
+		assertThat(replyCode).isEqualTo(IMAPReply.BAD);
+		assertReply(client, tag.next() + " BAD Syntax error");
 
 	}
 
