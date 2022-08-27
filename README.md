@@ -136,7 +136,11 @@ server.start();
 
 Clients can also switch to an SSL/TLS connection at runtime (also known as "opportunistic TLS") by sending the `STARTTLS` (SMTP and IMAP) or `STLS` (POP3) command.
 
-The server will use a self-signed certificate for the domain "localhost" with an 2048-bit RSA key, valid until July 31st 2032. 
+To disable support for opportunistic TLS, disable the required command by calling `server.setCommandEnabled("STARTTLS", false)` or `server.setCommandEnabled("STLS", false)`.
+
+#### Server certificate
+
+The server will use a self-signed certificate for the domain "localhost" with a 2048-bit RSA key, valid until July 31st 2032. 
 The certificate and the RSA key pair are loaded from the classpath resource `vtestmail.pfx`.
 
 #### Select a specific SSL/TLS protocol
