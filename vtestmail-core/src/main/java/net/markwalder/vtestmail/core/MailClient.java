@@ -34,6 +34,8 @@ import net.markwalder.vtestmail.utils.LineReader;
  */
 public abstract class MailClient {
 
+	private static final String CRLF_MARKER = "<CRLF>";
+
 	protected static final String CRLF = "\r\n";
 	protected static final String LF = "\n";
 
@@ -112,9 +114,23 @@ public abstract class MailClient {
 	public String readLine() throws IOException {
 		String line = reader.readLine();
 		if (line == null) return null;
-		System.out.println("Client: " + line);
+		System.out.println("Client: " + line + CRLF_MARKER);
 		log.append(line).append(LF);
 		return line;
+	}
+
+	/**
+	 * Read the given amount of characters from the client.
+	 *
+	 * @param len Number of characters to read.
+	 * @return Characters read from client.
+	 * @throws IOException If an I/O error occurs.
+	 */
+	public String readChars(long len) throws IOException {
+		String chars = reader.readChars(len);
+		System.out.println("Client: " + chars);
+		log.append(chars);
+		return chars;
 	}
 
 	/**
@@ -125,7 +141,7 @@ public abstract class MailClient {
 	 */
 	public void writeLine(String line) throws IOException {
 		Assert.isNotNull(line, "line");
-		System.out.println("Server: " + line);
+		System.out.println("Server: " + line + CRLF_MARKER);
 		log.append(line).append(LF);
 		writer.write(line);
 		writer.write(CRLF);

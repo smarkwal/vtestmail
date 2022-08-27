@@ -100,6 +100,47 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 	}
 
 	@Override
+	@SuppressWarnings("StringConcatenationInLoop")
+	protected String readCommand() throws IOException {
+		String line = client.readLine();
+
+		// while line ends with a literal ...
+		while (line.contains("{") && line.endsWith("}")) {
+
+			// parse literal (number of characters and synchronizing flag)
+			long number;
+			boolean synchronizing = true;
+			int pos = line.lastIndexOf('{');
+			if (line.endsWith("+}")) {
+				// non-synchronizing literal
+				String value = line.substring(pos + 1, line.length() - 2);
+				number = Long.parseLong(value);
+				synchronizing = false;
+			} else {
+				// synchronizing literal
+				String value = line.substring(pos + 1, line.length() - 1);
+				number = Long.parseLong(value);
+			}
+
+			// synchronizing literal -> tell client to proceed with the literal
+			if (synchronizing) {
+				client.writeContinue(null);
+			}
+
+			// read literal characters
+			String chars = client.readChars(number); // TODO: re-encode to UTF-8?
+
+			// read rest of line
+			String remaining = client.readLine();
+
+			// add literal data to command line
+			line += "\r\n" + chars + remaining;
+		}
+
+		return line;
+	}
+
+	@Override
 	protected void handleCommand(String line) throws ImapException, IOException {
 
 		// get tag

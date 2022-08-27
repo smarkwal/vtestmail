@@ -121,4 +121,23 @@ public class LineReader {
 
 	}
 
+	/**
+	 * Read the given number of characters
+	 *
+	 * @param len Number of characters to read
+	 * @return String containing the read characters
+	 * @throws IOException If an I/O error occurs.
+	 */
+	public String readChars(long len) throws IOException {
+		StringBuilder buffer = new StringBuilder(len > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) len);
+		for (int i = 0; i < len; i++) {
+			int c = reader.read();
+			if (c == -1) {
+				break;
+			}
+			buffer.append((char) c);
+		}
+		return buffer.toString();
+	}
+
 }

@@ -19,11 +19,12 @@ package net.markwalder.vtestmail.imap;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.StringReader;
+import java.math.BigInteger;
 
 class ImapCommandParser {
 
-	private static final int CR = 0x0A;
-	private static final int LF = 0x0D;
+	private static final int CR = 0x0D;
+	private static final int LF = 0x0A;
 	private static final int SP = 0x20;
 	private static final char DQUOTE = '"';
 
@@ -137,17 +138,101 @@ class ImapCommandParser {
 	}
 
 	private String readLiteral() throws ImapException {
-		// TODO: support literal
+
 		// literal = "{" number64 ["+"] "}" CRLF *CHAR8
 		//		   ; <number64> represents the number of CHAR8s.
 		//		   ; A non-synchronizing literal is distinguished
 		//		   ; from a synchronizing literal by the presence of
 		//		   ; "+" before the closing "}".
-		//		   ; Non-synchronizing literals are not allowed when
-		//		   ; sent from server to the client.
 		//	number64 = 1*DIGIT ; Unsigned 63-bit integer ; (0 <= n <= 9,223,372,036,854,775,807)
-		//	DIGIT =  %x30-39
-		throw ImapException.SyntaxError();
+
+		BigInteger number64 = readLiteralNumber();
+
+		// check that number is between 0 and 9223372036854775807
+		BigInteger minNumber = BigInteger.ZERO;
+		BigInteger maxNumber = new BigInteger("9223372036854775807");
+		if (number64.compareTo(minNumber) < 0) {
+			throw ImapException.SyntaxError();
+		} else if (number64.compareTo(maxNumber) > 0) {
+			throw ImapException.SyntaxError();
+		}
+
+		// technical limitation:
+		// maximum size of a literal is 2 GB
+		BigInteger maxInteger = BigInteger.valueOf(Integer.MAX_VALUE);
+		if (number64.compareTo(maxInteger) > 0) {
+			throw ImapException.SyntaxError();  // TODO: use a different exception
+		}
+		int number = number64.intValue();
+
+		// CRLF
+		readCRFL();
+
+		// *CHAR8
+		return readChar8s(number);
+	}
+
+	private BigInteger readLiteralNumber() throws ImapException {
+
+		int chr = read();
+		if (chr != '{') {
+			throw ImapException.SyntaxError();
+		}
+
+		StringBuilder buffer = new StringBuilder();
+
+		while (true) {
+
+			chr = read();
+			if (isEndOfStream(chr)) {
+				throw ImapException.SyntaxError();
+			}
+
+			if (chr == '}') {
+				break;
+			} else if (chr == '+') {
+				chr = read();
+				if (chr == '}') {
+					break;
+				} else {
+					throw ImapException.SyntaxError();
+				}
+			}
+
+			if (isDigit(chr)) {
+				buffer.append((char) chr);
+			} else {
+				throw ImapException.SyntaxError();
+			}
+		}
+
+		return new BigInteger(buffer.toString());
+	}
+
+	private void readCRFL() throws ImapException {
+		if (read() != CR || read() != LF) {
+			throw ImapException.SyntaxError();
+		}
+	}
+
+	private String readChar8s(int number) throws ImapException {
+
+		StringBuilder buffer = new StringBuilder();
+		for (long i = 0; i < number; i++) {
+
+			int chr = read();
+			if (isEndOfStream(chr)) {
+				throw ImapException.SyntaxError();
+			}
+
+			if (isChar8(chr)) {
+				buffer.append((char) chr);
+			} else {
+				throw ImapException.SyntaxError();
+			}
+		}
+
+		return buffer.toString();
 	}
 
 	private String readAStringChars() throws ImapException {
@@ -194,6 +279,16 @@ class ImapCommandParser {
 	private static boolean isChar(int chr) {
 		// CHAR = %x01-7F ; any 7-bit US-ASCII character, excluding NUL
 		return chr >= 0x01 && chr <= 0x7F;
+	}
+
+	private boolean isChar8(int chr) {
+		// CHAR8 = %x01-ff ; any OCTET except NUL, %x00
+		return chr >= 0x01 && chr <= 0xFF;
+	}
+
+	private static boolean isDigit(int chr) {
+		// DIGIT = %x30-39
+		return chr >= '0' && chr <= '9';
 	}
 
 	private static boolean isAtomSpecial(int chr) {

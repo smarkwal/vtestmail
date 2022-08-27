@@ -372,7 +372,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 				while (true) {
 
 					// read next command from client
-					String command = client.readLine();
+					String command = readCommand();
 					if (command == null) {
 
 						// client has closed the connection
@@ -440,6 +440,19 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	protected abstract S createSession();
 
 	protected abstract void handleNewClient() throws IOException;
+
+	/**
+	 * Read the next command from the client.
+	 * By default, this method reads a single line, up to the next {@code CRLF} sequence.
+	 * Subclasses like {@link net.markwalder.vtestmail.imap.ImapServer ImapServer}
+	 * may override this method to read commands with multiple lines.
+	 *
+	 * @return The command, or {@code null} if the client has closed the connection.
+	 * @throws IOException If an I/O error occurs.
+	 */
+	protected String readCommand() throws IOException {
+		return client.readLine();
+	}
 
 	protected abstract void handleCommand(String line) throws E, IOException;
 

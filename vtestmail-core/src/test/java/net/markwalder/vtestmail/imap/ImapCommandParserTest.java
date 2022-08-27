@@ -60,6 +60,42 @@ class ImapCommandParserTest {
 	}
 
 	@Test
+	void read_literal_synchronizing() throws ImapException {
+		// prepare
+		String parameters = "{26}\r\nThis is some example text.";
+		ImapCommandParser parser = new ImapCommandParser(parameters);
+		// test
+		String result = parser.readMailbox();
+		// assert
+		assertEquals("This is some example text.", result);
+		parser.assertNoMoreArguments();
+	}
+
+	@Test
+	void read_literal_non_synchronizing() throws ImapException {
+		// prepare
+		String parameters = "{27+}\r\nThis is some\r\nexample text.";
+		ImapCommandParser parser = new ImapCommandParser(parameters);
+		// test
+		String result = parser.readMailbox();
+		// assert
+		assertEquals("This is some\r\nexample text.", result);
+		parser.assertNoMoreArguments();
+	}
+
+	@Test
+	void read_literal_minValue() throws ImapException {
+		// prepare
+		String parameters = "{0}\r\n";
+		ImapCommandParser parser = new ImapCommandParser(parameters);
+		// test
+		String result = parser.readMailbox();
+		// assert
+		assertEquals("", result);
+		parser.assertNoMoreArguments();
+	}
+
+	@Test
 	void assertNoMoreArguments() throws ImapException {
 		// prepare
 		ImapCommandParser parser = new ImapCommandParser("");
@@ -91,6 +127,23 @@ class ImapCommandParserTest {
 		result = parser.readMailbox();
 		// assert
 		assertEquals("New Name", result);
+		parser.assertNoMoreArguments();
+	}
+
+	@Test
+	void login_command() throws ImapException {
+		// prepare
+		String parameters = "{5}\r\n\u00E4li\u00E7\u00E9 {12}\r\np\u00E4ssw\u00F6rd!123";
+		ImapCommandParser parser = new ImapCommandParser(parameters);
+		// test
+		String userId = parser.readUserId();
+		// assert
+		assertEquals("\u00E4li\u00E7\u00E9", userId);
+		parser.assertMoreArguments();
+		// test
+		String password = parser.readPassword();
+		// assert
+		assertEquals("p\u00E4ssw\u00F6rd!123", password);
 		parser.assertNoMoreArguments();
 	}
 
