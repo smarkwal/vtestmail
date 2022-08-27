@@ -21,10 +21,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import net.markwalder.vtestmail.utils.Assert;
+import net.markwalder.vtestmail.utils.StringUtils;
 
 public class MailboxStore implements MailboxProvider {
 
-	private final Map<String, Mailbox> mailboxes = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+	private final Map<String, Mailbox> mailboxes = new TreeMap<>(StringUtils.CASE_INSENSITIVE_ORDER);
 
 	public List<String> getUsernames() {
 		synchronized (mailboxes) {

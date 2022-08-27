@@ -49,7 +49,7 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 	/**
 	 * Supported flags. Key: flag name, value: permanent flag.
 	 */
-	private final Map<String, Boolean> flags = new TreeMap<>(StringUtils.CASE_INSENSITIVE);
+	private final Map<String, Boolean> flags = new TreeMap<>(StringUtils.CASE_INSENSITIVE_ORDER);
 
 	public ImapServer(MailboxStore store) {
 		super("IMAP", store);

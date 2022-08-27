@@ -24,7 +24,7 @@ import java.util.List;
 
 public class StringUtils {
 
-	public static Comparator<String> CASE_INSENSITIVE = new CaseInsensitiveStringComparator();
+	public static Comparator<String> CASE_INSENSITIVE_ORDER = new CaseInsensitiveStringComparator();
 
 	public static String substringBefore(String value, String separator) {
 		Assert.isNotNull(value, "value");
