@@ -28,6 +28,7 @@ import net.markwalder.vtestmail.store.MailboxProvider;
 import net.markwalder.vtestmail.utils.DigestUtils;
 import net.markwalder.vtestmail.utils.Hex;
 import net.markwalder.vtestmail.utils.RandomStringUtils;
+import net.markwalder.vtestmail.utils.StringUtils;
 
 public class DigestMd5Authenticator implements Authenticator {
 
@@ -147,10 +148,10 @@ public class DigestMd5Authenticator implements Authenticator {
 		Map<String, String> map = new LinkedHashMap<>();
 
 		// split response into key-value pairs
-		String[] parts = digestResponse.split(",");
+		String[] parts = StringUtils.split(digestResponse, ",");
 		for (String part : parts) {
 
-			String[] pair = part.split("=", 2);
+			String[] pair = StringUtils.split(part, "=", 2);
 			String name = pair[0];
 			String value = pair[1];
 

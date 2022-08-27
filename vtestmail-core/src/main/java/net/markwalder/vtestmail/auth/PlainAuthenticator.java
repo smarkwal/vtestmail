@@ -21,6 +21,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import net.markwalder.vtestmail.core.MailClient;
 import net.markwalder.vtestmail.store.MailboxProvider;
+import net.markwalder.vtestmail.utils.StringUtils;
 
 /**
  * Implementation of PLAIN authentication.
@@ -49,7 +50,7 @@ public class PlainAuthenticator implements Authenticator {
 		}
 
 		// extract username and password
-		String[] parts = data.split(NULL, -1);
+		String[] parts = StringUtils.split(data, NULL);
 		if (parts.length < 3) {
 			return null;
 		}

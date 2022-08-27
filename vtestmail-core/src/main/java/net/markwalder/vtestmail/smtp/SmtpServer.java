@@ -149,7 +149,7 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 		if (isCommandEnabled("AUTH")) {
 			List<String> authTypes = getAuthTypes();
 			if (authTypes.size() > 0) {
-				extensions.add("AUTH " + String.join(" ", authTypes));
+				extensions.add("AUTH " + StringUtils.join(authTypes, " "));
 			}
 		}
 

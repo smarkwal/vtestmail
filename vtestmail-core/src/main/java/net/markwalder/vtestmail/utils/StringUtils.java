@@ -61,10 +61,14 @@ public class StringUtils {
 		return value.substring(start + open.length(), end);
 	}
 
-	// TODO: implement tests for StringUtils.split
-	public static String[] split(String value, int limit) {
+	public static String[] split(String value, String separator) {
+		return split(value, separator, Integer.MAX_VALUE);
+	}
+
+	public static String[] split(String value, String separator, int limit) {
 		Assert.isNotNull(value, "value");
-		Assert.isInRange(limit, 1, Integer.MAX_VALUE, "limit");
+		Assert.isNotNull(separator, "separator");
+		Assert.isInRange(limit, 2, Integer.MAX_VALUE, "limit");
 
 		List<String> parts = new ArrayList<>();
 
@@ -72,7 +76,7 @@ public class StringUtils {
 		while (parts.size() < limit - 1) {
 
 			// try to find next separator
-			int end = value.indexOf(" ", start);
+			int end = value.indexOf(separator, start);
 			if (end < 0) {
 				break;
 			}
@@ -82,7 +86,7 @@ public class StringUtils {
 			parts.add(part);
 
 			// continue search after separator
-			start = end + 1;
+			start = end + separator.length();
 		}
 
 		// add remaining value
@@ -93,11 +97,13 @@ public class StringUtils {
 		return parts.toArray(new String[0]);
 	}
 
-	// TODO: implement tests for StringUtils.join
 	public static String join(Collection<String> values, String separator) {
 		StringBuilder buffer = new StringBuilder();
+		boolean first = true;
 		for (String value : values) {
-			if (buffer.length() > 0) {
+			if (first) {
+				first = false;
+			} else {
 				buffer.append(separator);
 			}
 			buffer.append(value);

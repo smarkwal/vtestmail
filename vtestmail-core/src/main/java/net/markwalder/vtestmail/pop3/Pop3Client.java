@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.Socket;
 import net.markwalder.vtestmail.core.MailClient;
 import net.markwalder.vtestmail.utils.Assert;
+import net.markwalder.vtestmail.utils.StringUtils;
 
 public class Pop3Client extends MailClient {
 
@@ -30,7 +31,7 @@ public class Pop3Client extends MailClient {
 	public void writeMultiLines(String message) throws IOException {
 
 		// split message into lines
-		String[] lines = message.split(CRLF, -1);
+		String[] lines = StringUtils.split(message, CRLF);
 
 		// send every line separately
 		for (String line : lines) {

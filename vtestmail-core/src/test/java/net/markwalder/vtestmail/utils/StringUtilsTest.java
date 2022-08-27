@@ -18,6 +18,7 @@ package net.markwalder.vtestmail.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class StringUtilsTest {
@@ -61,4 +62,51 @@ class StringUtilsTest {
 		assertThat(StringUtils.substringBetween("MAIL bob@localhost", "<", ">")).isNull();
 		assertThat(StringUtils.substringBetween("MAIL FROM:<alice@localhost>", "<", ">")).isEqualTo("alice@localhost");
 	}
+
+	@Test
+	void split() {
+		assertThat(StringUtils.split("", ",")).containsExactly("");
+		assertThat(StringUtils.split("1,2,3", ",")).containsExactly("1", "2", "3");
+		assertThat(StringUtils.split("1\r\n2\r\n\r\n3\r\n", "\r\n")).containsExactly("1", "2", "", "3", "");
+	}
+
+	@Test
+	void split_withLimit() {
+		assertThat(StringUtils.split("1\r\n2\r\n\r\n3\r\n", "\r\n", 2)).containsExactly("1", "2\r\n\r\n3\r\n");
+		assertThat(StringUtils.split("1\r\n2\r\n\r\n3\r\n", "\r\n", 3)).containsExactly("1", "2", "\r\n3\r\n");
+		assertThat(StringUtils.split("1\r\n2\r\n\r\n3\r\n", "\r\n", 4)).containsExactly("1", "2", "", "3\r\n");
+		assertThat(StringUtils.split("1\r\n2\r\n\r\n3\r\n", "\r\n", 5)).containsExactly("1", "2", "", "3", "");
+		assertThat(StringUtils.split("1\r\n2\r\n\r\n3\r\n", "\r\n", 6)).containsExactly("1", "2", "", "3", "");
+	}
+
+	@Test
+	void join() {
+		assertThat(StringUtils.join(List.of(), ",")).isEqualTo("");
+		assertThat(StringUtils.join(List.of("A"), ",")).isEqualTo("A");
+		assertThat(StringUtils.join(List.of("A", "B"), ",")).isEqualTo("A,B");
+		assertThat(StringUtils.join(List.of("A", "B", "C"), ",")).isEqualTo("A,B,C");
+		assertThat(StringUtils.join(List.of("A", "", "C"), ",")).isEqualTo("A,,C");
+		assertThat(StringUtils.join(List.of("", "", ""), ",")).isEqualTo(",,");
+		assertThat(StringUtils.join(List.of("", "", ""), "\r\n")).isEqualTo("\r\n\r\n");
+	}
+
+	@Test
+	@SuppressWarnings("EqualsWithItself")
+	void comparator() {
+		assertThat(StringUtils.CASE_INSENSITIVE_ORDER.compare("AA", "AA")).isZero();
+		assertThat(StringUtils.CASE_INSENSITIVE_ORDER.compare("aa", "aa")).isZero();
+		assertThat(StringUtils.CASE_INSENSITIVE_ORDER.compare("aa", "AA")).isPositive();
+		assertThat(StringUtils.CASE_INSENSITIVE_ORDER.compare("AA", "aa")).isNegative();
+
+		assertThat(StringUtils.CASE_INSENSITIVE_ORDER.compare("AA", "BB")).isNegative();
+		assertThat(StringUtils.CASE_INSENSITIVE_ORDER.compare("AA", "bb")).isNegative();
+		assertThat(StringUtils.CASE_INSENSITIVE_ORDER.compare("aa", "BB")).isNegative();
+		assertThat(StringUtils.CASE_INSENSITIVE_ORDER.compare("aa", "bb")).isNegative();
+
+		assertThat(StringUtils.CASE_INSENSITIVE_ORDER.compare("BB", "AA")).isPositive();
+		assertThat(StringUtils.CASE_INSENSITIVE_ORDER.compare("BB", "aa")).isPositive();
+		assertThat(StringUtils.CASE_INSENSITIVE_ORDER.compare("bb", "AA")).isPositive();
+		assertThat(StringUtils.CASE_INSENSITIVE_ORDER.compare("bb", "aa")).isPositive();
+	}
+
 }

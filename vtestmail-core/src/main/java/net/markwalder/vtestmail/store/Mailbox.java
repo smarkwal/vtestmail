@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import net.markwalder.vtestmail.utils.Assert;
+import net.markwalder.vtestmail.utils.StringUtils;
 
 public class Mailbox {
 
@@ -135,11 +136,7 @@ public class Mailbox {
 			} else if (name2.equals(INBOX)) {
 				return 1;
 			}
-			int diff = name1.compareToIgnoreCase(name2);
-			if (diff != 0) {
-				return diff;
-			}
-			return name1.compareTo(name2);
+			return StringUtils.CASE_INSENSITIVE_ORDER.compare(name1, name2);
 		}
 	}
 

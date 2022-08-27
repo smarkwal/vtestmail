@@ -39,13 +39,13 @@ public class STATUS extends ImapCommand {
 	public static STATUS parse(String parameters) throws ImapException {
 		isNotEmpty(parameters);
 		// TODO: support quoted mailbox name
-		String[] parts = StringUtils.split(parameters, 2);
+		String[] parts = StringUtils.split(parameters, " ", 2);
 		String folderName = parts[0];
 		String items = parts[1];
 		if (!items.startsWith("(") || !items.endsWith(")")) {
 			throw ImapException.SyntaxError();
 		}
-		String[] statusDataItemNames = StringUtils.split(items.substring(1, items.length() - 1), Integer.MAX_VALUE);
+		String[] statusDataItemNames = StringUtils.split(items.substring(1, items.length() - 1), " ");
 		return new STATUS(folderName, statusDataItemNames);
 	}
 

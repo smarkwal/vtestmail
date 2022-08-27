@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import net.markwalder.vtestmail.store.Mailbox;
 import net.markwalder.vtestmail.utils.Assert;
+import net.markwalder.vtestmail.utils.StringUtils;
 
 public class RENAME extends ImapCommand {
 
@@ -109,7 +110,7 @@ public class RENAME extends ImapCommand {
 		// "baz/rag/zowie" on a server in which "/" is the hierarchy separator
 		// character in the corresponding namespace SHOULD create "baz/" and
 		// "baz/rag/" if they do not already exist.
-		String[] folderPathElements = newFolderName.split(HIERARCHY_SEPARATOR);
+		String[] folderPathElements = StringUtils.split(newFolderName, HIERARCHY_SEPARATOR);
 		for (int i = 1; i < folderPathElements.length; i++) {
 			String parentFolderName = Arrays.stream(folderPathElements).limit(i).collect(Collectors.joining(HIERARCHY_SEPARATOR));
 			if (!mailbox.hasFolder(parentFolderName)) {

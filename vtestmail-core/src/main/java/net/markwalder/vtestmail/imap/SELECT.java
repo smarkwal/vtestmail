@@ -19,6 +19,7 @@ package net.markwalder.vtestmail.imap;
 import java.io.IOException;
 import net.markwalder.vtestmail.store.MailboxFolder;
 import net.markwalder.vtestmail.utils.Assert;
+import net.markwalder.vtestmail.utils.StringUtils;
 
 public class SELECT extends ImapCommand {
 
@@ -96,7 +97,7 @@ public class SELECT extends ImapCommand {
 		// system-defined flags) that are applicable for this mailbox.  Flags
 		// other than the system flags can also exist, depending on server
 		// implementation.
-		client.writeLine("* FLAGS (" + String.join(" ", server.getFlags()) + ")");
+		client.writeLine("* FLAGS (" + StringUtils.join(server.getFlags(), " ") + ")");
 
 		// A list of message flags that the client can change permanently.
 		// If this is missing, the client should assume that all flags can be changed permanently.
@@ -105,7 +106,7 @@ public class SELECT extends ImapCommand {
 		// include the special flag \*, which indicates that it is possible
 		// to create new keywords by attempting to store those keywords in
 		// the mailbox.
-		client.writeLine("* OK [PERMANENTFLAGS (" + String.join(" ", server.getPermanentFlags()) + " \\*)] Limited");
+		client.writeLine("* OK [PERMANENTFLAGS (" + StringUtils.join(server.getPermanentFlags(), " ") + " \\*)] Limited");
 
 		// The server MUST return a LIST response with the mailbox name.
 		// The list of mailbox attributes MUST be accurate.

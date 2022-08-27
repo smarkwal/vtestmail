@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import net.markwalder.vtestmail.store.Mailbox;
 import net.markwalder.vtestmail.utils.Assert;
+import net.markwalder.vtestmail.utils.StringUtils;
 
 public class CREATE extends ImapCommand {
 
@@ -86,7 +87,7 @@ public class CREATE extends ImapCommand {
 		// In other words, an attempt to create "foo/bar/zap" on a server in
 		// which "/" is the hierarchy separator character SHOULD create foo/ and
 		// foo/bar/ if they do not already exist.
-		String[] folderPathElements = folderName.split(HIERARCHY_SEPARATOR);
+		String[] folderPathElements = StringUtils.split(folderName, HIERARCHY_SEPARATOR);
 		for (int i = 1; i < folderPathElements.length; i++) {
 			String parentFolderName = Arrays.stream(folderPathElements).limit(i).collect(Collectors.joining(HIERARCHY_SEPARATOR));
 			if (!mailbox.hasFolder(parentFolderName)) {

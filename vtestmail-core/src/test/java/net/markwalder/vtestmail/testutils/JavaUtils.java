@@ -16,11 +16,13 @@
 
 package net.markwalder.vtestmail.testutils;
 
+import net.markwalder.vtestmail.utils.StringUtils;
+
 public class JavaUtils {
 
 	public static int getJavaVersion() {
 		String version = System.getProperty("java.version");
-		String[] digits = version.split("\\.");
+		String[] digits = StringUtils.split(version, ".");
 		if (version.startsWith("1.")) { // Java 1.1 - 1.8
 			return Integer.parseInt(digits[1]);
 		} else { // Java 9 and greater

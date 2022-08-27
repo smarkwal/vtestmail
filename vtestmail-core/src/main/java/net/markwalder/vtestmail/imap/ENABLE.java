@@ -32,7 +32,7 @@ public class ENABLE extends ImapCommand {
 
 	public static ENABLE parse(String parameters) throws ImapException {
 		isNotEmpty(parameters);
-		String[] extensions = StringUtils.split(parameters, Integer.MAX_VALUE);
+		String[] extensions = StringUtils.split(parameters, " ");
 		return new ENABLE(Arrays.asList(extensions));
 	}
 

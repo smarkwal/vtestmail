@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import net.markwalder.vtestmail.utils.Assert;
+import net.markwalder.vtestmail.utils.StringUtils;
 
 public class MailboxMessage {
 
@@ -209,7 +210,7 @@ public class MailboxMessage {
 	public String getTop(int n) {
 
 		// split message into lines
-		String[] lines = content.split(CRLF, -1);
+		String[] lines = StringUtils.split(content, CRLF);
 
 		// add all headers
 		boolean headers = true;
