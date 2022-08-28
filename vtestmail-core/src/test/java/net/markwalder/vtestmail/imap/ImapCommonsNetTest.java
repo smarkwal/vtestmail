@@ -500,6 +500,104 @@ class ImapCommonsNetTest {
 
 	}
 
+	@Test
+	void test_store() throws IOException {
+
+		// LOGIN
+		boolean success = client.login(USERNAME, PASSWORD);
+		assertThat(success).isTrue();
+		assertReply(client, tag.next() + " OK [CAPABILITY IMAP4rev2 STARTTLS] LOGIN completed");
+
+		// SELECT INBOX
+		success = client.select("INBOX");
+		assertThat(success).isTrue();
+		assertReply(client,
+				"* 2 EXISTS",
+				"* OK [UIDVALIDITY 1] UIDs valid",
+				"* OK [UIDNEXT 3] Predicted next UID",
+				"* FLAGS (\\Answered \\Deleted \\Draft \\Flagged \\Seen)",
+				"* OK [PERMANENTFLAGS (\\Answered \\Deleted \\Draft \\Flagged \\Seen \\*)] Limited",
+				"* LIST () \"/\" INBOX",
+				tag.next() + " OK [READ-WRITE] SELECT completed"
+		);
+
+		// assert: no flags set on message 1
+		ImapSession session = server.getActiveSession();
+		MailboxFolder folder = session.getFolder();
+		MailboxMessage message = folder.getMessage(1);
+		assertThat(message.getFlags()).isEmpty();
+
+		// STORE 1 FLAGS (\Seen)
+		success = client.store("1", "FLAGS", "(\\Seen)");
+		assertThat(success).isTrue();
+		// TODO: assert update messages
+		assertReply(client,
+				"* 1 FETCH (FLAGS (\\Seen))",
+				tag.next() + " OK STORE completed"
+		);
+
+		// assert: \Seen flag set on message 1
+		assertThat(message.getFlags()).containsExactly(MailboxMessage.FLAG_SEEN);
+
+		// STORE 1 +FLAGS (\Flagged)
+		success = client.store("1", "+FLAGS", "(\\Flagged)");
+		assertThat(success).isTrue();
+		assertReply(client,
+				"* 1 FETCH (FLAGS (\\Flagged \\Seen))",
+				tag.next() + " OK STORE completed"
+		);
+
+		// assert: \Flagged flag added to message 1
+		assertThat(message.getFlags()).containsExactly(MailboxMessage.FLAG_FLAGGED, MailboxMessage.FLAG_SEEN);
+
+		// STORE 1 -FLAGS (\Flagged)
+		success = client.store("1", "-FLAGS", "(\\Flagged)");
+		assertThat(success).isTrue();
+		assertReply(client,
+				"* 1 FETCH (FLAGS (\\Seen))",
+				tag.next() + " OK STORE completed"
+		);
+
+		// assert: \Flagged flag removed from message 1
+		assertThat(message.getFlags()).containsExactly(MailboxMessage.FLAG_SEEN);
+
+		// STORE 1 FLAGS.SILENT (\Draft)
+		success = client.store("1", "+FLAGS.SILENT", "(\\Draft)");
+		assertThat(success).isTrue();
+		assertReply(client,
+				tag.next() + " OK STORE completed"
+		);
+
+		// assert: \Draft flag added to message 1
+		assertThat(message.getFlags()).containsExactly(MailboxMessage.FLAG_DRAFT, MailboxMessage.FLAG_SEEN);
+
+		// STORE 1 FLAGS ()
+		success = client.store("1", "FLAGS", "()");
+		assertThat(success).isTrue();
+		assertReply(client,
+				"* 1 FETCH (FLAGS ())",
+				tag.next() + " OK STORE completed"
+		);
+
+		// assert: all flags removed from message 1
+		assertThat(message.getFlags()).isEmpty();
+
+		// STORE 1:* +FLAGS (\Deleted)
+		success = client.store("1:*", "+FLAGS", "(\\Deleted)");
+		assertThat(success).isTrue();
+		assertReply(client,
+				"* 1 FETCH (FLAGS (\\Deleted))",
+				"* 2 FETCH (FLAGS (\\Deleted))",
+				tag.next() + " OK STORE completed"
+		);
+
+		// assert: \Deleted flag added to all messages
+		for (MailboxMessage folderMessage : folder.getMessages()) {
+			assertThat(folderMessage.getFlags()).containsExactly(MailboxMessage.FLAG_DELETED);
+		}
+
+	}
+
 	private void assertReply(IMAPClient client, String... expectedReply) {
 		String[] reply = client.getReplyStrings();
 		assertThat(reply).containsExactly(expectedReply);

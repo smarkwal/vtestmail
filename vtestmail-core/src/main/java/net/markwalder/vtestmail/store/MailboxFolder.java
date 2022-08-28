@@ -59,6 +59,13 @@ public class MailboxFolder {
 		}
 	}
 
+	public MailboxMessage getMessage(int messageNumber) {
+		synchronized (messages) {
+			Assert.isInRange(messageNumber, 1, messages.size(), "messageNumber");
+			return messages.get(messageNumber - 1);
+		}
+	}
+
 	public MailboxMessage addMessage(String content) {
 		Assert.isNotEmpty(content, "content");
 		synchronized (messages) {

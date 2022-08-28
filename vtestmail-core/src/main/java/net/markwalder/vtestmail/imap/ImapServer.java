@@ -90,7 +90,7 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 		addCommand("EXPUNGE", EXPUNGE::parse);
 		// TODO: SEARCH
 		// TODO: FETCH
-		// TODO: STORE
+		addCommand("STORE", STORE::parse);
 		// TODO: COPY
 		// TODO: MOVE
 		// TODO: UID
