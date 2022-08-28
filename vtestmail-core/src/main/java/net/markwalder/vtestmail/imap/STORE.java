@@ -112,11 +112,13 @@ public class STORE extends ImapCommand {
 		session.assertState(State.Selected);
 		session.assertReadWrite();
 
+		// parse sequence set
 		SequenceSet sequenceSet = new SequenceSet(this.sequenceSet);
 
-		MailboxFolder folder = session.getFolder();
-		List<MailboxMessage> messages = folder.getMessages();
+		// parse flag list
+		final String[] flags = parseFlags(messageDataItemValue);
 
+		// parse operation and create action
 		String operation = messageDataItemName;
 		boolean silent = false;
 		if (operation.endsWith(".SILENT")) {
@@ -124,36 +126,22 @@ public class STORE extends ImapCommand {
 			silent = true;
 		}
 
-		final String[] flags;
-		if (messageDataItemValue.equals("()")) {
-			flags = new String[0]; // empty flag list
-		} else if (messageDataItemValue.startsWith("(") && messageDataItemValue.endsWith(")")) {
-			String list = messageDataItemValue.substring(1, messageDataItemValue.length() - 1);
-			flags = StringUtils.split(list, " ");
-		} else {
-			flags = StringUtils.split(messageDataItemValue, " ");
-		}
+		Consumer<MailboxMessage> action = createMessageAction(operation, flags);
 
-		Consumer<MailboxMessage> action;
-		switch (operation) {
-			case "FLAGS":
-				action = message -> setFlags(message, flags);
-				break;
-			case "+FLAGS":
-				action = message -> addFlags(message, flags);
-				break;
-			case "-FLAGS":
-				action = message -> removeFlags(message, flags);
-				break;
-			default:
-				throw ImapException.SyntaxError();
-		}
-
+		// execute action on all messages included in sequence set
+		MailboxFolder folder = session.getFolder();
+		List<MailboxMessage> messages = folder.getMessages();
 		for (int i = 0; i < messages.size(); i++) {
 			MailboxMessage message = messages.get(i);
 			int messageNumber = i + 1;
+
+			// if message is included in sequence set
 			if (sequenceSet.contains(messageNumber)) {
+
+				// execute action on message
 				action.accept(message);
+
+				// send untagged FETCH response (if not silent)
 				if (!silent) {
 					client.writeLine("* " + messageNumber + " FETCH (FLAGS (" + StringUtils.join(message.getFlags(), " ") + "))");
 				}
@@ -161,6 +149,29 @@ public class STORE extends ImapCommand {
 		}
 
 		client.writeLine(tag + " OK STORE completed");
+	}
+
+	private static String[] parseFlags(String list) {
+		if (list.equals("()")) {
+			return new String[0]; // empty flag list
+		}
+		if (list.startsWith("(") && list.endsWith(")")) {
+			list = list.substring(1, list.length() - 1);
+		}
+		return StringUtils.split(list, " ");
+	}
+
+	private static Consumer<MailboxMessage> createMessageAction(String operation, String[] flags) throws ImapException {
+		switch (operation) {
+			case "FLAGS":
+				return message -> setFlags(message, flags);
+			case "+FLAGS":
+				return message -> addFlags(message, flags);
+			case "-FLAGS":
+				return message -> removeFlags(message, flags);
+			default:
+				throw ImapException.SyntaxError();
+		}
 	}
 
 	private static void setFlags(MailboxMessage message, String[] flags) {
