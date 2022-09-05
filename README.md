@@ -1,5 +1,14 @@
 # vtestmail
 
+[![Release](https://img.shields.io/github/v/release/smarkwal/vtestmail?label=Latest)](https://github.com/smarkwal/vtestmail/releases/latest)
+[![License](https://img.shields.io/github/license/smarkwal/vtestmail?label=License)](https://github.com/smarkwal/vtestmail/blob/main/LICENSE)
+[![Issues](https://img.shields.io/github/issues/smarkwal/vtestmail?label=Issues)](https://github.com/smarkwal/vtestmail/issues)
+
+[![Build](https://github.com/smarkwal/vtestmail/actions/workflows/build.yml/badge.svg)](https://github.com/smarkwal/vtestmail/actions/workflows/build.yml)
+[![Tests](https://img.shields.io/sonar/tests/smarkwal_vtestmail/main?label=Tests&server=https%3A%2F%2Fsonarcloud.io)](https://sonarcloud.io/component_measures?id=smarkwal_vtestmail&metric=test_success_density&selected=smarkwal_vtestmail%3Asrc%2Ftest%2Fjava%2Forg%2Fsession-logout-listener)
+[![Coverage](https://img.shields.io/sonar/coverage/smarkwal_vtestmail/main?label=Coverage&server=https%3A%2F%2Fsonarcloud.io)](https://sonarcloud.io/component_measures?id=smarkwal_vtestmail&metric=coverage&view=list)
+[![Quality](https://img.shields.io/sonar/quality_gate/smarkwal_vtestmail/main?label=Quality&server=https%3A%2F%2Fsonarcloud.io)](https://sonarcloud.io/dashboard?id=smarkwal_vtestmail)
+
 Embedded SMTP, POP3, and IMAP servers for integration tests in Java projects.
 
 #### Problem
