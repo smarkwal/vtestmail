@@ -2,7 +2,6 @@ name: Build
 
 on:
   push:
-  #pull_request:
   workflow_dispatch:
     inputs:
       additionalGradleOptions:
@@ -15,6 +14,9 @@ jobs:
     name: Build
 
     runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      PUSH_GRADLE_OPTIONS: ''
 
     steps:
 
@@ -32,10 +34,21 @@ jobs:
     - name: Validate Gradle wrapper
       uses: gradle/wrapper-validation-action@v1
 
+    - name: Restore SonarQube Cache
+      uses: actions/cache@v3
+      if: ${{ github.event_name == 'push' && !startsWith(github.ref_name, 'dependabot/') }}
+      with:
+        path: /home/runner/.sonar/cache
+        key: sonarqube-cache
+
+    - name: Set Push Gradle options
+      if: ${{ github.event_name == 'push' && !startsWith(github.ref_name, 'dependabot/') }}
+      run: echo "PUSH_GRADLE_OPTIONS=sonarqube" >> $GITHUB_ENV
+
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: 'build ${{ github.event.inputs.additionalGradleOptions }}'
+        arguments: 'build ${{ env.PUSH_GRADLE_OPTIONS }} ${{ github.event.inputs.additionalGradleOptions }}'
 
     - name: Upload reports
       uses: actions/upload-artifact@v3

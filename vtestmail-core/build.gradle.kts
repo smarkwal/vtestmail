@@ -1,9 +1,30 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import java.util.*
 
 plugins {
     `java-library`
     jacoco
+
+    // run SonarQube analysis
+    id("org.sonarqube") version "3.4.0.2513"
+
+    // get current Git branch name
+    id("org.ajoberstar.grgit") version "5.0.0"
+
+    // provide utility task "taskTree" for analysis of task dependencies
+    id("com.dorongold.task-tree") version "2.1.0"
+}
+
+// load user-specific properties -----------------------------------------------
+
+val userPropertiesFile = file("${projectDir}/gradle.user.properties")
+if (userPropertiesFile.exists()) {
+    val userProperties = Properties()
+    userProperties.load(userPropertiesFile.inputStream())
+    userProperties.forEach {
+        project.ext.set(it.key.toString(), it.value)
+    }
 }
 
 // Java version check ----------------------------------------------------------
@@ -11,6 +32,22 @@ plugins {
 if (!JavaVersion.current().isJava11Compatible) {
     val error = "Build requires Java 11 and does not run on Java ${JavaVersion.current().majorVersion}."
     throw GradleException(error)
+}
+
+// Preconditions based on which tasks should be executed -----------------------
+
+gradle.taskGraph.whenReady {
+
+    // if sonarqube task should be executed ...
+    if (gradle.taskGraph.hasTask(":sonarqube")) {
+        // environment variable SONAR_TOKEN or property "sonar.login" must be set
+        val tokenFound = project.hasProperty("sonar.login") || System.getenv("SONAR_TOKEN") != null
+        if (!tokenFound) {
+            val error = "SonarQube: Token not found.\nPlease set property 'sonar.login' or environment variable 'SONAR_TOKEN'."
+            throw GradleException(error)
+        }
+    }
+
 }
 
 // dependencies ----------------------------------------------------------------
@@ -91,6 +128,68 @@ tasks.withType<Test> {
 
 }
 
+tasks {
+
+    jacocoTestReport {
+
+        // run all tests first
+        dependsOn(test)
+
+        // get JaCoCo data from all test tasks
+        executionData.from(
+            "${buildDir}/jacoco/test.exec"
+        )
+
+        reports {
+
+            // generate XML report (required for SonarQube)
+            xml.required.set(true)
+            xml.outputLocation.set(file("${buildDir}/reports/jacoco/test/report.xml"))
+
+            // generate HTML report
+            html.required.set(true)
+
+            // generate CSV report
+            // csv.required.set(true)
+        }
+    }
+
+}
+
+sonarqube {
+    // documentation: https://docs.sonarqube.org/latest/analysis/scan/sonarscanner-for-gradle/
+
+    properties {
+
+        // connection to SonarCloud
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.organization", "smarkwal")
+        property("sonar.projectKey", "smarkwal_vtestmail")
+
+        // Git branch
+        property("sonar.branch.name", getGitBranchName())
+
+        // paths to test sources and test classes
+        property("sonar.tests", "${projectDir}/src/test/java")
+        property("sonar.java.test.binaries", "${buildDir}/classes/java/test")
+
+        // include test results
+        property("sonar.junit.reportPaths", "${buildDir}/test-results/test")
+
+        // include test coverage results
+        property("sonar.java.coveragePlugin", "jacoco")
+        property("sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/report.xml")
+    }
+}
+
+tasks.sonarqube {
+    // run all tests and generate JaCoCo XML report
+    dependsOn(
+        tasks.test,
+        tasks.jacocoTestReport
+    )
+}
+
 // disable generation of Gradle module metadata file
 tasks.withType<GenerateModuleMetadata> {
     enabled = false
@@ -118,4 +217,10 @@ tasks.register("createKeystore") {
             )
         }
     }
+}
+
+// helper functions ------------------------------------------------------------
+
+fun getGitBranchName(): String {
+    return grgit.branch.current().name
 }
