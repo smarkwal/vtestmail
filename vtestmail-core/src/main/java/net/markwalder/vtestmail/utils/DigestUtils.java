@@ -22,6 +22,10 @@ import java.security.NoSuchAlgorithmException;
 
 public class DigestUtils {
 
+	private DigestUtils() {
+		// utility class
+	}
+
 	public static String md5Hex(String data, Charset charset) {
 		return Hex.encode(md5(data, charset));
 	}

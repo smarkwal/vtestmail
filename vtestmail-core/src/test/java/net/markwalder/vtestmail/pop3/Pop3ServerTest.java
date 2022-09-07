@@ -40,7 +40,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
-public class Pop3ServerTest {
+class Pop3ServerTest {
 
 	private static final String USERNAME = "\u00E4li\u00E7\u00E9";
 	private static final String PASSWORD = "p\u00E4ssw\u00F6rd!123";

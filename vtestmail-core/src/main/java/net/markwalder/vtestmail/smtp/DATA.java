@@ -32,6 +32,7 @@ public class DATA extends SmtpCommand {
 	private static final DateTimeFormatter DATETIME_FORMAT = DateTimeFormatter.ofPattern("E, d MMM uuuu HH:mm:ss Z").withLocale(Locale.US);
 
 	public DATA() {
+		// command has no parameters
 	}
 
 	public static DATA parse(String parameters) throws SmtpException {

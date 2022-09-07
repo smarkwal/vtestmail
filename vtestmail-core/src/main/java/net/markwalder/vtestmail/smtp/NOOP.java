@@ -21,6 +21,7 @@ import java.io.IOException;
 public class NOOP extends SmtpCommand {
 
 	public NOOP() {
+		// command has no parameters
 	}
 
 	public static NOOP parse(String parameters) throws SmtpException {

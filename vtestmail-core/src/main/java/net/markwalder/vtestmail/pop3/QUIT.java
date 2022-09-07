@@ -23,6 +23,7 @@ import net.markwalder.vtestmail.store.MailboxFolder;
 public class QUIT extends Pop3Command {
 
 	public QUIT() {
+		// command has no parameters
 	}
 
 	public static QUIT parse(String parameters) throws Pop3Exception {

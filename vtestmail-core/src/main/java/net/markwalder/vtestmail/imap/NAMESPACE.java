@@ -21,6 +21,7 @@ import java.io.IOException;
 public class NAMESPACE extends ImapCommand {
 
 	public NAMESPACE() {
+		// command has no parameters
 	}
 
 	public static NAMESPACE parse(String parameters) throws ImapException {

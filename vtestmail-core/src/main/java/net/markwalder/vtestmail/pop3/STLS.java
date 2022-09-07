@@ -21,6 +21,7 @@ import java.io.IOException;
 public class STLS extends Pop3Command {
 
 	public STLS() {
+		// command has no parameters
 	}
 
 	public static STLS parse(String parameters) throws Pop3Exception {

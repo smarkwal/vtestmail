@@ -451,6 +451,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	 * may override this method to read commands with multiple lines.
 	 *
 	 * @return The command, or {@code null} if the client has closed the connection.
+	 * @throws E           If a protocol error occurs.
 	 * @throws IOException If an I/O error occurs.
 	 */
 	protected String readCommand() throws E, IOException {

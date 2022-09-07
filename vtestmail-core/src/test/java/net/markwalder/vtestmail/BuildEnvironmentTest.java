@@ -21,7 +21,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import org.junit.jupiter.api.Test;
 
-public class BuildEnvironmentTest {
+class BuildEnvironmentTest {
 
 	@Test
 	void test() {

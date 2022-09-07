@@ -16,11 +16,15 @@
 
 package net.markwalder.vtestmail.utils;
 
-import java.util.Random;
+import java.security.SecureRandom;
 
 public class RandomStringUtils {
 
-	private static final Random RANDOM = new Random();
+	private static final SecureRandom RANDOM = new SecureRandom();
+
+	private RandomStringUtils() {
+		// utility class
+	}
 
 	public static String randomAscii(int count) {
 		Assert.isInRange(count, 1, Integer.MAX_VALUE, "count");

@@ -21,6 +21,7 @@ import java.io.IOException;
 public class NOOP extends Pop3Command {
 
 	public NOOP() {
+		// command has no parameters
 	}
 
 	@Override

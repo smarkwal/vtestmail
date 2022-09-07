@@ -45,6 +45,10 @@ class SSLUtils {
 	private static final String ALIAS = "localhost";
 	private static final String PASSWORD = "changeit";
 
+	private SSLUtils() {
+		// utility class
+	}
+
 	static SSLSocketFactory createSSLSocketFactory(String protocol) throws IOException {
 		SSLContext context = createSSLContext(protocol);
 		return context.getSocketFactory();
@@ -168,10 +172,12 @@ class SSLUtils {
 
 		@Override
 		public void checkClientTrusted(X509Certificate[] chain, String authType) {
+			// accept all clients
 		}
 
 		@Override
 		public void checkServerTrusted(X509Certificate[] chain, String authType) {
+			// accept all servers
 		}
 
 	}

@@ -23,6 +23,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class HmacUtils {
 
+	private HmacUtils() {
+		// utility class
+	}
+
 	public static Mac getMac(String algorithm, byte[] key) {
 		Assert.isNotEmpty(algorithm, "algorithm");
 		Assert.isNotNull(key, "key");

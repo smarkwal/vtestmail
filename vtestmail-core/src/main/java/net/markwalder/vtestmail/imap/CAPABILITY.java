@@ -23,6 +23,7 @@ import net.markwalder.vtestmail.utils.StringUtils;
 public class CAPABILITY extends ImapCommand {
 
 	public CAPABILITY() {
+		// command has no parameters
 	}
 
 	public static CAPABILITY parse(String parameters) throws ImapException {

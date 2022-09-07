@@ -30,6 +30,10 @@ import org.w3c.dom.NodeList;
  */
 public class MailboxStoreUtils {
 
+	private MailboxStoreUtils() {
+		// utility class
+	}
+
 	/**
 	 * Deserialize mailboxes from the given XML stream.
 	 *

@@ -16,12 +16,16 @@
 
 package net.markwalder.vtestmail.auth;
 
-public interface AuthType {
+public final class AuthType {
 
-	String LOGIN = "LOGIN";
-	String PLAIN = "PLAIN";
-	String CRAM_MD5 = "CRAM-MD5";
-	String DIGEST_MD5 = "DIGEST-MD5";
-	String XOAUTH2 = "XOAUTH2";
+	private AuthType() {
+		// constants only
+	}
+
+	public static final String LOGIN = "LOGIN";
+	public static final String PLAIN = "PLAIN";
+	public static final String CRAM_MD5 = "CRAM-MD5";
+	public static final String DIGEST_MD5 = "DIGEST-MD5";
+	public static final String XOAUTH2 = "XOAUTH2";
 
 }

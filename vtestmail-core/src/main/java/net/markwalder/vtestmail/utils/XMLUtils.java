@@ -37,6 +37,10 @@ import org.xml.sax.SAXException;
  */
 public class XMLUtils {
 
+	private XMLUtils() {
+		// utility class
+	}
+
 	/**
 	 * Create a new empty XML document.
 	 *

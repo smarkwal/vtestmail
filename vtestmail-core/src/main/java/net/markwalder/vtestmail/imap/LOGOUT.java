@@ -21,6 +21,7 @@ import java.io.IOException;
 public class LOGOUT extends ImapCommand {
 
 	public LOGOUT() {
+		// command has no parameters
 	}
 
 	public static LOGOUT parse(String parameters) throws ImapException {

@@ -21,6 +21,7 @@ import java.io.IOException;
 public class QUIT extends SmtpCommand {
 
 	public QUIT() {
+		// command has no parameters
 	}
 
 	public static QUIT parse(String parameters) throws SmtpException {

@@ -22,6 +22,7 @@ import net.markwalder.vtestmail.store.MailboxFolder;
 public class CLOSE extends ImapCommand {
 
 	public CLOSE() {
+		// command has no parameters
 	}
 
 	public static CLOSE parse(String parameters) throws ImapException {

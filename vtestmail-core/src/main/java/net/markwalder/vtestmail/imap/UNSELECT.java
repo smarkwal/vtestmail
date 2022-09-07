@@ -21,6 +21,7 @@ import java.io.IOException;
 public class UNSELECT extends ImapCommand {
 
 	public UNSELECT() {
+		// command has no parameters
 	}
 
 	public static UNSELECT parse(String parameters) throws ImapException {

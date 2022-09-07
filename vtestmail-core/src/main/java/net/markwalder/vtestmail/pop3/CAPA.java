@@ -22,6 +22,7 @@ import java.util.List;
 public class CAPA extends Pop3Command {
 
 	public CAPA() {
+		// command has no parameters
 	}
 
 	public static CAPA parse(String parameters) throws Pop3Exception {

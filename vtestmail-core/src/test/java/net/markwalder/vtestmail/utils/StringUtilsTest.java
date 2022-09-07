@@ -25,8 +25,8 @@ class StringUtilsTest {
 
 	@Test
 	void substringBefore() {
-		assertThat(StringUtils.substringBefore("", "a")).isEqualTo("");
-		assertThat(StringUtils.substringBefore("abc", "a")).isEqualTo("");
+		assertThat(StringUtils.substringBefore("", "a")).isEmpty();
+		assertThat(StringUtils.substringBefore("abc", "a")).isEmpty();
 		assertThat(StringUtils.substringBefore("abc", "b")).isEqualTo("a");
 		assertThat(StringUtils.substringBefore("abc", "c")).isEqualTo("ab");
 		assertThat(StringUtils.substringBefore("abc", "d")).isEqualTo("abc");
@@ -41,7 +41,7 @@ class StringUtilsTest {
 		assertThat(StringUtils.substringAfter("", "a")).isNull();
 		assertThat(StringUtils.substringAfter("abc", "a")).isEqualTo("bc");
 		assertThat(StringUtils.substringAfter("abc", "b")).isEqualTo("c");
-		assertThat(StringUtils.substringAfter("abc", "c")).isEqualTo("");
+		assertThat(StringUtils.substringAfter("abc", "c")).isEmpty();
 		assertThat(StringUtils.substringAfter("abc", "d")).isNull();
 
 		assertThat(StringUtils.substringAfter("UIDL", " ")).isNull();
@@ -81,7 +81,7 @@ class StringUtilsTest {
 
 	@Test
 	void join() {
-		assertThat(StringUtils.join(List.of(), ",")).isEqualTo("");
+		assertThat(StringUtils.join(List.of(), ",")).isEmpty();
 		assertThat(StringUtils.join(List.of("A"), ",")).isEqualTo("A");
 		assertThat(StringUtils.join(List.of("A", "B"), ",")).isEqualTo("A,B");
 		assertThat(StringUtils.join(List.of("A", "B", "C"), ",")).isEqualTo("A,B,C");

@@ -24,6 +24,7 @@ import net.markwalder.vtestmail.store.MailboxMessage;
 public class EXPUNGE extends ImapCommand {
 
 	public EXPUNGE() {
+		// command has no parameters
 	}
 
 	public static EXPUNGE parse(String parameters) throws ImapException {

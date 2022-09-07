@@ -24,7 +24,7 @@ import net.markwalder.vtestmail.store.MailboxMessage;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-public class RETRTest extends CommandTest {
+class RETRTest extends CommandTest {
 
 	private final MailboxMessage message = Mockito.mock(MailboxMessage.class);
 
@@ -35,7 +35,7 @@ public class RETRTest extends CommandTest {
 		RETR command = RETR.parse("1");
 
 		// assert
-		assertThat(command.toString()).isEqualTo("RETR 1");
+		assertThat(command).hasToString("RETR 1");
 	}
 
 	@Test

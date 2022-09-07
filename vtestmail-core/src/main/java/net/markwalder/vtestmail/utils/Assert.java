@@ -18,6 +18,10 @@ package net.markwalder.vtestmail.utils;
 
 public class Assert {
 
+	private Assert() {
+		// utility class
+	}
+
 	public static void isNotNull(Object argument, String name) {
 		if (argument == null) {
 			throw new IllegalArgumentException(name + " must not be null");

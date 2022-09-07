@@ -21,6 +21,7 @@ import java.io.IOException;
 public class STARTTLS extends ImapCommand {
 
 	public STARTTLS() {
+		// command has no parameters
 	}
 
 	public static STARTTLS parse(String parameters) throws ImapException {
