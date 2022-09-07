@@ -148,7 +148,7 @@ public class SmtpServer extends MailServer<SmtpCommand, SmtpSession, SmtpClient,
 		// supported authentication types
 		if (isCommandEnabled("AUTH")) {
 			List<String> authTypes = getAuthTypes();
-			if (authTypes.size() > 0) {
+			if (!authTypes.isEmpty()) {
 				extensions.add("AUTH " + StringUtils.join(authTypes, " "));
 			}
 		}

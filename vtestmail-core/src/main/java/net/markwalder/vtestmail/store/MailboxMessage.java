@@ -55,7 +55,16 @@ public class MailboxMessage {
 	MailboxMessage(String content) {
 		Assert.isNotEmpty(content, "content");
 		this.content = content;
-		this.uid = Math.abs(content.hashCode());
+		this.uid = calculateUID(content);
+	}
+
+	private static int calculateUID(String content) {
+		int hash = content.hashCode();
+		if (hash == Integer.MIN_VALUE) {
+			// see https://docs.oracle.com/javase/8/docs/api/java/lang/Math.html#abs-int-
+			hash = Integer.MAX_VALUE;
+		}
+		return Math.abs(hash);
 	}
 
 	MailboxMessage(int uid, String content) {

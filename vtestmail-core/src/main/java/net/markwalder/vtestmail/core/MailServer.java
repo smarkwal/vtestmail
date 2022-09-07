@@ -140,11 +140,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	public void setCommandEnabled(String command, boolean enabled) {
 		Assert.isNotEmpty(command, "command");
 		command = command.toUpperCase();
-		if (enabled) {
-			enabledCommands.put(command, true);
-		} else {
-			enabledCommands.put(command, false);
-		}
+		enabledCommands.put(command, enabled);
 	}
 
 	public MailboxStore getStore() {
@@ -314,9 +310,9 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 		if (thread != null) {
 			thread.interrupt();
 			try {
-				thread.join(5 * 1000);
+				thread.join(5 * 1000L);
 			} catch (InterruptedException e) {
-				// ignore
+				Thread.currentThread().interrupt();
 			}
 			thread = null;
 		}

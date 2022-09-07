@@ -136,7 +136,7 @@ public class Pop3Server extends MailServer<Pop3Command, Pop3Session, Pop3Client,
 		}
 
 		List<String> authTypes = getAuthTypes();
-		if (authTypes.size() > 0) {
+		if (!authTypes.isEmpty()) {
 			capabilities.add("SASL " + StringUtils.join(authTypes, " "));
 		}
 

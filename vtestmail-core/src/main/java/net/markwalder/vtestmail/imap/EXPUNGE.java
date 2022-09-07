@@ -50,7 +50,7 @@ public class EXPUNGE extends ImapCommand {
 
 		MailboxFolder folder = session.getFolder();
 		List<MailboxMessage> messages = folder.getMessages();
-		if (messages.size() > 0) {
+		if (!messages.isEmpty()) {
 
 			// send untagged EXPUNGE for each message that is marked as deleted
 			int deleted = 0;
