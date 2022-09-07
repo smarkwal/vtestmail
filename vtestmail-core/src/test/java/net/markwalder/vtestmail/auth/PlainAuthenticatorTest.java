@@ -18,11 +18,9 @@ package net.markwalder.vtestmail.auth;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import net.markwalder.vtestmail.testutils.SystemUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -148,22 +146,10 @@ class PlainAuthenticatorTest extends AuthenticatorTest {
 		// prepare: invalid response
 		String parameters = "invalid base64";
 
-		// capture output to STDERR
-		ByteArrayOutputStream stderr = SystemUtils.collectSystemErr();
-
-		Credentials credentials;
-		try {
-
-			// test
-			credentials = authenticator.authenticate(parameters, client, store);
-
-		} finally {
-			// restore original STDERR
-			SystemUtils.restoreSystemErr();
-		}
+		// test
+		Credentials credentials = authenticator.authenticate(parameters, client, store);
 
 		// assert
-		assertThat(stderr.toString()).startsWith("java.lang.IllegalArgumentException: Illegal base64 character 20");
 		assertThat(credentials).isNull();
 
 		// verify
