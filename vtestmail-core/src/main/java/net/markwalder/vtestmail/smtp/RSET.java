@@ -21,6 +21,7 @@ import java.io.IOException;
 public class RSET extends SmtpCommand {
 
 	public RSET() {
+		// command has no parameters
 	}
 
 	public static RSET parse(String parameters) throws SmtpException {

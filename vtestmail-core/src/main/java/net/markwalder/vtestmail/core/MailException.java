@@ -18,7 +18,7 @@ package net.markwalder.vtestmail.core;
 
 public abstract class MailException extends Exception {
 
-	public MailException(String message) {
+	protected MailException(String message) {
 		super(message);
 	}
 

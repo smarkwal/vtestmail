@@ -247,7 +247,7 @@ class ImapCommandParser {
 
 		// check that number is between 0 and 9223372036854775807
 		BigInteger minNumber = BigInteger.ZERO;
-		BigInteger maxNumber = new BigInteger("9223372036854775807");
+		BigInteger maxNumber = BigInteger.valueOf(9223372036854775807L);
 		if (number64.compareTo(minNumber) < 0) {
 			throw ImapException.SyntaxError();
 		} else if (number64.compareTo(maxNumber) > 0) {

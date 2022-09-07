@@ -26,6 +26,10 @@ import net.markwalder.vtestmail.utils.HmacUtils;
 
 class AuthUtils {
 
+	private AuthUtils() {
+		// utility class
+	}
+
 	static String encodeBase64(String data, Charset charset) {
 		byte[] bytes = data.getBytes(charset);
 		Base64.Encoder encoder = Base64.getEncoder();

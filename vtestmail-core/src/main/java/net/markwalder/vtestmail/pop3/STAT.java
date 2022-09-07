@@ -21,6 +21,7 @@ import java.io.IOException;
 public class STAT extends Pop3Command {
 
 	public STAT() {
+		// command has no parameters
 	}
 
 	public static STAT parse(String parameters) throws Pop3Exception {
