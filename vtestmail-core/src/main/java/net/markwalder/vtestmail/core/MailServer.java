@@ -228,7 +228,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	}
 
 	public void start() throws IOException {
-		logger.fine("Starting " + protocol + " server ...");
+		logger.fine(() -> "Starting " + protocol + " server ...");
 
 		// open a server socket on a free port
 		ServerSocketFactory factory;
@@ -256,7 +256,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 		thread.setName(protocol + "-server-localhost-" + getPort());
 		thread.start();
 
-		logger.fine(protocol + " server started");
+		logger.fine(() -> protocol + " server started");
 	}
 
 	/**
@@ -297,7 +297,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	}
 
 	public void stop() throws IOException {
-		logger.fine("Stopping " + protocol + " server ...");
+		logger.fine(() -> "Stopping " + protocol + " server ...");
 
 		// signal thread to stop
 		stop.set(true);
@@ -319,7 +319,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 			thread = null;
 		}
 
-		logger.fine(protocol + " server stopped");
+		logger.fine(() -> protocol + " server stopped");
 	}
 
 	@Override
@@ -335,7 +335,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 		while (!stop.get()) {
 
 			// wait for incoming connection
-			logger.fine("Waiting for " + protocol + " connection on localhost:" + getPort() + (useSSL ? " (" + sslProtocol + ")" : "") + " ...");
+			logger.fine(() -> "Waiting for " + protocol + " connection on localhost:" + getPort() + (useSSL ? " (" + sslProtocol + ")" : "") + " ...");
 
 			// if (serverSocket instanceof SSLServerSocket) {
 			// 	SSLServerSocket sslSocket = (SSLServerSocket) serverSocket;
@@ -350,7 +350,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 
 			try (Socket socket = serverSocket.accept()) {
 
-				logger.fine(protocol + " connection from " + getClientInfo(socket));
+				logger.fine(() -> protocol + " connection from " + getClientInfo(socket));
 
 				session = createSession();
 				client = createClient(socket, session.log); // client writes to session log
@@ -377,7 +377,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 						if (command == null) {
 
 							// client has closed the connection
-							logger.fine(protocol + " client closed connection");
+							logger.fine(() -> protocol + " client closed connection");
 
 							// stop waiting for new commands
 							break;
@@ -409,7 +409,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 			} catch (IOException e) {
 
 				if (!stop.get()) { // ignore exception if server has been stopped
-					logger.log(Level.WARNING, "Unexpected " + protocol + " I/O error:", e);
+					logger.log(Level.WARNING, e, () -> "Unexpected " + protocol + " I/O error:");
 				}
 
 			} finally {

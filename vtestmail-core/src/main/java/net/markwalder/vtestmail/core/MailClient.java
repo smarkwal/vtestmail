@@ -116,7 +116,7 @@ public abstract class MailClient {
 	public String readLine() throws IOException {
 		String line = reader.readLine();
 		if (line == null) return null;
-		logger.fine("Client: " + line + CRLF_MARKER);
+		logger.fine(() -> "Client: " + line + CRLF_MARKER);
 		log.append(line).append(LF);
 		return line;
 	}
@@ -130,7 +130,7 @@ public abstract class MailClient {
 	 */
 	public String readChars(long len) throws IOException {
 		String chars = reader.readChars(len);
-		logger.fine("Client: " + chars);
+		logger.fine(() -> "Client: " + chars);
 		log.append(chars);
 		return chars;
 	}
@@ -143,7 +143,7 @@ public abstract class MailClient {
 	 */
 	public void writeLine(String line) throws IOException {
 		Assert.isNotNull(line, "line");
-		logger.fine("Server: " + line + CRLF_MARKER);
+		logger.fine(() -> "Server: " + line + CRLF_MARKER);
 		log.append(line).append(LF);
 		writer.write(line);
 		writer.write(CRLF);
