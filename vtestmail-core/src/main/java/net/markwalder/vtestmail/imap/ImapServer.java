@@ -132,11 +132,16 @@ public class ImapServer extends MailServer<ImapCommand, ImapSession, ImapClient,
 	protected String readCommand() throws ImapException, IOException {
 		String line = client.readLine();
 
+		if (line == null) {
+			// client closed connection
+			return null;
+		}
+
 		// get tag
 		String tag = StringUtils.substringBefore(line, " ");
 
 		// while line ends with a literal ...
-		while (line != null && line.contains("{") && line.endsWith("}")) {
+		while (line.contains("{") && line.endsWith("}")) {
 
 			// literal = "{" number64 ["+"] "}" CRLF *CHAR8 ; <number64> represents the number of CHAR8s.
 			// A non-synchronizing literal is distinguished from a synchronizing literal by the presence of "+" before the closing "}".
