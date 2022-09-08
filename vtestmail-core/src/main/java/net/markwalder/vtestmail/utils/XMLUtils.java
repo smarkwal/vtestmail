@@ -110,35 +110,22 @@ public class XMLUtils {
 
 		// configure factory to prevent XXE attacks
 		// see https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
-
-		try {
-			factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-		} catch (ParserConfigurationException e) {
-			// ignore
-		}
-
-		try {
-			factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-		} catch (ParserConfigurationException e) {
-			// ignore
-		}
-
-		try {
-			factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-		} catch (ParserConfigurationException e) {
-			// ignore
-		}
-
-		try {
-			factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-		} catch (ParserConfigurationException e) {
-			// ignore
-		}
-
+		setFeature(factory, "http://apache.org/xml/features/disallow-doctype-decl", true);
+		setFeature(factory, "http://xml.org/sax/features/external-general-entities", false);
+		setFeature(factory, "http://xml.org/sax/features/external-parameter-entities", false);
+		setFeature(factory, "http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
 		factory.setXIncludeAware(false);
 		factory.setExpandEntityReferences(false);
 
 		return factory.newDocumentBuilder();
+	}
+
+	private static void setFeature(DocumentBuilderFactory factory, String name, boolean value) {
+		try {
+			factory.setFeature(name, value);
+		} catch (ParserConfigurationException e) {
+			// ignore
+		}
 	}
 
 }
