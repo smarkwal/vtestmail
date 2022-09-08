@@ -25,6 +25,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Logger;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import net.markwalder.vtestmail.utils.Assert;
@@ -34,6 +35,8 @@ import net.markwalder.vtestmail.utils.LineReader;
  * Mail client connection.
  */
 public abstract class MailClient {
+
+	private static final Logger logger = Logger.getLogger(MailClient.class.getName());
 
 	private static final String CRLF_MARKER = "<CRLF>";
 
@@ -77,7 +80,7 @@ public abstract class MailClient {
 		SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(socket, address, port, true);
 
 		// initiate handshake
-		System.out.println("[SSL/TLS handshake]");
+		logger.fine("[SSL/TLS handshake]");
 		sslSocket.setUseClientMode(false);
 		sslSocket.startHandshake();
 
@@ -113,7 +116,7 @@ public abstract class MailClient {
 	public String readLine() throws IOException {
 		String line = reader.readLine();
 		if (line == null) return null;
-		System.out.println("Client: " + line + CRLF_MARKER);
+		logger.fine("Client: " + line + CRLF_MARKER);
 		log.append(line).append(LF);
 		return line;
 	}
@@ -127,7 +130,7 @@ public abstract class MailClient {
 	 */
 	public String readChars(long len) throws IOException {
 		String chars = reader.readChars(len);
-		System.out.println("Client: " + chars);
+		logger.fine("Client: " + chars);
 		log.append(chars);
 		return chars;
 	}
@@ -140,7 +143,7 @@ public abstract class MailClient {
 	 */
 	public void writeLine(String line) throws IOException {
 		Assert.isNotNull(line, "line");
-		System.out.println("Server: " + line + CRLF_MARKER);
+		logger.fine("Server: " + line + CRLF_MARKER);
 		log.append(line).append(LF);
 		writer.write(line);
 		writer.write(CRLF);

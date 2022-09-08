@@ -216,6 +216,15 @@ TODO
 
 TODO
 
+#### Logging
+
+This project uses the [Java Logging API (JUL)](https://docs.oracle.com/javase/8/docs/technotes/guides/logging/overview.html) for logging.
+
+The two main loggers are:
+
+* `net.markwalder.vtestmail.core.MailServer` - logs startup and shutdown of servers, incoming connections, and unexpected I/O errors.
+* `net.markwalder.vtestmail.core.MailClient` - logs SMTP, IMAP, and POP3 commands (prefixed with "Client:") and responses (prefixed with "Server:").
+
 ## Supported features
 
 ### SMTP server

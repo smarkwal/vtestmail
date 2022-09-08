@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSession;
@@ -53,9 +55,9 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 		// enable SSLv3, TLSv1 and TLSv1.1
 		Security.setProperty("jdk.tls.disabledAlgorithms", "");
 
-		// enable Jakarta Mail API debug output
-		// System.setProperty("mail.socket.debug", "true");
 	}
+
+	private static final Logger logger = Logger.getLogger(MailServer.class.getName());
 
 	protected final Map<String, MailCommand.Parser<T, E>> commands = new ConcurrentHashMap<>();
 	private final Map<String, Boolean> enabledCommands = new ConcurrentHashMap<>();
@@ -226,7 +228,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	}
 
 	public void start() throws IOException {
-		System.out.println("Starting " + protocol + " server ...");
+		logger.fine("Starting " + protocol + " server ...");
 
 		// open a server socket on a free port
 		ServerSocketFactory factory;
@@ -254,7 +256,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 		thread.setName(protocol + "-server-localhost-" + getPort());
 		thread.start();
 
-		System.out.println(protocol + " server started");
+		logger.fine(protocol + " server started");
 	}
 
 	/**
@@ -295,7 +297,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	}
 
 	public void stop() throws IOException {
-		System.out.println("Stopping " + protocol + " server ...");
+		logger.fine("Stopping " + protocol + " server ...");
 
 		// signal thread to stop
 		stop.set(true);
@@ -317,7 +319,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 			thread = null;
 		}
 
-		System.out.println(protocol + " server stopped");
+		logger.fine(protocol + " server stopped");
 	}
 
 	@Override
@@ -333,12 +335,12 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 		while (!stop.get()) {
 
 			// wait for incoming connection
-			System.out.println("Waiting for " + protocol + " connection on localhost:" + getPort() + (useSSL ? " (" + sslProtocol + ")" : "") + " ...");
+			logger.fine("Waiting for " + protocol + " connection on localhost:" + getPort() + (useSSL ? " (" + sslProtocol + ")" : "") + " ...");
 
 			// if (serverSocket instanceof SSLServerSocket) {
 			// 	SSLServerSocket sslSocket = (SSLServerSocket) serverSocket;
-			// 	System.out.println("Protocols: " + Arrays.toString(sslSocket.getEnabledProtocols()));
-			// 	System.out.println("Cipher suites: " + Arrays.toString(sslSocket.getEnabledCipherSuites()));
+			// 	logger.fine("Protocols: " + Arrays.toString(sslSocket.getEnabledProtocols()));
+			// 	logger.fine("Cipher suites: " + Arrays.toString(sslSocket.getEnabledCipherSuites()));
 			// }
 
 			// check if the server is still listening
@@ -348,7 +350,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 
 			try (Socket socket = serverSocket.accept()) {
 
-				System.out.println(protocol + " connection from " + getClientInfo(socket));
+				logger.fine(protocol + " connection from " + getClientInfo(socket));
 
 				session = createSession();
 				client = createClient(socket, session.log); // client writes to session log
@@ -375,7 +377,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 						if (command == null) {
 
 							// client has closed the connection
-							System.out.println(protocol + " client closed connection");
+							logger.fine(protocol + " client closed connection");
 
 							// stop waiting for new commands
 							break;
@@ -407,10 +409,7 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 			} catch (IOException e) {
 
 				if (!stop.get()) { // ignore exception if server has been stopped
-					System.out.flush();
-					System.err.println("Unexpected " + protocol + " I/O error:");
-					e.printStackTrace();
-					System.err.flush();
+					logger.log(Level.WARNING, "Unexpected " + protocol + " I/O error:", e);
 				}
 
 			} finally {
