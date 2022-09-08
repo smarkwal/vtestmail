@@ -366,45 +366,8 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 				// greet client
 				handleNewClient();
 
-				// read and handle client commands
-				while (true) {
-
-					String command = null;
-					try {
-
-						// read next command from client
-						command = readCommand();
-						if (command == null) {
-
-							// client has closed the connection
-							logger.fine(() -> protocol + " client closed connection");
-
-							// stop waiting for new commands
-							break;
-
-						} else if (command.isEmpty()) {
-							// TODO: how should an empty line be handled?
-							//  (sent after failed authentication)
-							continue;
-						}
-
-						// TODO: implement command listener
-
-						// execute command
-						handleCommand(command);
-
-					} catch (MailException e) {
-						handleException(command, e);
-					}
-
-					// check if the session has been closed (with a QUIT command)
-					boolean quit = session.isClosed();
-					if (quit) {
-						// stop waiting for new commands and close the connection
-						// (if not already closed by the client)
-						break;
-					}
-				}
+				// receive commands and execute them
+				handleCommands();
 
 			} catch (IOException e) {
 
@@ -438,6 +401,55 @@ public abstract class MailServer<T extends MailCommand, S extends MailSession, C
 	protected abstract S createSession();
 
 	protected abstract void handleNewClient() throws IOException;
+
+	/**
+	 * Receive commands from client and execute them.
+	 *
+	 * @throws IOException If an I/O error occurs.
+	 */
+	protected void handleCommands() throws IOException {
+
+		// read and handle client commands
+		while (true) {
+
+			String command = null;
+			try {
+
+				// read next command from client
+				command = readCommand();
+				if (command == null) {
+
+					// client has closed the connection
+					logger.fine(() -> protocol + " client closed connection");
+
+					// stop waiting for new commands
+					return;
+
+				} else if (command.isEmpty()) {
+					// TODO: how should an empty line be handled?
+					//  (sent after failed authentication)
+					continue;
+				}
+
+				// TODO: implement command listener
+
+				// execute command
+				handleCommand(command);
+
+			} catch (MailException e) {
+				handleException(command, e);
+			}
+
+			// check if the session has been closed (with a QUIT or LOGOUT command)
+			boolean quit = session.isClosed();
+			if (quit) {
+				// stop waiting for new commands and close the connection
+				// (if not already closed by the client)
+				return;
+			}
+		}
+
+	}
 
 	/**
 	 * Read the next command from the client.
