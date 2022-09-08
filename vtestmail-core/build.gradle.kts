@@ -109,6 +109,9 @@ tasks.withType<Test> {
     // settings
     maxHeapSize = "1G"
 
+    // configure Java Logging (JUL) for tests
+    systemProperty("java.util.logging.config.file", "${projectDir}/src/test/resources/logging.properties")
+
     // test task output
     testLogging {
         events = mutableSetOf(
