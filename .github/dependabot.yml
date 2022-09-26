@@ -9,11 +9,14 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 0
   - package-ecosystem: "gradle"
     directory: "/vtestmail-core"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 0
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 0
