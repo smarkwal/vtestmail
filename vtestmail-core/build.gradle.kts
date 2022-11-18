@@ -7,7 +7,7 @@ plugins {
     jacoco
 
     // run SonarQube analysis
-    id("org.sonarqube") version "3.4.0.2513"
+    id("org.sonarqube") version "3.5.0.2730"
 
     // get current Git branch name
     id("org.ajoberstar.grgit") version "5.0.0"
@@ -61,7 +61,7 @@ repositories {
 dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
-    testImplementation("org.mockito:mockito-core:4.8.0")
+    testImplementation("org.mockito:mockito-core:4.9.0")
     testImplementation("org.assertj:assertj-core:3.23.1")
     testImplementation("com.sun.mail:jakarta.mail:2.0.1")
     testImplementation("commons-net:commons-net:3.8.0")
