@@ -7,7 +7,7 @@ plugins {
     jacoco
 
     // run SonarQube analysis
-    id("org.sonarqube") version "3.4.0.2513"
+    id("org.sonarqube") version "3.5.0.2730"
 
     // get current Git branch name
     id("org.ajoberstar.grgit") version "5.0.0"
