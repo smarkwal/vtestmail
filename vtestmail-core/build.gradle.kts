@@ -64,7 +64,7 @@ dependencies {
     testImplementation("org.mockito:mockito-core:4.9.0")
     testImplementation("org.assertj:assertj-core:3.23.1")
     testImplementation("com.sun.mail:jakarta.mail:2.0.1")
-    testImplementation("commons-net:commons-net:3.8.0")
+    testImplementation("commons-net:commons-net:3.9.0")
 
 }
 
