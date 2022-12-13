@@ -5,18 +5,30 @@
 
 version: 2
 updates:
+
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "friday"
+      time: "17:00"
+      timezone: "Europe/Zurich"
     open-pull-requests-limit: 100
+
   - package-ecosystem: "gradle"
     directory: "/vtestmail-core"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "friday"
+      time: "17:00"
+      timezone: "Europe/Zurich"
     open-pull-requests-limit: 100
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
+      day: "friday"
+      time: "17:00"
+      timezone: "Europe/Zurich"
     open-pull-requests-limit: 100
