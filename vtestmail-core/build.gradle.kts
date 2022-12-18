@@ -6,7 +6,7 @@ plugins {
     `java-library`
     jacoco
 
-    // run SonarQube analysis
+    // run Sonar analysis
     id("org.sonarqube") version "3.5.0.2730"
 
     // get current Git branch name
@@ -42,12 +42,12 @@ if (!JavaVersion.current().isJava11Compatible) {
 
 gradle.taskGraph.whenReady {
 
-    // if sonarqube task should be executed ...
-    if (gradle.taskGraph.hasTask(":sonarqube")) {
+    // if sonar task should be executed ...
+    if (gradle.taskGraph.hasTask(":sonar")) {
         // environment variable SONAR_TOKEN or property "sonar.login" must be set
         val tokenFound = project.hasProperty("sonar.login") || System.getenv("SONAR_TOKEN") != null
         if (!tokenFound) {
-            val error = "SonarQube: Token not found.\nPlease set property 'sonar.login' or environment variable 'SONAR_TOKEN'."
+            val error = "Sonar: Token not found.\nPlease set property 'sonar.login' or environment variable 'SONAR_TOKEN'."
             throw GradleException(error)
         }
     }
@@ -149,7 +149,7 @@ tasks {
 
         reports {
 
-            // generate XML report (required for SonarQube)
+            // generate XML report (required for Sonar)
             xml.required.set(true)
             xml.outputLocation.set(file("${buildDir}/reports/jacoco/test/report.xml"))
 
@@ -163,7 +163,7 @@ tasks {
 
 }
 
-sonarqube {
+sonar {
     // documentation: https://docs.sonarqube.org/latest/analysis/scan/sonarscanner-for-gradle/
 
     properties {
@@ -189,7 +189,7 @@ sonarqube {
     }
 }
 
-tasks.sonarqube {
+tasks.sonar {
     // run all tests and generate JaCoCo XML report
     dependsOn(
         tasks.test,
