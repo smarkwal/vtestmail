@@ -8,6 +8,9 @@
 /out
 build
 
+# JarHC cache
+/.jarhc/
+
 # IntelliJ project files
 /.idea
 *.iml

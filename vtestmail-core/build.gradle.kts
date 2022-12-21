@@ -18,6 +18,9 @@ plugins {
     // Gradle Versions Plugin
     // https://github.com/ben-manes/gradle-versions-plugin
     id("com.github.ben-manes.versions") version "0.44.0"
+
+    // JarHC Gradle plugin
+    id("org.jarhc") version "1.0.0"
 }
 
 // load user-specific properties -----------------------------------------------
@@ -159,6 +162,23 @@ tasks {
             // generate CSV report
             // csv.required.set(true)
         }
+    }
+
+    jarhcReport {
+        dependsOn(jar)
+        classpath.setFrom(
+            jar.get().archiveFile,
+            configurations.runtimeClasspath
+        )
+        reportFiles.setFrom(
+            file("${rootDir}/docs/jarhc-report.html"),
+            file("${rootDir}/docs/jarhc-report.txt")
+        )
+        dataDir.set(file("${rootDir}/.jarhc"))
+    }
+
+    build {
+        dependsOn(jarhcReport)
     }
 
 }

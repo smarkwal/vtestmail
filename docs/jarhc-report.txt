@@ -1,0 +1,83 @@
+JarHC Report for vtestmail-core 1.0.0
+=====================================
+
+JAR Files
+---------
+List of JAR files found in classpath.
+
+JAR file                 | Size   | Classes | Resources | Checksum (SHA-1)                         | Artifact coordinates
+-------------------------+--------+---------+-----------+------------------------------------------+---------------------
+vtestmail-core-1.0.0.jar | 159 KB | 110     | 1         | 34256626aaf05c48a1f3a15ec2b25552fc8d4431 | [unknown]
+Classpath                | 159 KB | 110     | 1         | -                                        | -
+
+Modules
+-------
+List of Java Modules found in classpath.
+
+JAR file                 | Module name    | Definition     | Automatic | Requires | Exports
+-------------------------+----------------+----------------+-----------+----------+---------------
+vtestmail-core-1.0.0.jar | vtestmail.core | Auto-generated | Yes       | -        | [all packages]
+
+Class Versions
+--------------
+Java class file format information.
+
+JAR file                 | Multi-release | Class files by Java version
+-------------------------+---------------+----------------------------
+vtestmail-core-1.0.0.jar | No            | Java 11 (110)
+Classpath                | -             | Java 11 (110)
+
+JAR Dependencies
+----------------
+Dependencies between JAR files.
+
+JAR file                 | Uses   | Used by
+-------------------------+--------+--------
+vtestmail-core-1.0.0.jar | [none] | [none]
+
+Dependencies
+------------
+Dependencies as declared in POM file.
+
+JAR file                 | Maven coordinates | Direct dependencies | Status
+-------------------------+-------------------+---------------------+-------
+vtestmail-core-1.0.0.jar | [unknown]         | [unknown]           |
+
+Packages
+--------
+List of packages per JAR file.
+
+JAR file                 | Count | Packages                                  | Issues
+-------------------------+-------+-------------------------------------------+-------
+vtestmail-core-1.0.0.jar | 8     | net.markwalder.vtestmail (+7 subpackages) |
+
+Duplicate Classes
+-----------------
+Duplicate classes, shadowed classes, and duplicate resources.
+
+Class/Resource | Sources | Similarity
+---------------+---------+-----------
+
+Binary Compatibility
+--------------------
+Compatibility issues between JAR files.
+
+JAR file | Issues
+---------+-------
+
+Blacklist
+---------
+Use of dangerous, unsafe, unstable, or deprecated classes and methods.
+
+JAR file | Issues
+---------+-------
+
+Java Runtime
+------------
+Information about JRE/JDK runtime.
+
+Java home    : /Users/markwalder/Library/Java/JavaVirtualMachines/temurin-11.0.13/Contents/Home
+Java runtime : OpenJDK Runtime Environment
+Java version : 11.0.13
+Java vendor  : Eclipse Adoptium
+
