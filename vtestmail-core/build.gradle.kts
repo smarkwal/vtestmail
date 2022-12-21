@@ -20,7 +20,7 @@ plugins {
     id("com.github.ben-manes.versions") version "0.44.0"
 
     // JarHC Gradle plugin
-    id("org.jarhc") version "1.0.0"
+    id("org.jarhc") version "1.0.1"
 }
 
 // load user-specific properties -----------------------------------------------
@@ -174,7 +174,6 @@ tasks {
             file("${rootDir}/docs/jarhc-report.html"),
             file("${rootDir}/docs/jarhc-report.txt")
         )
-        dataDir.set(file("${rootDir}/.jarhc"))
     }
 
     build {
