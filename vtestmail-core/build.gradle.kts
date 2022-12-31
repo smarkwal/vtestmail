@@ -68,7 +68,7 @@ repositories {
 dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
-    testImplementation("org.mockito:mockito-core:4.10.0")
+    testImplementation("org.mockito:mockito-core:4.11.0")
     testImplementation("org.assertj:assertj-core:3.23.1")
     testImplementation("com.sun.mail:jakarta.mail:2.0.1")
     testImplementation("commons-net:commons-net:3.9.0")
