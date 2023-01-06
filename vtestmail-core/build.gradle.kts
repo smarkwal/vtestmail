@@ -13,7 +13,7 @@ plugins {
     id("org.ajoberstar.grgit") version "5.0.0"
 
     // provide utility task "taskTree" for analysis of task dependencies
-    id("com.dorongold.task-tree") version "2.1.0"
+    id("com.dorongold.task-tree") version "2.1.1"
 
     // Gradle Versions Plugin
     // https://github.com/ben-manes/gradle-versions-plugin
