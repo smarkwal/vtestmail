@@ -12,9 +12,6 @@ plugins {
     // get current Git branch name
     id("org.ajoberstar.grgit") version "5.0.0"
 
-    // provide utility task "taskTree" for analysis of task dependencies
-    id("com.dorongold.task-tree") version "2.1.0"
-
     // Gradle Versions Plugin
     // https://github.com/ben-manes/gradle-versions-plugin
     id("com.github.ben-manes.versions") version "0.44.0"
@@ -69,7 +66,7 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
     testImplementation("org.mockito:mockito-core:4.11.0")
-    testImplementation("org.assertj:assertj-core:3.23.1")
+    testImplementation("org.assertj:assertj-core:3.24.1")
     testImplementation("com.sun.mail:jakarta.mail:2.0.1")
     testImplementation("commons-net:commons-net:3.9.0")
 
