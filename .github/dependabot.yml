@@ -9,7 +9,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
       day: "friday"
       time: "17:00"
       timezone: "Europe/Zurich"
@@ -18,7 +18,7 @@ updates:
   - package-ecosystem: "gradle"
     directory: "/vtestmail-core"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
       day: "friday"
       time: "17:00"
       timezone: "Europe/Zurich"
@@ -27,7 +27,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
       day: "friday"
       time: "17:00"
       timezone: "Europe/Zurich"
