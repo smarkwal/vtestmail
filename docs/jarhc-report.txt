@@ -7,7 +7,7 @@ List of JAR files found in classpath.
 
 JAR file                 | Size   | Classes | Resources | Checksum (SHA-1)                         | Artifact coordinates
 -------------------------+--------+---------+-----------+------------------------------------------+---------------------
-vtestmail-core-1.0.0.jar | 159 KB | 110     | 1         | 34256626aaf05c48a1f3a15ec2b25552fc8d4431 | [unknown]
+vtestmail-core-1.0.0.jar | 159 KB | 110     | 1         | dafbc6084ac2704e4d7ca1b07f009461e3f659b1 | [unknown]
 Classpath                | 159 KB | 110     | 1         | -                                        | -
 
 Modules
@@ -76,8 +76,8 @@ Java Runtime
 ------------
 Information about JRE/JDK runtime.
 
-Java home    : /Users/markwalder/Library/Java/JavaVirtualMachines/temurin-11.0.13/Contents/Home
+Java home    : /Users/markwalder/Library/Java/JavaVirtualMachines/temurin-11.0.17/Contents/Home
 Java runtime : OpenJDK Runtime Environment
-Java version : 11.0.13
+Java version : 11.0.17
 Java vendor  : Eclipse Adoptium
 
