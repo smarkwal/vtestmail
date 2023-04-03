@@ -7,14 +7,14 @@ plugins {
     jacoco
 
     // run Sonar analysis
-    id("org.sonarqube") version "3.5.0.2730"
+    id("org.sonarqube") version "4.0.0.2929"
 
     // get current Git branch name
     id("org.ajoberstar.grgit") version "5.0.0"
 
     // Gradle Versions Plugin
     // https://github.com/ben-manes/gradle-versions-plugin
-    id("com.github.ben-manes.versions") version "0.45.0"
+    id("com.github.ben-manes.versions") version "0.46.0"
 
     // JarHC Gradle plugin
     id("org.jarhc") version "1.0.1"
@@ -65,7 +65,7 @@ repositories {
 dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
-    testImplementation("org.mockito:mockito-core:5.1.1")
+    testImplementation("org.mockito:mockito-core:5.2.0")
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("com.sun.mail:jakarta.mail:2.0.1")
     testImplementation("commons-net:commons-net:3.9.0")

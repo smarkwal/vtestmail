@@ -7,7 +7,7 @@ List of JAR files found in classpath.
 
 JAR file                 | Size   | Classes | Resources | Checksum (SHA-1)                         | Artifact coordinates
 -------------------------+--------+---------+-----------+------------------------------------------+---------------------
-vtestmail-core-1.0.0.jar | 159 KB | 110     | 1         | dafbc6084ac2704e4d7ca1b07f009461e3f659b1 | [unknown]
+vtestmail-core-1.0.0.jar | 159 KB | 110     | 1         | 128f69f57c8cb1d1e1ac26c03b8e8ddf9c6f9c6a | [unknown]
 Classpath                | 159 KB | 110     | 1         | -                                        | -
 
 Modules
