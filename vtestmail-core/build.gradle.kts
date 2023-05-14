@@ -10,7 +10,7 @@ plugins {
     id("org.sonarqube") version "4.0.0.2929"
 
     // get current Git branch name
-    id("org.ajoberstar.grgit") version "5.0.0"
+    id("org.ajoberstar.grgit") version "5.2.0"
 
     // Gradle Versions Plugin
     // https://github.com/ben-manes/gradle-versions-plugin
@@ -64,8 +64,8 @@ repositories {
 
 dependencies {
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
-    testImplementation("org.mockito:mockito-core:5.2.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
+    testImplementation("org.mockito:mockito-core:5.3.1")
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("com.sun.mail:jakarta.mail:2.0.1")
     testImplementation("commons-net:commons-net:3.9.0")
@@ -88,7 +88,7 @@ java {
 }
 
 jacoco {
-    toolVersion = "0.8.8"
+    toolVersion = "0.8.10"
 }
 
 tasks.withType<JavaCompile> {
