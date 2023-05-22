@@ -79,6 +79,11 @@ public abstract class MailClient {
 		SSLSocketFactory sslSocketFactory = SSLUtils.createSSLSocketFactory(protocol);
 		SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(socket, address, port, true);
 
+		// disable all other SSL/TLS protocols
+		// note: since Java 11.0.19, SSLv3 must be enabled explicitly
+		// see: https://bugs.openjdk.org/browse/JDK-8190492
+		sslSocket.setEnabledProtocols(new String[] { protocol });
+
 		// initiate handshake
 		logger.fine("[SSL/TLS handshake]");
 		sslSocket.setUseClientMode(false);
