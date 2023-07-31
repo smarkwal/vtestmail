@@ -5,6 +5,8 @@ import java.util.*
 plugins {
     `java-library`
     jacoco
+    signing
+    `maven-publish`
 
     // run Sonar analysis
     id("org.sonarqube") version "4.3.0.3225"
@@ -19,6 +21,9 @@ plugins {
     // JarHC Gradle plugin
     id("org.jarhc") version "1.0.1"
 }
+
+val developerUrl = "https://github.com/smarkwal/"
+val projectUrl = developerUrl + rootProject.name
 
 // load user-specific properties -----------------------------------------------
 
@@ -216,6 +221,49 @@ tasks.sonar {
 // disable generation of Gradle module metadata file
 tasks.withType<GenerateModuleMetadata> {
     enabled = false
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+
+            from(components["java"])
+
+            pom {
+
+                name.set(project.name)
+                description.set(project.description)
+                url.set(projectUrl)
+
+                licenses {
+                    license {
+                        name.set("Apache License, Version 2.0")
+                        url.set("$projectUrl/blob/main/LICENSE")
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set("smarkwal")
+                        name.set("Stephan Markwalder")
+                        email.set("stephan@markwalder.net")
+                        url.set(developerUrl)
+                    }
+                }
+
+                scm {
+                    connection.set(projectUrl.replace("https://", "scm:git:git://") + ".git")
+                    developerConnection.set(projectUrl.replace("https://", "scm:git:ssh://") + ".git")
+                    url.set(projectUrl)
+                }
+
+            }
+        }
+    }
+}
+
+signing {
+    sign(publishing.publications["maven"])
 }
 
 tasks.register("createKeystore") {
