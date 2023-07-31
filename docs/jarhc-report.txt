@@ -1,55 +1,55 @@
-JarHC Report for vtestmail-core 1.0.0
-=====================================
+JarHC Report for vtestmail-core 1.0.1-SNAPSHOT
+==============================================
 
 JAR Files
 ---------
 List of JAR files found in classpath.
 
-JAR file                 | Size   | Classes | Resources | Checksum (SHA-1)                         | Artifact coordinates
--------------------------+--------+---------+-----------+------------------------------------------+---------------------
-vtestmail-core-1.0.0.jar | 159 KB | 110     | 1         | d95ecb40ddfb4125b8639f96b00abfa8fed6366f | [unknown]
-Classpath                | 159 KB | 110     | 1         | -                                        | -
+JAR file                          | Size   | Classes | Resources | Checksum (SHA-1)                         | Artifact coordinates
+----------------------------------+--------+---------+-----------+------------------------------------------+---------------------
+vtestmail-core-1.0.1-SNAPSHOT.jar | 159 KB | 110     | 1         | dfe72966997bd6d3025d76fe7687b4912122d871 | [unknown]
+Classpath                         | 159 KB | 110     | 1         | -                                        | -
 
 Modules
 -------
 List of Java Modules found in classpath.
 
-JAR file                 | Module name    | Definition     | Automatic | Requires | Exports
--------------------------+----------------+----------------+-----------+----------+---------------
-vtestmail-core-1.0.0.jar | vtestmail.core | Auto-generated | Yes       | -        | [all packages]
+JAR file                          | Module name    | Definition     | Automatic | Requires | Exports
+----------------------------------+----------------+----------------+-----------+----------+---------------
+vtestmail-core-1.0.1-SNAPSHOT.jar | vtestmail.core | Auto-generated | Yes       | -        | [all packages]
 
 Class Versions
 --------------
 Java class file format information.
 
-JAR file                 | Multi-release | Class files by Java version
--------------------------+---------------+----------------------------
-vtestmail-core-1.0.0.jar | No            | Java 11 (110)
-Classpath                | -             | Java 11 (110)
+JAR file                          | Multi-release | Class files by Java version
+----------------------------------+---------------+----------------------------
+vtestmail-core-1.0.1-SNAPSHOT.jar | No            | Java 11 (110)
+Classpath                         | -             | Java 11 (110)
 
 JAR Dependencies
 ----------------
 Dependencies between JAR files.
 
-JAR file                 | Uses   | Used by
--------------------------+--------+--------
-vtestmail-core-1.0.0.jar | [none] | [none]
+JAR file                          | Uses   | Used by
+----------------------------------+--------+--------
+vtestmail-core-1.0.1-SNAPSHOT.jar | [none] | [none]
 
 Dependencies
 ------------
 Dependencies as declared in POM file.
 
-JAR file                 | Maven coordinates | Direct dependencies | Status
--------------------------+-------------------+---------------------+-------
-vtestmail-core-1.0.0.jar | [unknown]         | [unknown]           |
+JAR file                          | Maven coordinates | Direct dependencies | Status
+----------------------------------+-------------------+---------------------+-------
+vtestmail-core-1.0.1-SNAPSHOT.jar | [unknown]         | [unknown]           |
 
 Packages
 --------
 List of packages per JAR file.
 
-JAR file                 | Count | Packages                                  | Issues
--------------------------+-------+-------------------------------------------+-------
-vtestmail-core-1.0.0.jar | 8     | net.markwalder.vtestmail (+7 subpackages) |
+JAR file                          | Count | Packages                                  | Issues
+----------------------------------+-------+-------------------------------------------+-------
+vtestmail-core-1.0.1-SNAPSHOT.jar | 8     | net.markwalder.vtestmail (+7 subpackages) |
 
 Duplicate Classes
 -----------------
