@@ -9,14 +9,14 @@ plugins {
     `maven-publish`
 
     // run Sonar analysis
-    id("org.sonarqube") version "4.3.0.3225"
+    id("org.sonarqube") version "4.3.1.3277"
 
     // get current Git branch name
     id("org.ajoberstar.grgit") version "5.2.0"
 
     // Gradle Versions Plugin
     // https://github.com/ben-manes/gradle-versions-plugin
-    id("com.github.ben-manes.versions") version "0.47.0"
+    id("com.github.ben-manes.versions") version "0.48.0"
 
     // JarHC Gradle plugin
     id("org.jarhc") version "1.0.1"
@@ -70,7 +70,7 @@ repositories {
 dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
-    testImplementation("org.mockito:mockito-core:5.4.0")
+    testImplementation("org.mockito:mockito-core:5.5.0")
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("com.sun.mail:jakarta.mail:2.0.1")
     testImplementation("commons-net:commons-net:3.9.0")
