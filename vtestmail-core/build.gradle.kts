@@ -149,14 +149,14 @@ tasks {
 
         // get JaCoCo data from all test tasks
         executionData.from(
-            "${buildDir}/jacoco/test.exec"
+            "${layout.buildDirectory}/jacoco/test.exec"
         )
 
         reports {
 
             // generate XML report (required for Sonar)
             xml.required.set(true)
-            xml.outputLocation.set(file("${buildDir}/reports/jacoco/test/report.xml"))
+            xml.outputLocation.set(file("${layout.buildDirectory}/reports/jacoco/test/report.xml"))
 
             // generate HTML report
             html.required.set(true)
@@ -199,14 +199,14 @@ sonar {
 
         // paths to test sources and test classes
         property("sonar.tests", "${projectDir}/src/test/java")
-        property("sonar.java.test.binaries", "${buildDir}/classes/java/test")
+        property("sonar.java.test.binaries", "${layout.buildDirectory}/classes/java/test")
 
         // include test results
-        property("sonar.junit.reportPaths", "${buildDir}/test-results/test")
+        property("sonar.junit.reportPaths", "${layout.buildDirectory}/test-results/test")
 
         // include test coverage results
         property("sonar.java.coveragePlugin", "jacoco")
-        property("sonar.coverage.jacoco.xmlReportPaths", "${buildDir}/reports/jacoco/test/report.xml")
+        property("sonar.coverage.jacoco.xmlReportPaths", "${layout.buildDirectory}/reports/jacoco/test/report.xml")
     }
 }
 
