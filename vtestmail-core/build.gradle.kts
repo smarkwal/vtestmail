@@ -70,6 +70,7 @@ repositories {
 dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.mockito:mockito-core:5.5.0")
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("com.sun.mail:jakarta.mail:2.0.1")
