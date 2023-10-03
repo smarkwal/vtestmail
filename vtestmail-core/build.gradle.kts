@@ -9,7 +9,7 @@ plugins {
     `maven-publish`
 
     // run Sonar analysis
-    id("org.sonarqube") version "4.3.1.3277"
+    id("org.sonarqube") version "4.4.0.3356"
 
     // get current Git branch name
     id("org.ajoberstar.grgit") version "5.2.0"
