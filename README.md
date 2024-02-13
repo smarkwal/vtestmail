@@ -28,7 +28,7 @@ It does not have any dependencies on other libraries.
 
 ## Requirements
 
-* Java 11 or greater. Tested with Java 11 - Java 18 in July 2022.
+* Java 11 or greater. Tested with Java 11, Java 17, and Java 21 in February 2024.
 
 ## Installation
 
