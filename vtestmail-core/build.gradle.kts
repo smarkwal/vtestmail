@@ -16,7 +16,7 @@ plugins {
 
     // Gradle Versions Plugin
     // https://github.com/ben-manes/gradle-versions-plugin
-    id("com.github.ben-manes.versions") version "0.50.0"
+    id("com.github.ben-manes.versions") version "0.51.0"
 
     // JarHC Gradle plugin
     id("org.jarhc") version "1.0.1"
@@ -69,10 +69,10 @@ repositories {
 
 dependencies {
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("org.mockito:mockito-core:5.8.0")
-    testImplementation("org.assertj:assertj-core:3.24.2")
+    testImplementation("org.mockito:mockito-core:5.10.0")
+    testImplementation("org.assertj:assertj-core:3.25.3")
     testImplementation("com.sun.mail:jakarta.mail:2.0.1")
     testImplementation("commons-net:commons-net:3.10.0")
 
