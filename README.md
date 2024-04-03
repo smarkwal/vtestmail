@@ -1,3 +1,6 @@
+> [!NOTE]
+> This project has been archived in April 2024 and is no longer maintained.
+
 # vtestmail
 
 [![Release](https://img.shields.io/github/v/release/smarkwal/vtestmail?label=Latest)](https://github.com/smarkwal/vtestmail/releases/latest)
